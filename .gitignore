@@ -1,0 +1,8 @@
+# created by virtualenv automatically
+.git/
+__pycache__
+bin/
+lib/
+CACHEDIR.TAG
+pyvenv.cfg
+testGUI1.py
