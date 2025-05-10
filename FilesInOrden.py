@@ -177,15 +177,6 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area = scrolledtext.ScrolledText(log_frame, wrap=WORD)
         self.log_area.pack(fill=BOTH, expand=True)
 
-    # def filter_formats(self, event=None):
-    #     query = self.search_entry.get().lower()
-    #     for child in self.format_tree.get_children():
-    #         ext, folder = self.format_tree.item(child)["values"]
-    #         if query in ext.lower() or query in folder.lower():
-    #             self.format_tree.move(child, "", "end")
-    #         else:
-    #             self.format_tree.detach(child)
-
     def filter_formats(self, event=None):
         query = self.search_entry.get().lower()
         all_items = [
