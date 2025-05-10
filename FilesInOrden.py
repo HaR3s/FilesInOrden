@@ -1,10 +1,10 @@
 import logging
 from typing import Dict, Optional
-from PIL import Image, ImageTk
 from logging.handlers import RotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from cachetools import TTLCache
 from coloredlogs import ColoredFormatter
+from PIL import Image, ImageTk
 import os
 import sys
 import psutil
