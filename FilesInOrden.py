@@ -1,4 +1,8 @@
+import logging
+from logging.handlers import RotatingFileHandler
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+import hashlib
 import shutil
 import threading
 import json
@@ -12,39 +16,108 @@ from collections import deque
 import schedule
 
 
+class ThreadManager:
+    """Gestor profesional de hilos con supervisión"""
+
+    def __init__(self):
+        self.threads = {}
+        self.lock = threading.Lock()
+
+    def add_thread(self, name, target, daemon=False):
+        with self.lock:
+            self.threads[name] = {
+                "thread": threading.Thread(
+                    target=self._thread_wrapper,
+                    args=(name, target),
+                    daemon=daemon,
+                    name=name,
+                ),
+                "active": False,
+                "target": target,
+            }
+
+    def _thread_wrapper(self, name, target):
+        """Envuelve cada hilo para manejo de errores"""
+        try:
+            self.threads[name]["active"] = True
+            target()
+        except Exception as e:
+            logging.error(f"Thread {name} crashed: {str(e)}", exc_info=True)
+        finally:
+            self.threads[name]["active"] = False
+
+    def start_all(self):
+        for thread_info in self.threads.values():
+            thread_info["thread"].start()
+
+    def stop_all(self, timeout=5):
+        for name, thread_info in self.threads.items():
+            if thread_info["thread"].is_alive():
+                thread_info["thread"].join(timeout)
+                if thread_info["thread"].is_alive():
+                    logging.warning(f"Thread {name} didn't stop gracefully")
+
+
+class ToolTip:
+    """Implementación profesional de tooltips"""
+
+    def __init__(self, widget, text, bg, fg, font):
+        self.widget = widget
+        self.text = text
+        self.bg = bg
+        self.fg = fg
+        self.font = font
+        self.tip_window = None
+        self.id = None
+        self.x = self.y = 0
+        self.widget.bind("<Enter>", self.show)
+        self.widget.bind("<Leave>", self.hide)
+
+    def show(self, event=None):
+        """Muestra el tooltip con formato profesional"""
+        if self.tip_window or not self.text:
+            return
+        x, y, _, _ = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + 25
+        y += self.widget.winfo_rooty() + 25
+
+        self.tip_window = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(
+            tw,
+            text=self.text,
+            justify=tk.LEFT,
+            background=self.bg,
+            foreground=self.fg,
+            relief=tk.SOLID,
+            borderwidth=1,
+            font=self.font,
+            wraplength=200,
+        )
+        label.pack(ipadx=1)
+
+    def hide(self, event=None):
+        """Oculta el tooltip"""
+        if self.tip_window:
+            self.tip_window.destroy()
+            self.tip_window = None
+
+
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Organizador Avanzado de Archivos")
-        self.geometry("900x700")
-        self.configure(bg="#f0f0f0")
-        self.profiles = {}
-        self.current_profile = "default"
-        self.undo_stack = deque(maxlen=5)
-        self.task_queue = Queue()
-        self.running = True
-        self.theme_mode = "light"
-
-        # Inicializar configuración predeterminada
-        self.default_formats = {
-            ".jpg": "Fotos",
-            ".png": "Fotos",
-            ".ico": "Iconos",
-            ".mp4": "Videos",
-            ".avi": "Videos",
-            ".mpg": "Videos",
-            ".mp3": "Musica",
-            ".pdf": "PDFs",
-            ".docx": "Documentos_work",
-            ".doc": "Documentos_work",
-            ".txt": "Documentos_txt",
-            "": "Otros",
-        }
-
-        self.init_threads()
-        self.create_widgets()
-        self.load_profiles()
-        self.update_theme()
+        self.setup_logging()  # Primero el logging para capturar errores
+        self.logger.info("Inicializando aplicación")
+        try:
+            self.optimize_performance()
+            self.init_threads()
+            self.enhance_ui()
+            # Resto de tu inicialización...
+        except Exception as e:
+            self.logger.critical("Error durante inicialización", exc_info=True)
+            raise
 
     def select_directory(self):
         directory = filedialog.askdirectory(title="Seleccionar carpeta a organizar")
@@ -177,15 +250,6 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area = scrolledtext.ScrolledText(log_frame, wrap=WORD)
         self.log_area.pack(fill=BOTH, expand=True)
 
-    # def filter_formats(self, event=None):
-    #     query = self.search_entry.get().lower()
-    #     for child in self.format_tree.get_children():
-    #         ext, folder = self.format_tree.item(child)["values"]
-    #         if query in ext.lower() or query in folder.lower():
-    #             self.format_tree.move(child, "", "end")
-    #         else:
-    #             self.format_tree.detach(child)
-
     def filter_formats(self, event=None):
         query = self.search_entry.get().lower()
         all_items = [
@@ -210,20 +274,132 @@ class FileOrganizerGUI(tk.Tk):
         self.style.configure(".", background=bg, foreground=fg)
         self.log_area.configure(bg=bg, fg=fg, insertbackground=fg)
 
-    def init_threads(self):
-        """Inicializa los hilos para procesamiento en segundo plano."""
-        # Hilo para procesar la cola de tareas (task_queue)
-        self.task_thread = threading.Thread(
-            target=self.process_queue,
-            daemon=True,  # Se cerrará automáticamente al salir
-        )
-        self.task_thread.start()
+    def optimize_performance(self):
+        """Aplicar optimizaciones"""
+        # Cache para operaciones frecuentes
+        self.ext_cache = {}
+        self.folder_cache = {}
 
-        # Hilo para tareas programadas (schedule)
-        self.schedule_thread = threading.Thread(
-            target=self.run_scheduled_tasks, daemon=True
+        # Configuración de Treeview optimizada
+        self.format_tree.configure("Treeview", font=("Segoe UI", 9))
+        self.preview_tree.configure("Treeview", font=("Segoe UI", 9))
+
+        # Deshabilitar actualizaciones durante operaciones masivas
+        self.format_tree.bind("<<TreeviewOpen>>", self.on_treeview_update)
+        self.preview_tree.bind("<<TreeviewOpen>>", self.on_treeview_update)
+
+        # Precarga de iconos
+        self.load_icons()
+
+    def on_treeview_update(self, event):
+        """Controla actualizaciones de UI para mejor rendimiento"""
+        if self.mass_operation:
+            return "break"  # Cancela la actualización
+
+    def load_icons(self):
+        """Precarga iconos para mejor rendimiento visual"""
+        self.icons = {
+            "file": tk.PhotoImage(file="icons/file.png"),
+            "folder": tk.PhotoImage(file="icons/folder.png"),
+            "image": tk.PhotoImage(file="icons/image.png"),
+            "video": tk.PhotoImage(file="icons/video.png"),
+        }
+        for item in self.format_tree.get_children():
+            ext = self.format_tree.item(item)["values"][0]
+            icon = self.get_icon_for_extension(ext)
+            self.format_tree.item(item, image=icon)
+
+    def enhance_ui(self):
+        """Mejoras visuales profesionales"""
+        # Configuración de estilo avanzado
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
+
+        # Paleta de colores profesional
+        self.setup_colors()
+
+        # Tooltips avanzados
+        self.setup_tooltips()
+
+        # Animaciones fluidas
+        self.setup_animations()
+
+        # Barra de estado profesional
+        self.setup_statusbar()
+
+    def setup_colors(self):
+        """Configuración de tema dinámico"""
+        colors = {
+            "dark": {
+                "primary": "#2E3440",
+                "secondary": "#3B4252",
+                "text": "#ECEFF4",
+                "accent": "#88C0D0",
+            },
+            "light": {
+                "primary": "#ECEFF4",
+                "secondary": "#E5E9F0",
+                "text": "#2E3440",
+                "accent": "#5E81AC",
+            },
+        }
+
+        for theme, palette in colors.items():
+            self.style.theme_create(
+                f"{theme}_professional",
+                settings={
+                    "TFrame": {"configure": {"background": palette["primary"]}},
+                    "TLabel": {
+                        "configure": {
+                            "background": palette["primary"],
+                            "foreground": palette["text"],
+                        }
+                    },
+                    "TButton": {
+                        "configure": {
+                            "background": palette["secondary"],
+                            "foreground": palette["text"],
+                            "padding": (10, 5),
+                        },
+                        "map": {
+                            "background": [
+                                ("active", palette["accent"]),
+                                ("disabled", palette["secondary"]),
+                            ]
+                        },
+                    },
+                },
+            )
+
+    def setup_tooltips(self):
+        """Tooltips profesionales con HTML"""
+        self.tooltips = {
+            "organize_button": ToolTip(
+                self.organize_button,
+                text="<b>Organizar Archivos</b><br>Clasifica los archivos según las reglas definidas",
+                bg="white",
+                fg="black",
+                font=("Arial", 9),
+            ),
+            "undo_button": ToolTip(
+                self.undo_button,
+                text="<b>Deshacer</b><br>Revierte la última operación realizada",
+                bg="white",
+                fg="black",
+                font=("Arial", 9),
+            ),
+        }
+
+    def init_threads(self):
+        """Inicialización avanzada de hilos con monitoreo"""
+        self.thread_manager = ThreadManager()
+        self.thread_manager.add_thread(
+            name="TaskProcessor", target=self.process_queue, daemon=True
         )
-        self.schedule_thread.start()
+        self.thread_manager.add_thread(
+            name="Scheduler", target=self.run_scheduled_tasks, daemon=True
+        )
+        self.thread_manager.start_all()
 
     def process_queue(self):
         while self.running:
@@ -276,44 +452,70 @@ class FileOrganizerGUI(tk.Tk):
         thread.start()
 
     def organize_files(self, directory):
-        self.log("Iniciando organización de archivos...")
-        total_files = len(
-            [
-                f
-                for f in os.listdir(directory)
-                if os.path.isfile(os.path.join(directory, f))
-            ]
-        )
-        processed = 0
-        moved_files = []
+        """Versión segura mejorada"""
+        try:
+            self.validate_directory(directory)
+            self.logger.info(f"Iniciando organización en: {directory}")
 
-        for filename in os.listdir(directory):
-            src_path = os.path.join(directory, filename)
-            if os.path.isfile(src_path):
-                ext = os.path.splitext(filename)[1].lower()
-                folder = self.profiles[self.current_profile]["formatos"].get(
-                    ext, "Otros"
+            files = self.safe_listdir(directory)
+            total_files = len(files)
+            processed = 0
+            moved_files = []
+
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                futures = []
+                for filename in files:
+                    futures.append(
+                        executor.submit(self.process_single_file, directory, filename)
+                    )
+
+                for future in as_completed(futures):
+                    result = future.result()
+                    if result:
+                        moved_files.append(result)
+                        processed += 1
+                        self.update_progress(processed / total_files * 100)
+
+            self.finalize_operation(moved_files)
+
+        except Exception as e:
+            self.logger.error(f"Error en organize_files: {e}", exc_info=True)
+            self.task_queue.put(
+                lambda: messagebox.showerror(
+                    "Error", f"No se pudo completar la operación: {str(e)}"
                 )
-                dest_dir = os.path.join(directory, folder)
+            )
 
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)
+    def process_single_file(self, directory, filename):
+        """Procesamiento seguro de archivos individuales"""
+        try:
+            src_path = os.path.join(directory, filename)
+            if not self.validate_file(src_path):
+                return None
 
-                dest_path = os.path.join(dest_dir, filename)
-                try:
-                    shutil.move(src_path, dest_path)
-                    moved_files.append((src_path, dest_path))
-                    self.log(f"Movido: {filename} -> {folder}")
-                except Exception as e:
-                    self.log(f"Error: {str(e)}")
+            ext = os.path.splitext(filename)[1].lower()
+            folder = self.profiles[self.current_profile]["formatos"].get(ext, "Otros")
+            dest_dir = os.path.join(directory, folder)
 
-                processed += 1
-                self.update_progress(processed / total_files * 100)
+            if not os.path.exists(dest_dir):
+                self.safe_makedirs(dest_dir)
 
-        self.undo_stack.append(moved_files)
-        self.log("Organización completada")
-        self.update_progress(0)
-        self.task_queue.put(self.show_stats(moved_files))
+            dest_path = os.path.join(dest_dir, filename)
+            self.safe_move(src_path, dest_path)
+
+            self.logger.debug(f"Movido: {filename} -> {folder}")
+            return (src_path, dest_path)
+
+        except Exception as e:
+            self.logger.warning(f"Error procesando {filename}: {e}")
+            return None
+
+    def safe_move(self, src, dst):
+        """Movimiento seguro con verificación de hash"""
+        src_hash = self.file_hash(src)
+        shutil.move(src, dst)
+        if self.file_hash(dst) != src_hash:
+            raise IntegrityError(f"Hash mismatch after moving {src}")
 
     def show_stats(self, moved_files):
         stats = {
@@ -350,10 +552,49 @@ class FileOrganizerGUI(tk.Tk):
         self.progress["value"] = value
         self.update_idletasks()
 
-    def log(self, message):
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        self.log_area.insert(END, f"[{timestamp}] {message}\n")
-        self.log_area.see(END)
+    def setup_logging(self):
+        """Configura logging avanzado con rotación de archivos"""
+        self.logger = logging.getLogger("FileOrganizer")
+        self.logger.setLevel(logging.DEBUG)
+
+        # Formateador profesional
+        formatter = ColoredFormatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+
+        # Handler para consola (colorizado)
+        console = logging.StreamHandler()
+        console.setFormatter(formatter)
+
+        # Handler para archivo con rotación (10MB x 5 archivos)
+        file_handler = RotatingFileHandler(
+            "organizer.log", maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
+        )
+        file_handler.setFormatter(formatter)
+
+        # Filtro para logs importantes
+        class ImportantFilter(logging.Filter):
+            def filter(self, record):
+                return record.levelno >= logging.INFO
+
+        # Configuración final
+        self.logger.addHandler(console)
+        self.logger.addHandler(file_handler)
+        file_handler.addFilter(ImportantFilter())
+
+        # Captura de excepciones no manejadas
+        sys.excepthook = self.handle_uncaught_exception
+
+    def handle_uncaught_exception(self, exc_type, exc_value, exc_traceback):
+        """Maneja excepciones no capturadas"""
+        self.logger.critical(
+            "Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback)
+        )
+        messagebox.showerror(
+            "Error Crítico",
+            f"Ocurrió un error no manejado: {str(exc_value)}\nVer logs para detalles.",
+        )
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
@@ -451,16 +692,19 @@ class FileOrganizerGUI(tk.Tk):
             self.format_tree.delete(selected[0])
 
     def on_closing(self):
-        self.running = False
+        """Cierre profesional con limpieza"""
+        self.logger.info("Iniciando cierre de aplicación")
+        try:
+            if hasattr(self, "thread_manager"):
+                self.thread_manager.stop_all()
 
-        # Espera un máximo de 1 segundo a que los hilos terminen
-        if hasattr(self, "task_thread"):
-            self.task_thread.join(timeout=1)
-        if hasattr(self, "schedule_thread"):
-            self.schedule_thread.join(timeout=1)
-
-        self.save_to_file()
-        self.destroy()
+            # Guardar estado
+            self.save_to_file()
+            self.logger.info("Aplicación cerrada correctamente")
+        except Exception as e:
+            self.logger.error(f"Error durante el cierre: {e}")
+        finally:
+            self.destroy()
 
 
 if __name__ == "__main__":
