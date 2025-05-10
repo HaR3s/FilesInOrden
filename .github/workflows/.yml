@@ -18,15 +18,16 @@ jobs:
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       # 3. Instala PyInstaller
       - name: Instalar PyInstaller
         run: pip install pyinstaller
+        run: pip install 
 
       # 4. Compila el script a .exe (¡cambia "mi_script.py" por tu archivo!)
       - name: Compilar a EXE
-        run: pyinstaller --onefile --clean mi_script.py
+        run: pyinstaller --ico="ico/favicon.ico" --onefile --clean FilesInOrden.py
 
       # 5. Sube el .exe como "artifact" para descargar
       - name: Subir ejecutable
