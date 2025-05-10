@@ -157,6 +157,11 @@ class FileOrganizerGUI(tk.Tk):
         self.load_profiles()
         self.update_theme()
 
+    def log(self, message):
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        self.log_area.insert(END, f"[{timestamp}] {message}\n")
+        self.log_area.see(END)
+
     def select_directory(self):
         directory = filedialog.askdirectory(title="Seleccionar carpeta a organizar")
         if directory:  # Si el usuario no cancela
