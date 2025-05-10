@@ -1,25 +1,40 @@
-import logging
-from typing import Dict, Optional
-from logging.handlers import RotatingFileHandler
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from cachetools import TTLCache
-from coloredlogs import ColoredFormatter
-from PIL import Image, ImageTk
 import os
 import sys
-import psutil
-import hashlib
-import shutil
-import threading
-import json
 import time
-from tkinter import *
-from tkinter import ttk, filedialog, messagebox, scrolledtext
-import tkinter as tk
-from queue import Queue, Empty
+import json
+import logging
+import threading
+import hashlib
 from datetime import datetime
 from collections import deque
+from queue import Queue, Empty
+from typing import Dict, Optional, List, Tuple  # Tipado adicional
+from logging.handlers import RotatingFileHandler
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# Tkinter y GUI
+from tkinter import *
+import tkinter as tk
+from tkinter import (
+    Tk,
+    StringVar,
+    BooleanVar,
+    IntVar,
+    filedialog,
+    messagebox,
+    scrolledtext,
+)
+from tkinter import ttk
+from PIL import Image, ImageTk  # Requiere pillow
+
+# Utilidades del sistema
+import psutil
+import shutil
 import schedule
+
+# Librerías de terceros
+from cachetools import TTLCache
+from coloredlogs import ColoredFormatter
 
 
 class ThreadManager:
@@ -216,7 +231,6 @@ class FileOrganizerGUI(tk.Tk):
         # Configuración de estilo para botón destacado
         self.style.configure("Accent.TButton", foreground="white", background="#0078d7")
 
-    # ------
     def build_config_tab(self, parent):
         """Construye la pestaña de configuración avanzada"""
         notebook = ttk.Notebook(parent)
@@ -887,6 +901,12 @@ class FileOrganizerGUI(tk.Tk):
                 return icon_type
         return "file"
 
+    def setup_animations(self):
+        pass
+
+    def setup_statusbar(self):
+        pass
+
     def enhance_ui(self):
         """Mejoras visuales profesionales"""
         # Configuración de estilo avanzado
@@ -1029,6 +1049,17 @@ class FileOrganizerGUI(tk.Tk):
         )
         thread.start()
 
+    def validate_directory(self, directory):
+        """prueba de definicion para la funcion"""
+        return os.path
+
+    def safe_listdir(self, directory):
+        """prueba de definicion para la funcion"""
+        return os.path
+
+    def finalize_operation(self, moved_files):
+        pass
+
     def organize_files(self, directory):
         """Versión segura mejorada"""
         try:
@@ -1064,6 +1095,12 @@ class FileOrganizerGUI(tk.Tk):
                 )
             )
 
+    def validate_file(self, src_path):
+        pass
+
+    def safe_makedirs(self, dest_dir):
+        pass
+
     def process_single_file(self, directory, filename):
         """Procesamiento seguro de archivos individuales"""
         try:
@@ -1088,13 +1125,18 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.warning(f"Error procesando {filename}: {e}")
             return None
 
+    def file_hash(self, src):
+        pass
+
     def safe_move(self, src, dst):
         """Movimiento seguro con verificación de hash"""
-        # src_hash = self.file_hash(src)
+        src_hash = self.file_hash(src)
         shutil.move(src, dst)
 
-        # if self.file_hash(dst) != src_hash:
-        #     raise IntegrityError(f"Hash mismatch after moving {src}")
+        if self.file_hash(dst) != src_hash:
+            raise IntegrityError(
+                f"Hash mismatch after moving {src}"
+            )  # cambiarlo por logging
 
     def show_stats(self, moved_files):
         stats = {
