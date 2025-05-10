@@ -1287,7 +1287,7 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.error(f"No se pudo crear directorio {directory}: {e}")
             raise OSError(f"Error creando directorio: {directory}") from e
 
-    def file_hash(self, filepath: str) -> str:
+    def file_hash(self, filepath, chunk_size=8192):
         """Calcula el hash SHA-256 de un archivo.
 
         Args:
@@ -1299,14 +1299,12 @@ class FileOrganizerGUI(tk.Tk):
         sha256 = hashlib.sha256()
         try:
             with open(filepath, "rb") as f:
-                for block in iter(lambda: f.read(4096), b""):
-                    sha256.update(block)
+                while chunk := f.read(chunk_size):
+                    sha256.update(chunk)
             return sha256.hexdigest()
         except Exception as e:
-            self.logger.error(f"Error calculando hash de {filepath}: {e}")
-            raise IntegrityError(
-                f"No se pudo verificar integridad de {filepath}"
-            ) from e
+            self.logger.error(f"Error calculando hash: {e}")
+            raise IntegrityError(f"Error verificando integridad de {filepath}") from e
 
     def safe_move(self, src: str, dst: str) -> None:
         """Mueve un archivo verificando integridad.
@@ -1385,13 +1383,23 @@ class FileOrganizerGUI(tk.Tk):
             self.log(f"Operación completada. Archivos movidos: {len(moved_files)}")
             self.update_ui_from_thread(lambda: setattr(self.progress, "values", 100))
 
-    def update_ui_from_thread(self, callback: Callable[[], None]) -> None:
+    def update_ui_from_thread(self, callback):
         """Ejecuta una función en el hilo principal de la UI de forma segura.
 
         Args:
             callback: Función a ejecutar en el hilo principal
         """
-        self.after(0, callback)
+        if not self.running:  # Verificar si la aplicación sigue activa
+            return
+        self.after(0, lambda: self._safe_execute(callback))
+
+    def _safe_execute(self, callback):
+        """Ejecuta el callback con manejo de errores"""
+        try:
+            if self.running:  # Doble verificación
+                callback()
+        except Exception as e:
+            self.logger.error(f"Error en actualización de UI: {e}")
 
     def organize_files(self, directory: str) -> None:
         """Organiza los archivos en el directorio especificado según los formatos configurados.
