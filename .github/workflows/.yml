@@ -10,28 +10,29 @@ jobs:
     runs-on: windows-latest  # Máquina virtual con Windows
 
     steps:
-      # 1. Descarga el código del repositorio
+      #  Descarga el código del repositorio
       - name: Checkout código
         uses: actions/checkout@v3
 
-      # 2. Instala Python 3.10
+      #  Instala Python 3.10
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      # 3. Instala PyInstaller
-      - name: Instalar PyInstaller
-        run: pip install pyinstaller
-        run: pip install 
+      #  Instalar dependencias  
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller  # Asegurarse de tener PyInstaller
 
-      # 4. Compila el script a .exe (¡cambia "mi_script.py" por tu archivo!)
+      #  Compila el script a .exe (¡cambia "mi_script.py" por tu archivo!)
       - name: Compilar a EXE
-        run: pyinstaller --ico="ico/favicon.ico" --onefile --clean FilesInOrden.py
+        run: pyinstaller --ico="ico/favicon.ico" --windowed --onefile --clean FilesInOrden.py
 
-      # 5. Sube el .exe como "artifact" para descargar
+      #  Sube el .exe como "artifact" para descargar
       - name: Subir ejecutable
         uses: actions/upload-artifact@v3
         with:
-          name: MiScript-Windows
+          name: FilesInOrden
           path: dist/

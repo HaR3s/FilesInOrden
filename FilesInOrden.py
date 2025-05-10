@@ -1,5 +1,3 @@
-#!/data/data/com.termux/files/usr/bin/python3
-
 import os
 import shutil
 import threading
@@ -43,7 +41,7 @@ class FileOrganizerGUI(tk.Tk):
             "": "Otros",
         }
 
-        # self.init_threads()
+        self.init_threads()
         self.create_widgets()
         self.load_profiles()
         self.update_theme()
@@ -179,14 +177,27 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area = scrolledtext.ScrolledText(log_frame, wrap=WORD)
         self.log_area.pack(fill=BOTH, expand=True)
 
+    # def filter_formats(self, event=None):
+    #     query = self.search_entry.get().lower()
+    #     for child in self.format_tree.get_children():
+    #         ext, folder = self.format_tree.item(child)["values"]
+    #         if query in ext.lower() or query in folder.lower():
+    #             self.format_tree.move(child, "", "end")
+    #         else:
+    #             self.format_tree.detach(child)
+
     def filter_formats(self, event=None):
         query = self.search_entry.get().lower()
-        for child in self.format_tree.get_children():
-            ext, folder = self.format_tree.item(child)["values"]
+        all_items = [
+            (child, self.format_tree.item(child)["values"])
+            for child in self.format_tree.get_children()
+        ]
+
+        self.format_tree.delete(*self.format_tree.get_children())  # Limpiar todo
+
+        for child, (ext, folder) in all_items:
             if query in ext.lower() or query in folder.lower():
-                self.format_tree.attach(child, "", "end")
-            else:
-                self.format_tree.detach(child)
+                self.format_tree.insert("", "end", id=child, values=(ext, folder))
 
     def toggle_theme(self):
         self.theme_mode = "dark" if self.theme_mode == "light" else "light"
@@ -198,6 +209,21 @@ class FileOrganizerGUI(tk.Tk):
         self.configure(background=bg)
         self.style.configure(".", background=bg, foreground=fg)
         self.log_area.configure(bg=bg, fg=fg, insertbackground=fg)
+
+    def init_threads(self):
+        """Inicializa los hilos para procesamiento en segundo plano."""
+        # Hilo para procesar la cola de tareas (task_queue)
+        self.task_thread = threading.Thread(
+            target=self.process_queue,
+            daemon=True,  # Se cerrará automáticamente al salir
+        )
+        self.task_thread.start()
+
+        # Hilo para tareas programadas (schedule)
+        self.schedule_thread = threading.Thread(
+            target=self.run_scheduled_tasks, daemon=True
+        )
+        self.schedule_thread.start()
 
     def process_queue(self):
         while self.running:
@@ -426,6 +452,13 @@ class FileOrganizerGUI(tk.Tk):
 
     def on_closing(self):
         self.running = False
+
+        # Espera un máximo de 1 segundo a que los hilos terminen
+        if hasattr(self, "task_thread"):
+            self.task_thread.join(timeout=1)
+        if hasattr(self, "schedule_thread"):
+            self.schedule_thread.join(timeout=1)
+
         self.save_to_file()
         self.destroy()
 
