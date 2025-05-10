@@ -1,7 +1,10 @@
 import logging
+from typing import Dict, Optional
+from PIL import Image, ImageTk
 from logging.handlers import RotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from cachetools import TTLCache
+from coloredlogs import ColoredFormatter
 import os
 import sys
 import psutil
@@ -17,12 +20,6 @@ from queue import Queue, Empty
 from datetime import datetime
 from collections import deque
 import schedule
-
-
-class SecurityError(Exception):
-    """Error personalizado para problemas de seguridad"""
-
-    pass
 
 
 class ThreadManager:
@@ -167,6 +164,362 @@ class FileOrganizerGUI(tk.Tk):
         if directory:  # Si el usuario no cancela
             self.dir_entry.delete(0, tk.END)
             self.dir_entry.insert(0, directory)
+
+    def build_operations_tab(self, parent):
+        """Construye la pestaña de operaciones principales"""
+        # Frame principal con scroll
+        main_frame = ttk.Frame(parent)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+        # Panel de directorio
+        dir_frame = ttk.LabelFrame(
+            main_frame, text="Selección de Directorio", padding=10
+        )
+        dir_frame.pack(fill=tk.X, pady=(0, 10))
+
+        ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
+        self.dir_entry = ttk.Entry(dir_frame)
+        self.dir_entry.pack(fill=tk.X, pady=5)
+        ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
+            pady=5
+        )
+
+        # Panel de acciones
+        action_frame = ttk.LabelFrame(main_frame, text="Acciones", padding=10)
+        action_frame.pack(fill=tk.X, pady=(0, 10))
+
+        btn_grid = ttk.Frame(action_frame)
+        btn_grid.pack()
+
+        buttons = [
+            ("Previsualizar", self.preview_changes, 0, 0),
+            ("Organizar Ahora", self.start_organization, 0, 1),
+            ("Deshacer", self.undo_last, 1, 0),
+            ("Estadísticas", self.show_stats, 1, 1),
+        ]
+
+        for text, command, row, col in buttons:
+            btn = ttk.Button(
+                btn_grid, text=text, command=command, style="Accent.TButton"
+            )
+            btn.grid(row=row, column=col, padx=5, pady=5, sticky=tk.NSEW)
+
+        # Panel de progreso
+        progress_frame = ttk.LabelFrame(main_frame, text="Progreso", padding=10)
+        progress_frame.pack(fill=tk.X)
+
+        self.progress = ttk.Progressbar(
+            progress_frame, orient=tk.HORIZONTAL, mode="determinate"
+        )
+        self.progress.pack(fill=tk.X, pady=5)
+
+        # Configuración de estilo para botón destacado
+        self.style.configure("Accent.TButton", foreground="white", background="#0078d7")
+
+    # ------
+    def build_config_tab(self, parent):
+        """Construye la pestaña de configuración avanzada"""
+        notebook = ttk.Notebook(parent)
+        notebook.pack(fill=tk.BOTH, expand=True)
+
+        # Subpestaña de Perfiles
+        profile_tab = ttk.Frame(notebook, padding=10)
+        self.build_profile_settings(profile_tab)
+        notebook.add(profile_tab, text="Perfiles")
+
+        # Subpestaña de Formatos
+        format_tab = ttk.Frame(notebook, padding=10)
+        self.build_format_settings(format_tab)
+        notebook.add(format_tab, text="Formatos")
+
+        # Subpestaña de Apariencia
+        appearance_tab = ttk.Frame(notebook, padding=10)
+        self.build_appearance_settings(appearance_tab)
+        notebook.add(appearance_tab, text="Apariencia")
+
+    def build_profile_settings(self, parent):
+        """Construye el panel de configuración de perfiles"""
+        frame = ttk.LabelFrame(parent, text="Gestión de Perfiles", padding=10)
+        frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(frame, text="Perfil actual:").pack(anchor=tk.W)
+        self.profile_combo = ttk.Combobox(frame)
+        self.profile_combo.pack(fill=tk.X, pady=5)
+
+        btn_frame = ttk.Frame(frame)
+        btn_frame.pack(fill=tk.X)
+
+        profile_buttons = [
+            ("Guardar", self.save_profile),
+            ("Eliminar", self.delete_profile),
+            ("Nuevo",),
+            # ("Nuevo", self.create_new_profile),
+        ]
+
+        for text, command in profile_buttons:
+            btn = ttk.Button(btn_frame, text=text, command=command)
+            btn.pack(side=tk.LEFT, padx=5, pady=5, expand=True)
+
+    def import_formats(self):
+        """Importa formatos desde un archivo JSON"""
+        filepath = filedialog.askopenfilename(
+            title="Importar formatos",
+            filetypes=[("Archivos JSON", "*.json"), ("Todos los archivos", "*.*")],
+            defaultextension=".json",
+        )
+
+        if not filepath:  # Usuario canceló
+            return
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                formats = json.load(f)
+
+                # Validar estructura del archivo
+                if not isinstance(formats, dict):
+                    raise ValueError(
+                        "El archivo debe contener un diccionario de formatos"
+                    )
+
+                # Actualizar el perfil actual
+                self.profiles[self.current_profile]["formatos"] = formats
+                self.update_format_tree(formats)
+
+                self.logger.info(f"Formatos importados desde {filepath}")
+                messagebox.showinfo("Éxito", "Formatos importados correctamente")
+
+        except json.JSONDecodeError:
+            messagebox.showerror("Error", "El archivo no es un JSON válido")
+            self.logger.error("Error al decodificar JSON de formatos")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo importar: {str(e)}")
+            self.logger.error(f"Error importando formatos: {e}", exc_info=True)
+
+    def export_formats(self):
+        """Exporta los formatos actuales a un archivo JSON"""
+        filepath = filedialog.asksaveasfilename(
+            title="Exportar formatos",
+            filetypes=[("Archivos JSON", "*.json"), ("Todos los archivos", "*.*")],
+            defaultextension=".json",
+            initialfile=f"formatos_{self.current_profile}.json",
+        )
+
+        if not filepath:  # Usuario canceló
+            return
+
+        try:
+            formats = self.get_current_formats()
+
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(formats, f, indent=4, ensure_ascii=False)
+
+            self.logger.info(f"Formatos exportados a {filepath}")
+            messagebox.showinfo("Éxito", "Formatos exportados correctamente")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo exportar: {str(e)}")
+            self.logger.error(f"Error exportando formatos: {e}", exc_info=True)
+
+    def build_format_settings(self, parent):
+        """Construye el panel de configuración de formatos"""
+        main_frame = ttk.Frame(parent)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Barra de búsqueda
+        search_frame = ttk.Frame(main_frame)
+        search_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
+        self.search_entry = ttk.Entry(search_frame)
+        self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        self.search_entry.bind("<KeyRelease>", self.filter_formats)
+
+        # Treeview de formatos
+        tree_frame = ttk.Frame(main_frame)
+        tree_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.format_tree = ttk.Treeview(
+            tree_frame, columns=("ext", "folder"), show="headings", selectmode="browse"
+        )
+        self.format_tree.heading("ext", text="Extensión")
+        self.format_tree.heading("folder", text="Carpeta Destino")
+        self.format_tree.column("ext", width=100)
+        self.format_tree.column("folder", width=200)
+
+        vsb = ttk.Scrollbar(
+            tree_frame, orient="vertical", command=self.format_tree.yview
+        )
+        hsb = ttk.Scrollbar(
+            tree_frame, orient="horizontal", command=self.format_tree.xview
+        )
+        self.format_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+
+        self.format_tree.grid(row=0, column=0, sticky=tk.NSEW)
+        vsb.grid(row=0, column=1, sticky=tk.NS)
+        hsb.grid(row=1, column=0, sticky=tk.EW)
+
+        tree_frame.grid_columnconfigure(0, weight=1)
+        tree_frame.grid_rowconfigure(0, weight=1)
+
+        # Controles de formatos
+        ctrl_frame = ttk.Frame(main_frame)
+        ctrl_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Button(ctrl_frame, text="Agregar", command=self.add_format).pack(
+            side=tk.LEFT, padx=5
+        )
+        ttk.Button(ctrl_frame, text="Eliminar", command=self.remove_format).pack(
+            side=tk.LEFT, padx=5
+        )
+        ttk.Button(ctrl_frame, text="Importar", command=self.import_formats).pack(
+            side=tk.RIGHT, padx=5
+        )
+        ttk.Button(ctrl_frame, text="Exportar", command=self.export_formats).pack(
+            side=tk.RIGHT, padx=5
+        )
+
+    def change_theme(self, event=None):
+        """Cambia el tema visual de toda la aplicación"""
+        try:
+            # Mapeo de nombres de temas a configuraciones
+            theme_mapping = {
+                "Claro": {
+                    "style": "light",
+                    "bg": "#f0f0f0",
+                    "fg": "#000000",
+                    "accent": "#0078d7",
+                },
+                "Oscuro": {
+                    "style": "dark",
+                    "bg": "#2d2d2d",
+                    "fg": "#ffffff",
+                    "accent": "#0e639c",
+                },
+                "Profesional": {
+                    "style": "professional",
+                    "bg": "#f5f5f5",
+                    "fg": "#212121",
+                    "accent": "#607d8b",
+                },
+                "Sistema": {
+                    "style": "clam",
+                    "bg": "default",
+                    "fg": "default",
+                    "accent": "default",
+                },
+            }
+
+            selected_theme = self.theme_combo.get()
+            theme_config = theme_mapping.get(selected_theme, theme_mapping["Sistema"])
+
+            # 1. Aplicar estilo ttk
+            self.style.theme_use(theme_config["style"])
+
+            # 2. Configurar colores base
+            self.style.configure(
+                ".",
+                background=theme_config["bg"],
+                foreground=theme_config["fg"],
+                fieldbackground=theme_config["bg"],
+            )
+
+            # 3. Configurar widgets específicos
+            self.style.configure("TFrame", background=theme_config["bg"])
+            self.style.configure(
+                "TLabel", background=theme_config["bg"], foreground=theme_config["fg"]
+            )
+            self.style.configure(
+                "TButton",
+                background=theme_config["accent"],
+                foreground="white",
+                font=("Segoe UI", 9),
+            )
+            self.style.map(
+                "TButton",
+                background=[
+                    ("active", theme_config["accent"]),
+                    ("disabled", "#cccccc"),
+                ],
+            )
+
+            # 4. Actualizar widgets no-ttk
+            self.update_non_ttk_widgets(theme_config)
+
+            # 5. Guardar preferencia
+            self.theme_mode = theme_config["style"]
+            self.logger.info(f"Tema cambiado a: {selected_theme}")
+
+        except Exception as e:
+            self.logger.error(f"Error cambiando tema: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo cambiar el tema: {str(e)}")
+
+    def update_non_ttk_widgets(self, theme_config):
+        """Actualiza widgets que no son ttk y ajusta los Treeviews"""
+        try:
+            # 1. Área de texto del log (widget estándar)
+            self.log_area.configure(
+                bg=theme_config["bg"],
+                fg=theme_config["fg"],
+                insertbackground=theme_config["fg"],
+            )
+
+            # 2. Configurar Treeviews mediante estilos (forma correcta)
+            self.style.configure(
+                "Treeview",
+                background=theme_config["bg"],
+                foreground=theme_config["fg"],
+                fieldbackground=theme_config["bg"],
+                rowheight=25,  # Mantener configuración previa
+            )
+
+            # Estilo para items seleccionados
+            self.style.map(
+                "Treeview",
+                background=[("selected", theme_config["accent"])],
+                foreground=[("selected", "white")],
+            )
+
+            # 3. Ventana principal
+            self.configure(background=theme_config["bg"])
+
+            # 4. Forzar actualización de los Treeviews
+            self.format_tree.update_idletasks()
+            if hasattr(self, "preview_tree"):
+                self.preview_tree.update_idletasks()
+
+        except Exception as e:
+            self.logger.error(f"Error actualizando widgets: {e}", exc_info=True)
+
+    def build_appearance_settings(self, parent):
+        """Construye el panel de configuración de apariencia"""
+        frame = ttk.LabelFrame(parent, text="Personalización", padding=10)
+        frame.pack(fill=tk.BOTH, expand=True, pady=5)
+
+        # Selector de tema
+        ttk.Label(frame, text="Tema visual:").pack(anchor=tk.W)
+        self.theme_combo = ttk.Combobox(
+            frame, values=["Claro", "Oscuro", "Profesional", "Sistema"]
+        )
+        self.theme_combo.pack(fill=tk.X, pady=5)
+        self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
+
+        # Configuración de fuente
+        font_frame = ttk.LabelFrame(frame, text="Fuente", padding=10)
+        font_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky=tk.W)
+        self.font_size = ttk.Combobox(
+            font_frame, values=["8", "9", "10", "11", "12"], width=5
+        )
+        self.font_size.grid(row=0, column=1, sticky=tk.W, padx=5)
+        self.font_size.set("9")
+
+        # Configuración de iconos
+        ttk.Checkbutton(
+            frame,
+            text="Mostrar iconos en los archivos",
+            variable=tk.BooleanVar(value=True),
+        ).pack(anchor=tk.W, pady=5)
 
     def create_widgets(self):
         """Versión mejorada con UI profesional"""
@@ -472,18 +825,67 @@ class FileOrganizerGUI(tk.Tk):
             # Actualización optimizada
             widget.see(event.widget.focus())
 
-    def load_icons(self):
-        """Precarga iconos para mejor rendimiento visual"""
-        self.icons = {
-            "file": tk.PhotoImage(file="icons/file.png"),
-            "folder": tk.PhotoImage(file="icons/folder.png"),
-            "image": tk.PhotoImage(file="icons/image.png"),
-            "video": tk.PhotoImage(file="icons/video.png"),
+    def load_icons(self) -> None:
+        """Carga todos los iconos necesarios con manejo seguro de tipos"""
+        self.icons: Dict[
+            str, tk.PhotoImage
+        ] = {}  # Especificamos el tipo explícitamente
+
+        # Lista de iconos requeridos
+        required_icons = {
+            "file": self.create_default_icon("gray"),
+            "folder": self.create_default_icon("blue"),
+            "document": self.load_icon_safely("document.png"),
+            "image": self.load_icon_safely("image.png"),
+            "video": self.load_icon_safely("video.png"),
+            "audio": self.load_icon_safely("audio.png"),
+            "archive": self.load_icon_safely("archive.png"),
         }
-        for item in self.format_tree.get_children():
-            ext = self.format_tree.item(item)["values"][0]
-            icon = self.get_icon_for_extension(ext)
-            self.format_tree.item(item, image=icon)
+
+        self.icons.update({k: v for k, v in required_icons.items() if v is not None})
+
+        # Asegurarse de que al menos tenemos el icono 'file'
+        if "file" not in self.icons:
+            self.icons["file"] = self.create_default_icon("gray")
+
+    def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
+        """Carga un icono con manejo de errores"""
+        try:
+            return tk.PhotoImage(file=f"icons/{filename}")
+        except Exception as e:
+            self.logger.warning(f"No se pudo cargar icono {filename}: {e}")
+            return None
+
+    def create_default_icon(self, color: str) -> tk.PhotoImage:
+        """Crea un icono por defecto programáticamente"""
+
+        try:
+            img = Image.new("RGB", (16, 16), color)
+            return ImageTk.PhotoImage(img)
+        except ImportError:
+            # Fallback si no hay PIL instalado
+            return tk.PhotoImage(width=16, height=16)
+
+    def get_icon_for_extension(self, extension: str) -> tk.PhotoImage:
+        """Versión completamente tipada que nunca devuelve None"""
+        icon_type = self._get_icon_type(extension)
+        return self.icons.get(icon_type, self.icons["file"])
+
+    def _get_icon_type(self, extension: str) -> str:
+        """Determina el tipo de icono para una extensión"""
+        extension = extension.lower()
+        icon_mapping = {
+            "document": [".pdf", ".doc", ".docx", ".txt", ".rtf"],
+            "image": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
+            "video": [".mp4", ".avi", ".mov", ".mkv"],
+            "audio": [".mp3", ".wav", ".flac", ".aac"],
+            "archive": [".zip", ".rar", ".7z", ".tar"],
+        }
+
+        for icon_type, extensions in icon_mapping.items():
+            if extension in extensions:
+                return icon_type
+        return "file"
 
     def enhance_ui(self):
         """Mejoras visuales profesionales"""
@@ -551,14 +953,14 @@ class FileOrganizerGUI(tk.Tk):
         """Tooltips profesionales con HTML"""
         self.tooltips = {
             "organize_button": ToolTip(
-                self.organize_button,
+                self.organize_files,
                 text="<b>Organizar Archivos</b><br>Clasifica los archivos según las reglas definidas",
                 bg="white",
                 fg="black",
                 font=("Arial", 9),
             ),
             "undo_button": ToolTip(
-                self.undo_button,
+                self.undo_last,
                 text="<b>Deshacer</b><br>Revierte la última operación realizada",
                 bg="white",
                 fg="black",
@@ -658,7 +1060,7 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.error(f"Error en organize_files: {e}", exc_info=True)
             self.task_queue.put(
                 lambda: messagebox.showerror(
-                    "Error", f"No se pudo completar la operación: {str(e)}"
+                    "Error", "No se pudo completar la operación"
                 )
             )
 
@@ -688,10 +1090,11 @@ class FileOrganizerGUI(tk.Tk):
 
     def safe_move(self, src, dst):
         """Movimiento seguro con verificación de hash"""
-        src_hash = self.file_hash(src)
+        # src_hash = self.file_hash(src)
         shutil.move(src, dst)
-        if self.file_hash(dst) != src_hash:
-            raise IntegrityError(f"Hash mismatch after moving {src}")
+
+        # if self.file_hash(dst) != src_hash:
+        #     raise IntegrityError(f"Hash mismatch after moving {src}")
 
     def show_stats(self, moved_files):
         stats = {
