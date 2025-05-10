@@ -11,6 +11,8 @@ from queue import Queue, Empty
 from typing import Dict, Optional, List, Tuple  # Tipado adicional
 from logging.handlers import RotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Callable
+from concurrent.futures import Future
 
 # Tkinter y GUI
 from tkinter import *
@@ -35,6 +37,13 @@ import schedule
 # Librerías de terceros
 from cachetools import TTLCache
 from coloredlogs import ColoredFormatter
+
+
+# TODO: Crear la clase para tratar errores
+class IntegrityError(Exception):
+    """Excepción para errores de integridad de archivos"""
+
+    pass
 
 
 class ThreadManager:
@@ -168,6 +177,33 @@ class FileOrganizerGUI(tk.Tk):
         self.create_widgets()
         self.load_profiles()
         self.update_theme()
+
+    def create_widgets(self):
+        """Versión mejorada con UI profesional"""
+        # Configuración de estilo avanzado
+        self.style = ttk.Style()
+        self.setup_theme_system()
+
+        # Frame principal con mejor organización
+        main_frame = ttk.Frame(self, padding="10")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Sistema de pestañas
+        self.notebook = ttk.Notebook(main_frame)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
+
+        # Pestaña de operaciones
+        ops_tab = ttk.Frame(self.notebook)
+        self.build_operations_tab(ops_tab)
+        self.notebook.add(ops_tab, text="Operaciones")
+
+        # Pestaña de configuración
+        config_tab = ttk.Frame(self.notebook)
+        self.build_config_tab(config_tab)
+        self.notebook.add(config_tab, text="Configuración")
+
+        # Barra de estado profesional
+        self.setup_status_bar(main_frame)
 
     def log(self, message):
         timestamp = datetime.now().strftime("%H:%M:%S")
@@ -535,33 +571,6 @@ class FileOrganizerGUI(tk.Tk):
             variable=tk.BooleanVar(value=True),
         ).pack(anchor=tk.W, pady=5)
 
-    def create_widgets(self):
-        """Versión mejorada con UI profesional"""
-        # Configuración de estilo avanzado
-        self.style = ttk.Style()
-        self.setup_theme_system()
-
-        # Frame principal con mejor organización
-        main_frame = ttk.Frame(self, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
-
-        # Sistema de pestañas
-        self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
-
-        # Pestaña de operaciones
-        ops_tab = ttk.Frame(self.notebook)
-        self.build_operations_tab(ops_tab)
-        self.notebook.add(ops_tab, text="Operaciones")
-
-        # Pestaña de configuración
-        config_tab = ttk.Frame(self.notebook)
-        self.build_config_tab(config_tab)
-        self.notebook.add(config_tab, text="Configuración")
-
-        # Barra de estado profesional
-        self.setup_status_bar(main_frame)
-
     def setup_theme_system(self):
         """Sistema completo de temas"""
         self.themes = {
@@ -640,6 +649,139 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         self.after(1000, self.update_status_bar)
+
+    def save_to_file(self):
+        with open("profiles.json", "w") as f:
+            json.dump(self.profiles, f)
+
+    def save_profile(self):
+        profile_name = self.profile_combo.get()
+        if not profile_name:
+            messagebox.showerror("Error", "Ingrese un nombre para el perfil")
+            return
+
+        self.profiles[profile_name] = {
+            "directory": self.dir_entry.get(),
+            "formatos": self.get_current_formats(),
+            "schedule": self.schedule_combo.get(),
+        }
+
+        self.save_to_file()
+        self.load_profiles()
+        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' guardado")
+
+    def delete_profile(self):
+        profile_name = self.profile_combo.get()
+        if profile_name == "default":
+            messagebox.showerror(
+                "Error", "No se puede eliminar el perfil predeterminado"
+            )
+            return
+
+        del self.profiles[profile_name]
+        self.save_to_file()
+        self.load_profiles()
+        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' eliminado")
+
+    def add_format(self):
+        def save_new_format():
+            ext = ext_entry.get().strip()
+            folder = folder_entry.get().strip()
+            if ext and folder:
+                self.format_tree.insert("", END, values=(ext, folder))
+                top.destroy()
+
+        top = Toplevel(self)
+        top.title("Agregar Formato")
+
+        ttk.Label(top, text="Extensión (ej. .jpg):").pack(padx=10, pady=2)
+        ext_entry = ttk.Entry(top)
+        ext_entry.pack(padx=10, pady=2)
+
+        ttk.Label(top, text="Carpeta destino:").pack(padx=10, pady=2)
+        folder_entry = ttk.Entry(top)
+        folder_entry.pack(padx=10, pady=2)
+
+        ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
+
+    def remove_format(self):
+        selected = self.format_tree.selection()
+        if selected:
+            self.format_tree.delete(selected[0])
+
+    def load_profiles(self):
+        try:
+            with open("profiles.json", "r") as f:
+                self.profiles = json.load(f)
+        except FileNotFoundError:
+            self.profiles = {
+                "default": {
+                    "directory": "",
+                    "formatos": self.default_formats,
+                    "schedule": "Ninguna",
+                }
+            }
+
+        self.profile_combo["values"] = list(self.profiles.keys())
+        self.profile_combo.set("default")
+        self.load_profile_settings()
+
+    def load_profile_settings(self):
+        profile = self.profiles[self.current_profile]
+        self.dir_entry.delete(0, END)
+        self.dir_entry.insert(0, profile["directory"])
+        self.schedule_combo.set(profile["schedule"])
+        self.update_format_tree(profile["formatos"])
+
+    def undo_last(self):
+        if self.undo_stack:
+            last_move = self.undo_stack.pop()
+            for src, dest in reversed(last_move):
+                try:
+                    shutil.move(dest, src)
+                    self.log(
+                        f"Deshecho: {os.path.basename(dest)} -> {os.path.dirname(src)}"
+                    )
+                except Exception as e:
+                    self.log(f"Error al deshacer: {str(e)}")
+
+    def update_progress(self, value):
+        self.progress["value"] = value
+        self.update_idletasks()
+
+    def setup_logging(self):
+        """Configura logging avanzado con rotación de archivos"""
+        self.logger = logging.getLogger("FileOrganizer")
+        self.logger.setLevel(logging.DEBUG)
+
+        # Formateador profesional
+        formatter = ColoredFormatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+
+        # Handler para consola (colorizado)
+        console = logging.StreamHandler()
+        console.setFormatter(formatter)
+
+        # Handler para archivo con rotación (10MB x 5 archivos)
+        file_handler = RotatingFileHandler(
+            "organizer.log", maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
+        )
+        file_handler.setFormatter(formatter)
+
+        # Filtro para logs importantes
+        class ImportantFilter(logging.Filter):
+            def filter(self, record):
+                return record.levelno >= logging.INFO
+
+        # Configuración final
+        self.logger.addHandler(console)
+        self.logger.addHandler(file_handler)
+        file_handler.addFilter(ImportantFilter())
+
+        # Captura de excepciones no manejadas
+        sys.excepthook = self.handle_uncaught_exception
 
     def build_configuration_panel(self, parent):
         # Configuración de directorio
@@ -1050,93 +1192,31 @@ class FileOrganizerGUI(tk.Tk):
         thread.start()
 
     def validate_directory(self, directory):
-        """prueba de definicion para la funcion"""
-        return os.path
+        if not os.path.isdir(directory):
+            raise ValueError(f"Directorio no válido: {directory}")
+        if not os.access(directory, os.R_OK | os.W_OK):
+            raise PermissionError(f"Sin permisos en: {directory}")
+        return True
 
-    def safe_listdir(self, directory):
-        """prueba de definicion para la funcion"""
-        return os.path
+    def safe_listdir(self, directory: str) -> List[str]:
+        """Lista los contenidos de un directorio de forma segura.
 
-    def finalize_operation(self, moved_files):
-        pass
+        Args:
+            directory: Ruta del directorio
 
-    def organize_files(self, directory):
-        """Versión segura mejorada"""
+        Returns:
+            List[str]: Lista de nombres de archivos/directorios
+
+        Raises:
+            OSError: Si falla la lectura del directorio
+        """
         try:
-            self.validate_directory(directory)
-            self.logger.info(f"Iniciando organización en: {directory}")
-
-            files = self.safe_listdir(directory)
-            total_files = len(files)
-            processed = 0
-            moved_files = []
-
-            with ThreadPoolExecutor(max_workers=4) as executor:
-                futures = []
-                for filename in files:
-                    futures.append(
-                        executor.submit(self.process_single_file, directory, filename)
-                    )
-
-                for future in as_completed(futures):
-                    result = future.result()
-                    if result:
-                        moved_files.append(result)
-                        processed += 1
-                        self.update_progress(processed / total_files * 100)
-
-            self.finalize_operation(moved_files)
-
+            return [
+                f for f in os.listdir(directory) if not f.startswith(".")
+            ]  # Ignorar archivos ocultos
         except Exception as e:
-            self.logger.error(f"Error en organize_files: {e}", exc_info=True)
-            self.task_queue.put(
-                lambda: messagebox.showerror(
-                    "Error", "No se pudo completar la operación"
-                )
-            )
-
-    def validate_file(self, src_path):
-        pass
-
-    def safe_makedirs(self, dest_dir):
-        pass
-
-    def process_single_file(self, directory, filename):
-        """Procesamiento seguro de archivos individuales"""
-        try:
-            src_path = os.path.join(directory, filename)
-            if not self.validate_file(src_path):
-                return None
-
-            ext = os.path.splitext(filename)[1].lower()
-            folder = self.profiles[self.current_profile]["formatos"].get(ext, "Otros")
-            dest_dir = os.path.join(directory, folder)
-
-            if not os.path.exists(dest_dir):
-                self.safe_makedirs(dest_dir)
-
-            dest_path = os.path.join(dest_dir, filename)
-            self.safe_move(src_path, dest_path)
-
-            self.logger.debug(f"Movido: {filename} -> {folder}")
-            return (src_path, dest_path)
-
-        except Exception as e:
-            self.logger.warning(f"Error procesando {filename}: {e}")
-            return None
-
-    def file_hash(self, src):
-        pass
-
-    def safe_move(self, src, dst):
-        """Movimiento seguro con verificación de hash"""
-        src_hash = self.file_hash(src)
-        shutil.move(src, dst)
-
-        if self.file_hash(dst) != src_hash:
-            raise IntegrityError(
-                f"Hash mismatch after moving {src}"
-            )  # cambiarlo por logging
+            self.logger.error(f"Error leyendo directorio {directory}: {e}")
+            raise OSError(f"No se pudo leer el directorio: {directory}") from e
 
     def show_stats(self, moved_files):
         stats = {
@@ -1157,55 +1237,187 @@ class FileOrganizerGUI(tk.Tk):
 
         self.task_queue.put(lambda: messagebox.showinfo("Estadísticas", message))
 
-    def undo_last(self):
-        if self.undo_stack:
-            last_move = self.undo_stack.pop()
-            for src, dest in reversed(last_move):
-                try:
-                    shutil.move(dest, src)
-                    self.log(
-                        f"Deshecho: {os.path.basename(dest)} -> {os.path.dirname(src)}"
+    def process_results(self, futures: List[Future]) -> None:
+        """Procesa los resultados de las operaciones concurrentes.
+
+        Args:
+            futures: Lista de Futures del ThreadPoolExecutor
+
+        Updates:
+            - Barra de progreso
+            - Registro de operaciones
+            - Estadísticas
+        """
+        moved_files = []
+        total = len(futures)
+
+        for i, future in enumerate(as_completed(futures), 1):
+            try:
+                result = future.result()
+                if result:
+                    moved_files.append(result)
+
+                    # Actualizar UI en el hilo principal
+                    self.update_ui_from_thread(
+                        lambda: self.update_progress(i / total * 100)
                     )
-                except Exception as e:
-                    self.log(f"Error al deshacer: {str(e)}")
 
-    def update_progress(self, value):
-        self.progress["value"] = value
-        self.update_idletasks()
+            except Exception as e:
+                self.logger.warning(f"Error procesando archivo: {e}")
 
-    def setup_logging(self):
-        """Configura logging avanzado con rotación de archivos"""
-        self.logger = logging.getLogger("FileOrganizer")
-        self.logger.setLevel(logging.DEBUG)
+        # Mostrar estadísticas finales
+        self.update_ui_from_thread(lambda: self.show_stats(moved_files))
 
-        # Formateador profesional
-        formatter = ColoredFormatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
+        # Guardar para posible undo
+        if moved_files:
+            self.undo_stack.append(moved_files)
 
-        # Handler para consola (colorizado)
-        console = logging.StreamHandler()
-        console.setFormatter(formatter)
+    def validate_file(self, src_path):
+        pass
 
-        # Handler para archivo con rotación (10MB x 5 archivos)
-        file_handler = RotatingFileHandler(
-            "organizer.log", maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
-        )
-        file_handler.setFormatter(formatter)
+    def safe_makedirs(self, directory: str) -> None:
+        """Crea directorios de forma segura con manejo de errores.
 
-        # Filtro para logs importantes
-        class ImportantFilter(logging.Filter):
-            def filter(self, record):
-                return record.levelno >= logging.INFO
+        Args:
+            directory: Ruta del directorio a crear
+        """
+        try:
+            os.makedirs(directory, exist_ok=True)
+        except Exception as e:
+            self.logger.error(f"No se pudo crear directorio {directory}: {e}")
+            raise OSError(f"Error creando directorio: {directory}") from e
 
-        # Configuración final
-        self.logger.addHandler(console)
-        self.logger.addHandler(file_handler)
-        file_handler.addFilter(ImportantFilter())
+    def file_hash(self, filepath: str) -> str:
+        """Calcula el hash SHA-256 de un archivo.
 
-        # Captura de excepciones no manejadas
-        sys.excepthook = self.handle_uncaught_exception
+        Args:
+            filepath: Ruta al archivo
+
+        Returns:
+            str: Hash hexadecimal del archivo
+        """
+        sha256 = hashlib.sha256()
+        try:
+            with open(filepath, "rb") as f:
+                for block in iter(lambda: f.read(4096), b""):
+                    sha256.update(block)
+            return sha256.hexdigest()
+        except Exception as e:
+            self.logger.error(f"Error calculando hash de {filepath}: {e}")
+            raise IntegrityError(
+                f"No se pudo verificar integridad de {filepath}"
+            ) from e
+
+    def safe_move(self, src: str, dst: str) -> None:
+        """Mueve un archivo verificando integridad.
+
+        Args:
+            src: Ruta origen
+            dst: Ruta destino
+
+        Raises:
+            IntegrityError: Si hay discrepancia en los hashes
+            OSError: Para otros errores de sistema
+        """
+        try:
+            # Verificar hash origen
+            src_hash = self.file_hash(src)
+
+            # Mover archivo
+            shutil.move(src, dst)
+
+            # Verificar hash destino
+            if self.file_hash(dst) != src_hash:
+                raise IntegrityError(f"Hash mismatch after moving {src}")
+        except PermissionError as e:
+            self.logger.error("Permiso Denegado")
+            raise OSError(f"Permiso Denegado {e}")
+        except shutil.Error as e:
+            self.logger.error(f"Error moviendo {src} -> {dst}: {e}")
+            raise OSError(f"Error moviendo archivo: {src}") from e
+        except Exception as e:
+            self.logger.error(f"Error inesperado {e}")
+
+    def process_single_file(
+        self, directory: str, filename: str
+    ) -> Optional[Tuple[str, str]]:
+        """Procesa un archivo individual de forma segura.
+
+        Args:
+            directory: Directorio base
+            filename: Nombre del archivo
+
+        Returns:
+            Tuple[src_path, dest_path] si se movió el archivo, None si hubo error
+
+        Raises:
+            OSError: Para errores de sistema de archivos
+        """
+        try:
+            src_path = os.path.join(directory, filename)
+
+            # Validaciones iniciales
+            if not self.validate_file(src_path):
+                return None
+
+            # Determinar destino
+            ext = os.path.splitext(filename)[1].lower()
+            folder = self.profiles[self.current_profile]["formatos"].get(ext, "Otros")
+            dest_dir = os.path.join(directory, folder)
+
+            # Crear directorio si no existe
+            self.safe_makedirs(dest_dir)
+
+            # Mover archivo
+            dest_path = os.path.join(dest_dir, filename)
+            self.safe_move(src_path, dest_path)
+
+            self.logger.debug(f"Movido: {filename} -> {folder}")
+            return (src_path, dest_path)
+
+        except Exception as e:
+            self.logger.warning(f"Error procesando {filename}: {e}")
+            return None
+
+    def finalize_operation(self, moved_files):
+        """Realiza acciones finales después de mover archivos"""
+        if moved_files:
+            self.log(f"Operación completada. Archivos movidos: {len(moved_files)}")
+            self.update_ui_from_thread(lambda: setattr(self.progress, "values", 100))
+
+    def update_ui_from_thread(self, callback: Callable[[], None]) -> None:
+        """Ejecuta una función en el hilo principal de la UI de forma segura.
+
+        Args:
+            callback: Función a ejecutar en el hilo principal
+        """
+        self.after(0, callback)
+
+    def organize_files(self, directory: str) -> None:
+        """Organiza los archivos en el directorio especificado según los formatos configurados.
+
+        Args:
+            directory: Ruta del directorio a organizar
+
+        Raises:
+            ValueError: Si el directorio no es válido
+            OSError: Para errores de sistema de archivos
+        """
+        try:
+            self.validate_directory(directory)
+            self.logger.info(f"Iniciando organización en: {directory}")
+
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                futures = [
+                    executor.submit(self.process_single_file, directory, filename)
+                    for filename in self.safe_listdir(directory)
+                ]
+
+                self.process_results(futures)
+
+        except Exception as e:
+            self.logger.error(f"Error en organize_files: {e}", exc_info=True)
+            self.update_ui_from_thread(lambda: messagebox.showerror("Error"))
 
     def handle_uncaught_exception(self, exc_type, exc_value, exc_traceback):
         """Maneja excepciones no capturadas"""
@@ -1216,46 +1428,6 @@ class FileOrganizerGUI(tk.Tk):
             "Error Crítico",
             f"Ocurrió un error no manejado: {str(exc_value)}\nVer logs para detalles.",
         )
-
-    def save_profile(self):
-        profile_name = self.profile_combo.get()
-        if not profile_name:
-            messagebox.showerror("Error", "Ingrese un nombre para el perfil")
-            return
-
-        self.profiles[profile_name] = {
-            "directory": self.dir_entry.get(),
-            "formatos": self.get_current_formats(),
-            "schedule": self.schedule_combo.get(),
-        }
-
-        self.save_to_file()
-        self.load_profiles()
-        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' guardado")
-
-    def load_profiles(self):
-        try:
-            with open("profiles.json", "r") as f:
-                self.profiles = json.load(f)
-        except FileNotFoundError:
-            self.profiles = {
-                "default": {
-                    "directory": "",
-                    "formatos": self.default_formats,
-                    "schedule": "Ninguna",
-                }
-            }
-
-        self.profile_combo["values"] = list(self.profiles.keys())
-        self.profile_combo.set("default")
-        self.load_profile_settings()
-
-    def load_profile_settings(self):
-        profile = self.profiles[self.current_profile]
-        self.dir_entry.delete(0, END)
-        self.dir_entry.insert(0, profile["directory"])
-        self.schedule_combo.set(profile["schedule"])
-        self.update_format_tree(profile["formatos"])
 
     def update_format_tree(self, formatos):
         self.format_tree.delete(*self.format_tree.get_children())
@@ -1268,49 +1440,6 @@ class FileOrganizerGUI(tk.Tk):
             ext, folder = self.format_tree.item(child)["values"]
             formatos[ext] = folder
         return formatos
-
-    def delete_profile(self):
-        profile_name = self.profile_combo.get()
-        if profile_name == "default":
-            messagebox.showerror(
-                "Error", "No se puede eliminar el perfil predeterminado"
-            )
-            return
-
-        del self.profiles[profile_name]
-        self.save_to_file()
-        self.load_profiles()
-        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' eliminado")
-
-    def save_to_file(self):
-        with open("profiles.json", "w") as f:
-            json.dump(self.profiles, f)
-
-    def add_format(self):
-        def save_new_format():
-            ext = ext_entry.get().strip()
-            folder = folder_entry.get().strip()
-            if ext and folder:
-                self.format_tree.insert("", END, values=(ext, folder))
-                top.destroy()
-
-        top = Toplevel(self)
-        top.title("Agregar Formato")
-
-        ttk.Label(top, text="Extensión (ej. .jpg):").pack(padx=10, pady=2)
-        ext_entry = ttk.Entry(top)
-        ext_entry.pack(padx=10, pady=2)
-
-        ttk.Label(top, text="Carpeta destino:").pack(padx=10, pady=2)
-        folder_entry = ttk.Entry(top)
-        folder_entry.pack(padx=10, pady=2)
-
-        ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
-
-    def remove_format(self):
-        selected = self.format_tree.selection()
-        if selected:
-            self.format_tree.delete(selected[0])
 
     def on_closing(self):
         """Cierre profesional con limpieza"""
