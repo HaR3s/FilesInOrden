@@ -1,7 +1,10 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from cachetools import TTLCache
 import os
+import sys
+import psutil
 import hashlib
 import shutil
 import threading
@@ -14,6 +17,12 @@ from queue import Queue, Empty
 from datetime import datetime
 from collections import deque
 import schedule
+
+
+class SecurityError(Exception):
+    """Error personalizado para problemas de seguridad"""
+
+    pass
 
 
 class ThreadManager:
@@ -108,16 +117,45 @@ class ToolTip:
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.setup_logging()  # Primero el logging para capturar errores
+        self.setup_logging()  # Primero el logging
         self.logger.info("Inicializando aplicación")
-        try:
-            self.optimize_performance()
-            self.init_threads()
-            self.enhance_ui()
-            # Resto de tu inicialización...
-        except Exception as e:
-            self.logger.critical("Error durante inicialización", exc_info=True)
-            raise
+        self.performance_cache = {
+            "directory_scan": TTLCache(maxsize=100, ttl=30),
+            "file_operations": TTLCache(maxsize=500, ttl=60),
+        }
+        self.setup_performance_optimizations()
+        self.init_threads()
+        self.create_widgets()
+        self.title("Organizador Avanzado de Archivos")
+        self.geometry("900x700")
+        self.configure(bg="#f0f0f0")
+        self.profiles = {}
+        self.current_profile = "default"
+        self.undo_stack = deque(maxlen=5)
+        self.task_queue = Queue()
+        self.running = True
+        self.theme_mode = "light"
+
+        # Inicializar configuración predeterminada
+        self.default_formats = {
+            ".jpg": "Fotos",
+            ".png": "Fotos",
+            ".ico": "Iconos",
+            ".mp4": "Videos",
+            ".avi": "Videos",
+            ".mpg": "Videos",
+            ".mp3": "Musica",
+            ".pdf": "PDFs",
+            ".docx": "Documentos_work",
+            ".doc": "Documentos_work",
+            ".txt": "Documentos_txt",
+            "": "Otros",
+        }
+
+        self.init_threads()
+        self.create_widgets()
+        self.load_profiles()
+        self.update_theme()
 
     def select_directory(self):
         directory = filedialog.askdirectory(title="Seleccionar carpeta a organizar")
@@ -126,23 +164,110 @@ class FileOrganizerGUI(tk.Tk):
             self.dir_entry.insert(0, directory)
 
     def create_widgets(self):
-        # Configurar estilo
+        """Versión mejorada con UI profesional"""
+        # Configuración de estilo avanzado
         self.style = ttk.Style()
-        self.style.theme_use("clam")
+        self.setup_theme_system()
 
-        # Paneles principales
-        main_panel = ttk.PanedWindow(self, orient=HORIZONTAL)
-        main_panel.pack(fill=BOTH, expand=True)
+        # Frame principal con mejor organización
+        main_frame = ttk.Frame(self, padding="10")
+        main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Panel izquierdo (Configuración)
-        left_panel = ttk.Frame(main_panel, width=300)
-        self.build_configuration_panel(left_panel)
-        main_panel.add(left_panel)
+        # Sistema de pestañas
+        self.notebook = ttk.Notebook(main_frame)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
 
-        # Panel derecho (Registro y previsualización)
-        right_panel = ttk.Frame(main_panel)
-        self.build_preview_panel(right_panel)
-        main_panel.add(right_panel)
+        # Pestaña de operaciones
+        ops_tab = ttk.Frame(self.notebook)
+        self.build_operations_tab(ops_tab)
+        self.notebook.add(ops_tab, text="Operaciones")
+
+        # Pestaña de configuración
+        config_tab = ttk.Frame(self.notebook)
+        self.build_config_tab(config_tab)
+        self.notebook.add(config_tab, text="Configuración")
+
+        # Barra de estado profesional
+        self.setup_status_bar(main_frame)
+
+    def setup_theme_system(self):
+        """Sistema completo de temas"""
+        self.themes = {
+            "light": {
+                "primary": "#f0f0f0",
+                "secondary": "#ffffff",
+                "text": "#000000",
+                "accent": "#0078d7",
+            },
+            "dark": {
+                "primary": "#2d2d2d",
+                "secondary": "#3d3d3d",
+                "text": "#ffffff",
+                "accent": "#0e639c",
+            },
+            "professional": {
+                "primary": "#f5f5f5",
+                "secondary": "#e0e0e0",
+                "text": "#212121",
+                "accent": "#607d8b",
+            },
+        }
+
+        # Aplicar estilo a widgets
+        for theme_name, colors in self.themes.items():
+            self.style.theme_create(
+                theme_name,
+                parent="clam",
+                settings={
+                    "TFrame": {"configure": {"background": colors["primary"]}},
+                    "TLabel": {
+                        "configure": {
+                            "background": colors["primary"],
+                            "foreground": colors["text"],
+                            "font": ("Segoe UI", 10),
+                        }
+                    },
+                    # ... (configuraciones similares para otros widgets)
+                },
+            )
+
+        self.style.theme_use("professional")
+
+    def setup_status_bar(self, parent):
+        """Barra de estado avanzada"""
+        self.status_bar = ttk.Frame(parent)
+        self.status_bar.pack(fill=tk.X, pady=(5, 0))
+
+        # Componentes de la barra
+        self.status_label = ttk.Label(
+            self.status_bar, text="Listo", anchor=tk.W, style="Status.TLabel"
+        )
+        self.status_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        self.memory_usage = ttk.Label(self.status_bar, text="RAM: 0MB", anchor=tk.E)
+        self.memory_usage.pack(side=tk.RIGHT)
+
+        # Actualización periódica
+        self.update_status_bar()
+
+    def update_status_bar(self):
+        """Actualiza dinámicamente la barra de estado"""
+        # Uso de memoria
+        process = psutil.Process(os.getpid())
+        mem = process.memory_info().rss / 1024 / 1024
+        self.memory_usage.config(text=f"RAM: {mem:.1f}MB")
+
+        # Hilos activos
+        threads = threading.active_count()
+
+        # Tareas pendientes
+        tasks = self.task_queue.qsize()
+
+        self.status_label.config(
+            text=f"Hilos: {threads} | Tareas: {tasks} | {datetime.now().strftime('%H:%M:%S')}"
+        )
+
+        self.after(1000, self.update_status_bar)
 
     def build_configuration_panel(self, parent):
         # Configuración de directorio
@@ -275,26 +400,72 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area.configure(bg=bg, fg=fg, insertbackground=fg)
 
     def optimize_performance(self):
-        """Aplicar optimizaciones"""
+        """Aplicar optimizaciones de rendimiento correctamente"""
         # Cache para operaciones frecuentes
-        self.ext_cache = {}
-        self.folder_cache = {}
+        self.ext_cache = TTLCache(maxsize=500, ttl=300)  # 5 minutos de cache
+        self.folder_cache = TTLCache(maxsize=100, ttl=600)  # 10 minutos
 
-        # Configuración de Treeview optimizada
-        self.format_tree.configure("Treeview", font=("Segoe UI", 9))
-        self.preview_tree.configure("Treeview", font=("Segoe UI", 9))
+        # Configuración CORRECTA de Treeview mediante estilos
+        self.style.configure(
+            "Treeview",
+            font=("Segoe UI", 9),
+            rowheight=25,
+            borderwidth=1,
+            relief="solid",
+        )
 
-        # Deshabilitar actualizaciones durante operaciones masivas
+        self.style.configure(
+            "Treeview.Heading", font=("Segoe UI", 9, "bold"), padding=(5, 2, 5, 2)
+        )
+
+        # Configuración específica para cada treeview
+        self.format_tree.configure(style="Custom.Treeview")
+        self.preview_tree.configure(style="Custom.Treeview")
+
+        # Crear un estilo personalizado si necesitas diferencias
+        self.style.map(
+            "Custom.Treeview",
+            background=[("selected", "#0078d7")],
+            foreground=[("selected", "white")],
+        )
+
+        # Manejo de actualizaciones
+        self.tree_update_lock = threading.Lock()
         self.format_tree.bind("<<TreeviewOpen>>", self.on_treeview_update)
         self.preview_tree.bind("<<TreeviewOpen>>", self.on_treeview_update)
 
-        # Precarga de iconos
-        self.load_icons()
+        # Precarga de iconos (versión mejorada)
+        self.icon_cache = {}
+        self.load_icons_async()
+
+    def load_icons_async(self):
+        """Carga los íconos en segundo plano para no bloquear la UI"""
+
+        def _load_icons():
+            icon_names = ["file", "folder", "image", "document", "audio"]
+            for name in icon_names:
+                try:
+                    self.icon_cache[name] = tk.PhotoImage(file=f"icons/{name}.png")
+                except Exception as e:
+                    self.logger.warning(f"No se pudo cargar ícono {name}: {e}")
+
+        threading.Thread(target=_load_icons, daemon=True, name="IconLoader").start()
 
     def on_treeview_update(self, event):
-        """Controla actualizaciones de UI para mejor rendimiento"""
-        if self.mass_operation:
-            return "break"  # Cancela la actualización
+        """Maneja actualizaciones eficientes del Treeview"""
+        with self.tree_update_lock:
+            widget = event.widget
+            widget.update_idletasks()
+
+            # Limitar la frecuencia de actualización
+            current_time = time.time()
+            if hasattr(widget, "_last_update"):
+                if current_time - widget._last_update < 0.1:  # 100ms
+                    return
+            widget._last_update = current_time
+
+            # Actualización optimizada
+            widget.see(event.widget.focus())
 
     def load_icons(self):
         """Precarga iconos para mejor rendimiento visual"""
@@ -705,6 +876,113 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.error(f"Error durante el cierre: {e}")
         finally:
             self.destroy()
+
+    def setup_performance_optimizations(self):
+        """Configuración avanzada y correcta de optimizaciones"""
+        try:
+            # 1. Configuración de estilos para Treeview (forma correcta)
+            self.style = ttk.Style()
+
+            # Estilo base para todos los Treeviews
+            self.style.configure(
+                "Treeview",
+                rowheight=25,
+                font=("Segoe UI", 9),
+                background="#ffffff",
+                fieldbackground="#ffffff",
+            )
+
+            # Estilo para los encabezados
+            self.style.configure(
+                "Treeview.Heading",
+                font=("Segoe UI", 9, "bold"),
+                padding=(5, 2, 5, 2),
+                background="#f0f0f0",
+            )
+
+            # Estilo para items seleccionados
+            self.style.map(
+                "Treeview",
+                background=[("selected", "#0078d7")],
+                foreground=[("selected", "white")],
+            )
+
+            # 2. Configuración específica de los widgets (forma correcta)
+            if hasattr(self, "format_tree"):
+                self.format_tree.configure(style="Treeview")  # Usar el estilo definido
+
+                # Configuración de columnas (alternativa correcta a displaycolumns)
+                cols = self.format_tree["columns"]
+                if cols:
+                    self.format_tree.configure(columns=cols, show="headings")
+
+            if hasattr(self, "preview_tree"):
+                self.preview_tree.configure(style="Treeview")
+
+            # 3. Sistema de caché mejorado
+            self.setup_caching_system()
+
+            # 4. Precarga en segundo plano
+            self.start_background_cache_builder()
+
+            self.logger.info("Optimizaciones de rendimiento configuradas correctamente")
+
+        except Exception as e:
+            self.logger.error(f"Error configurando optimizaciones: {e}", exc_info=True)
+            messagebox.showwarning(
+                "Advertencia",
+                "Algunas optimizaciones no se aplicaron completamente.\n"
+                "La aplicación funcionará pero con rendimiento reducido.",
+            )
+
+    def setup_caching_system(self):
+        """Configura el sistema de caché avanzado"""
+
+        # Caché para operaciones de archivos
+        self.file_cache = TTLCache(
+            maxsize=1000,  # ~1MB de memoria
+            ttl=300,  # 5 minutos de vida
+        )
+
+        # Caché para estructura de directorios
+        self.dir_cache = TTLCache(
+            maxsize=500,  # ~500KB
+            ttl=180,  # 3 minutos
+        )
+
+        # Caché para imágenes y recursos
+        self.resource_cache = {}
+
+    def start_background_cache_builder(self):
+        """Inicia el precaché en segundo plano"""
+
+        def cache_builder():
+            while getattr(self, "running", True):
+                try:
+                    self.warmup_caches()
+                    time.sleep(30)  # Actualizar caché cada 30 segundos
+                except Exception as e:
+                    self.logger.warning(f"Error en cache_builder: {e}")
+                    time.sleep(5)
+
+        if not hasattr(self, "cache_thread") or not self.cache_thread.is_alive():
+            self.cache_thread = threading.Thread(
+                target=cache_builder, name="CacheBuilder", daemon=True
+            )
+            self.cache_thread.start()
+
+    def warmup_caches(self):
+        """Precarga datos en los cachés"""
+        # Precargar perfiles y formatos
+        for profile in self.profiles.values():
+            cache_key = f"profile_{profile['name']}"
+            self.file_cache[cache_key] = profile
+
+        # Precargar estructura de directorios recientes
+        recent_dirs = [p["directory"] for p in self.profiles.values()]
+        for directory in recent_dirs:
+            if os.path.isdir(directory):
+                self.dir_cache[directory] = os.listdir(directory)
 
 
 if __name__ == "__main__":
