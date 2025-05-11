@@ -853,18 +853,49 @@ class FileOrganizerGUI(tk.Tk):
         if selected:
             self.format_tree.delete(selected[0])
 
+    def toggle_icons(self):
+        """Activa/desactiva la visualización de iconos"""
+        show_icons = self.show_icons_var.get()
+        # Implementar lógica para mostrar/ocultar iconos
+        self.logger.info(f"Iconos {'activados' if show_icons else 'desactivados'}")
+
+    def toggle_compact_view(self):
+        """Activa/desactiva la vista compacta"""
+        compact = self.compact_view_var.get()
+        # Implementar lógica para cambiar el espaciado y tamaño de widgets
+        self.logger.info(f"Vista {'compacta' if compact else 'normal'} activada")
+
+    def toggle_preview(self):
+        """Muestra/oculta el panel de previsualización"""
+        show_preview = self.show_preview_var.get()
+        if show_preview:
+            self.preview_tree.pack(fill=tk.BOTH, expand=True)
+        else:
+            self.preview_tree.pack_forget()
+
+    def apply_appearance_settings(self):
+        """Aplica todos los cambios de apariencia"""
+        self.change_theme()
+        self.update_font_settings()
+        self.toggle_icons()
+        self.toggle_compact_view()
+        self.toggle_preview()
+        messagebox.showinfo("Éxito", "Configuración de apariencia aplicada")
+
     def build_appearance_settings(self, parent):
         """
-        Construye el panel de configuración de apariencia con:
-        - Selector de tema visual
+        Construye el panel de configuración de apariencia.
+        Incluye:
+        - Selección de tema
         - Configuración de fuentes
-        - Opciones de iconos
+        - Opciones de visualización
         """
-        frame = ttk.LabelFrame(parent, text="Personalización", padding=10)
-        frame.pack(fill=tk.BOTH, expand=True, pady=5)
+        # Frame principal
+        main_frame = ttk.Frame(parent)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Selector de tema
-        theme_frame = ttk.LabelFrame(frame, text="Tema Visual", padding=10)
+        # Sección de tema visual
+        theme_frame = ttk.LabelFrame(main_frame, text="Tema Visual", padding=10)
         theme_frame.pack(fill=tk.X, pady=5)
 
         ttk.Label(theme_frame, text="Estilo:").grid(row=0, column=0, sticky="e", padx=5)
@@ -873,8 +904,72 @@ class FileOrganizerGUI(tk.Tk):
             values=["Claro", "Oscuro", "Profesional", "Sistema"],
             state="readonly",
         )
-        self.theme_combo.grid(row=0, column=1, sticky="we", padx=5)
+        self.theme_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         self.theme_combo.set("Profesional")
+        self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
+
+        # Sección de fuentes
+        font_frame = ttk.LabelFrame(main_frame, text="Fuentes", padding=10)
+        font_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky="e", padx=5)
+        self.font_size_combo = ttk.Combobox(
+            font_frame, values=["8", "9", "10", "11", "12", "14", "16"], width=5
+        )
+        self.font_size_combo.grid(row=0, column=1, sticky="w", padx=5, pady=2)
+        self.font_size_combo.set("10")
+        self.font_size_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
+
+        ttk.Label(font_frame, text="Familia:").grid(row=1, column=0, sticky="e", padx=5)
+        self.font_family_combo = ttk.Combobox(
+            font_frame,
+            values=["Segoe UI", "Arial", "Helvetica", "Courier New", "Times New Roman"],
+            width=15,
+        )
+        self.font_family_combo.grid(row=1, column=1, sticky="w", padx=5, pady=2)
+        self.font_family_combo.set("Segoe UI")
+        self.font_family_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
+
+        # Sección de opciones visuales
+        options_frame = ttk.LabelFrame(main_frame, text="Opciones Visuales", padding=10)
+        options_frame.pack(fill=tk.X, pady=5)
+
+        self.show_icons_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            options_frame,
+            text="Mostrar iconos en los archivos",
+            variable=self.show_icons_var,
+            command=self.toggle_icons,
+        ).pack(anchor=tk.W, pady=2)
+
+        self.compact_view_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            options_frame,
+            text="Vista compacta",
+            variable=self.compact_view_var,
+            command=self.toggle_compact_view,
+        ).pack(anchor=tk.W, pady=2)
+
+        self.show_preview_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            options_frame,
+            text="Mostrar previsualización",
+            variable=self.show_preview_var,
+            command=self.toggle_preview,
+        ).pack(anchor=tk.W, pady=2)
+
+        # Botón para aplicar cambios
+        apply_btn = ttk.Button(
+            main_frame,
+            text="Aplicar Cambios",
+            command=self.apply_appearance_settings,
+            style="Accent.TButton",
+        )
+        apply_btn.pack(pady=10)
+
+        # Configurar el grid para que se expanda correctamente
+        theme_frame.columnconfigure(1, weight=1)
+        font_frame.columnconfigure(1, weight=1)
 
     def build_format_settings(self, parent):
         """
