@@ -331,46 +331,6 @@ class FileOrganizerGUI(tk.Tk):
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
 
-    # def __init__(self):
-    #     super().__init__()
-    #     self.task_queue = Queue(maxsize=100)
-    #     self.setup_logging()
-    #     self.logger.info("Inicializando aplicación")
-    #     self.performance_cache = {
-    #         "directory_scan": TTLCache(maxsize=100, ttl=30),
-    #         "file_operations": TTLCache(maxsize=500, ttl=60),
-    #     }
-    #     self.running = True
-    #     self.theme_mode = "light"
-    #     self.create_widgets()  # Primero crear todos los widgets
-    #     self.setup_performance_optimizations()
-    #     self.init_threads()
-    #     self.load_icons_async()
-    #     self.title("Organizador Avanzado de Archivos")
-    #     self.geometry("900x700")
-    #     self.configure(bg="#f0f0f0")
-    #     self.current_profile = "default"
-    #     self.profiles = {}
-    #     self.load_profiles()
-    #     self.undo_stack = deque(maxlen=5)
-    #     self.task_queue = Queue()
-    #     self.default_formats = {
-    #         ".jpg": "Fotos",
-    #         ".png": "Fotos",
-    #         ".ico": "Iconos",
-    #         ".mp4": "Videos",
-    #         ".avi": "Videos",
-    #         ".mpg": "Videos",
-    #         ".mp3": "Musica",
-    #         ".pdf": "PDFs",
-    #         ".docx": "Documentos_work",
-    #         ".doc": "Documentos_work",
-    #         ".txt": "Documentos_txt",
-    #         "": "Otros",
-    #     }
-    #     self.load_profiles()
-    #     self.update_theme()  # Ahora se llama después de create_widgets()
-    #
     def create_new_profile(self):
         """Placeholder para futura implementación"""
         messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")

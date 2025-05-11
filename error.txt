@@ -1,0 +1,196 @@
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Optimizaciones de rendimiento configuradas correctamente
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/document.png[0m
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/folder.png[0m
+[32m2025-05-11 04:41:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/image.png[0m
+[32m2025-05-11 04:41:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:54[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:41:59[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:04[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:09[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:19[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:26[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Claro
+[32m2025-05-11 04:42:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:30[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Oscuro
+[32m2025-05-11 04:42:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:34[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError cambiando tema: unknown color name "default"[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 1298, in change_theme
+    self.log_area.configure(
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 1722, in configure
+    return self._configure('configure', cnf, kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 1712, in _configure
+    self.tk.call(_flatten((self._w, cmd)) + self._options(cnf))
+_tkinter.TclError: unknown color name "default"
+[32m2025-05-11 04:42:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:39[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Claro
+[32m2025-05-11 04:42:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:46[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError actualizando fuentes: unknown option "-font"[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 966, in update_font_settings
+    self.preview_tree.heading(
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 1277, in heading
+    return _val_or_dict(self.tk, kw, self._w, 'heading', column)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 281, in _val_or_dict
+    res = tk.call(*(args + options))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_tkinter.TclError: unknown option "-font"
+[32m2025-05-11 04:42:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:54[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:42:56[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError actualizando fuentes: unknown option "-font"[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 966, in update_font_settings
+    self.preview_tree.heading(
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 1277, in heading
+    return _val_or_dict(self.tk, kw, self._w, 'heading', column)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 281, in _val_or_dict
+    res = tk.call(*(args + options))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_tkinter.TclError: unknown option "-font"
+[32m2025-05-11 04:42:59[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:03[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
+[32m2025-05-11 04:43:04[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:09[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:19[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:54[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:55[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Claro
+[32m2025-05-11 04:43:55[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError actualizando fuentes: unknown option "-font"[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 966, in update_font_settings
+    self.preview_tree.heading(
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 1277, in heading
+    return _val_or_dict(self.tk, kw, self._w, 'heading', column)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 281, in _val_or_dict
+    res = tk.call(*(args + options))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_tkinter.TclError: unknown option "-font"
+[32m2025-05-11 04:43:59[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:43:59[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iconos activados
+[32m2025-05-11 04:43:59[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
+[32m2025-05-11 04:44:04[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:09[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:19[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando organización en: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test
+[32m2025-05-11 04:44:50[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .mp4 en Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4[0m
+[32m2025-05-11 04:44:50[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .pdf en DVWA_v1.3.pdf[0m
+[32m2025-05-11 04:44:50[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando DVWA_v1.3.pdf] Hash calculado: ff91b80b...[0m
+[32m2025-05-11 04:44:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Directorio creado: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros
+[32m2025-05-11 04:44:50[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .png en n01.png[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando n01.png] Hash calculado: 6cf4cdae...[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando n01.png] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/n01.png
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/DVWA_v1.3.pdf
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .docx en file4.docx[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mFirma de archivo inválida: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError verificando uso del archivo: Archivo corrupto o inválido: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando file4.docx] Falló validación, omitiendo[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Hash calculado: 479c95d7...[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .mp3 en notification.mp3[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mArchivo vacío: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/cookies.txt[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando cookies.txt] Falló validación, omitiendo[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando notification.mp3] Hash calculado: 9a3b6d90...[0m
+[32m2025-05-11 04:44:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando notification.mp3] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/notification.mp3
+[32m2025-05-11 04:44:54[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:44:59[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:04[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:09[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:19[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:54[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:45:59[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:04[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:09[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:19[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:23[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando organización en: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .pdf en DVWA_v1.3.pdf[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando DVWA_v1.3.pdf] Hash calculado: ff91b80b...[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/DVWA_v1.3.pdf
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando Otros] Es un directorio, omitiendo[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .png en n01.png[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando n01.png] Hash calculado: 6cf4cdae...[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando n01.png] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/n01.png
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .mp4 en Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .docx en file4.docx[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mFirma de archivo inválida: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError verificando uso del archivo: Archivo corrupto o inválido: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando file4.docx] Falló validación, omitiendo[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32mExtensión no configurada: .mp3 en notification.mp3[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando notification.mp3] Hash calculado: 9a3b6d90...[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando notification.mp3] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/notification.mp3
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mDEBUG[0m - [32m[Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Hash calculado: 479c95d7...[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mArchivo vacío: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/cookies.txt[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando cookies.txt] Falló validación, omitiendo[0m
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4
+[32m2025-05-11 04:46:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:54[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:46:59[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:03[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista normal activada
+[32m2025-05-11 04:47:04[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:05[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
+[32m2025-05-11 04:47:06[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iconos desactivados
+[32m2025-05-11 04:47:08[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Claro
+[32m2025-05-11 04:47:08[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError actualizando fuentes: unknown option "-font"[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 966, in update_font_settings
+    self.preview_tree.heading(
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 1277, in heading
+    return _val_or_dict(self.tk, kw, self._w, 'heading', column)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/ttk.py", line 281, in _val_or_dict
+    res = tk.call(*(args + options))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_tkinter.TclError: unknown option "-font"
+[32m2025-05-11 04:47:09[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:13[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iconos desactivados
+[32m2025-05-11 04:47:13[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
+[32m2025-05-11 04:47:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:19[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:24[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:29[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:34[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:39[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:42[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-11 04:47:42[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-11 04:47:44[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:47:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando cierre de aplicación
+[32m2025-05-11 04:47:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Aplicación cerrada correctamente
