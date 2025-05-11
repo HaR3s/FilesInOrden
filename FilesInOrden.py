@@ -226,6 +226,7 @@ class FileOrganizerGUI(tk.Tk):
         dir_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
+
         self.dir_entry = ttk.Entry(dir_frame)
         self.dir_entry.pack(fill=tk.X, pady=5)
         ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
