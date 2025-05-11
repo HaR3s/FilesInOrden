@@ -214,28 +214,21 @@ class FileOrganizerGUI(tk.Tk):
             self.dir_entry.insert(0, directory)
 
     def build_operations_tab(self, parent):
-        """Construye la pestaña de operaciones principales"""
-        # Frame principal con scroll
-        main_frame = ttk.Frame(parent)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-
-        # Panel de directorio
-        dir_frame = ttk.LabelFrame(
-            main_frame, text="Selección de Directorio", padding=10
-        )
-        dir_frame.pack(fill=tk.X, pady=(0, 10))
-
-        ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
+        """Versión compacta similar al ejemplo"""
+        # Configuración de directorio
+        dir_frame = ttk.LabelFrame(parent, text="Directorio")
+        dir_frame.pack(padx=10, pady=5, fill=tk.X)
 
         self.dir_entry = ttk.Entry(dir_frame)
-        self.dir_entry.pack(fill=tk.X, pady=5)
+        self.dir_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
         ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
-            pady=5
+            side=tk.LEFT
         )
 
         # Panel de acciones
-        action_frame = ttk.LabelFrame(main_frame, text="Acciones", padding=10)
-        action_frame.pack(fill=tk.X, pady=(0, 10))
+        action_frame = ttk.LabelFrame(parent, text="Acciones")
+        action_frame.pack(padx=10, pady=5, fill=tk.X)
 
         btn_grid = ttk.Frame(action_frame)
         btn_grid.pack()
@@ -248,64 +241,87 @@ class FileOrganizerGUI(tk.Tk):
         ]
 
         for text, command, row, col in buttons:
-            btn = ttk.Button(
-                btn_grid, text=text, command=command, style="Accent.TButton"
-            )
+            btn = ttk.Button(btn_grid, text=text, command=command)
             btn.grid(row=row, column=col, padx=5, pady=5, sticky=tk.NSEW)
 
-        # Panel de progreso
-        progress_frame = ttk.LabelFrame(main_frame, text="Progreso", padding=10)
-        progress_frame.pack(fill=tk.X)
-
+        # Barra de progreso
         self.progress = ttk.Progressbar(
-            progress_frame, orient=tk.HORIZONTAL, mode="determinate"
+            parent, orient=tk.HORIZONTAL, mode="determinate"
         )
-        self.progress.pack(fill=tk.X, pady=5)
-
-        # Configuración de estilo para botón destacado
-        self.style.configure("Accent.TButton", foreground="white", background="#0078d7")
+        self.progress.pack(padx=10, pady=5, fill=tk.X)
 
     def build_config_tab(self, parent):
-        """Construye la pestaña de configuración avanzada"""
-        notebook = ttk.Notebook(parent)
-        notebook.pack(fill=tk.BOTH, expand=True)
+        """Versión compacta similar al ejemplo"""
+        # Configuración de perfiles
+        profile_frame = ttk.LabelFrame(parent, text="Perfiles")
+        profile_frame.pack(padx=10, pady=5, fill=tk.X)
 
-        # Subpestaña de Perfiles
-        profile_tab = ttk.Frame(notebook, padding=10)
-        self.build_profile_settings(profile_tab)
-        notebook.add(profile_tab, text="Perfiles")
+        self.profile_combo = ttk.Combobox(profile_frame)
+        self.profile_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        ttk.Button(profile_frame, text="Guardar", command=self.save_profile).pack(
+            side=tk.LEFT
+        )
+        ttk.Button(profile_frame, text="Eliminar", command=self.delete_profile).pack(
+            side=tk.LEFT
+        )
 
-        # Subpestaña de Formatos
-        format_tab = ttk.Frame(notebook, padding=10)
-        self.build_format_settings(format_tab)
-        notebook.add(format_tab, text="Formatos")
+        # Configuración de formatos
+        format_frame = ttk.LabelFrame(parent, text="Formatos de Archivo")
+        format_frame.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
 
-        # Subpestaña de Apariencia
-        appearance_tab = ttk.Frame(notebook, padding=10)
-        self.build_appearance_settings(appearance_tab)
-        notebook.add(appearance_tab, text="Apariencia")
+        self.search_entry = ttk.Entry(format_frame)
+        self.search_entry.pack(fill=tk.X, padx=5, pady=2)
+        self.search_entry.bind("<KeyRelease>", self.filter_formats)
 
-    def build_profile_settings(self, parent):
-        """Construye el panel de configuración de perfiles"""
-        frame = ttk.LabelFrame(parent, text="Gestión de Perfiles", padding=10)
-        frame.pack(fill=tk.X, pady=5)
+        self.format_tree = ttk.Treeview(
+            format_frame, columns=("ext", "folder"), show="headings"
+        )
+        self.format_tree.heading("ext", text="Extensión")
+        self.format_tree.heading("folder", text="Carpeta")
+        self.format_tree.pack(fill=tk.BOTH, expand=True)
 
-        ttk.Label(frame, text="Perfil actual:").pack(anchor=tk.W)
-        self.profile_combo = ttk.Combobox(frame)
-        self.profile_combo.pack(fill=tk.X, pady=5)
+        control_frame = ttk.Frame(format_frame)
+        control_frame.pack(pady=5)
+        ttk.Button(control_frame, text="Agregar", command=self.add_format).pack(
+            side=tk.LEFT
+        )
+        ttk.Button(control_frame, text="Eliminar", command=self.remove_format).pack(
+            side=tk.LEFT
+        )
 
-        btn_frame = ttk.Frame(frame)
-        btn_frame.pack(fill=tk.X)
+        # Configuración de programación
+        schedule_frame = ttk.LabelFrame(parent, text="Programación")
+        schedule_frame.pack(padx=10, pady=5, fill=tk.X)
 
-        profile_buttons = [
-            ("Guardar", self.save_profile),
-            ("Eliminar", self.delete_profile),
-            ("Nuevo", self.create_new_profile),
-        ]
+        self.schedule_combo = ttk.Combobox(
+            schedule_frame, values=["Ninguna", "5 minutos", "1 hora", "Diario"]
+        )
+        self.schedule_combo.pack(side=tk.LEFT, padx=5)
+        ttk.Button(schedule_frame, text="Activar", command=self.enable_scheduling).pack(
+            side=tk.LEFT
+        )
 
-        for text, command in profile_buttons:
-            btn = ttk.Button(btn_frame, text=text, command=command)
-            btn.pack(side=tk.LEFT, padx=5, pady=5, expand=True)
+    # def build_profile_settings(self, parent):
+    #     """Construye el panel de configuración de perfiles"""
+    #     frame = ttk.LabelFrame(parent, text="Gestión de Perfiles", padding=10)
+    #     frame.pack(fill=tk.X, pady=5)
+    #
+    #     ttk.Label(frame, text="Perfil actual:").pack(anchor=tk.W)
+    #     self.profile_combo = ttk.Combobox(frame)
+    #     self.profile_combo.pack(fill=tk.X, pady=5)
+    #
+    #     btn_frame = ttk.Frame(frame)
+    #     btn_frame.pack(fill=tk.X)
+    #
+    #     profile_buttons = [
+    #         ("Guardar", self.save_profile),
+    #         ("Eliminar", self.delete_profile),
+    #         ("Nuevo", self.create_new_profile),
+    #     ]
+    #
+    #     for text, command in profile_buttons:
+    #         btn = ttk.Button(btn_frame, text=text, command=command)
+    #         btn.pack(side=tk.LEFT, padx=5, pady=5, expand=True)
 
     def import_formats(self):
         """Importa formatos desde un archivo JSON"""
@@ -367,63 +383,63 @@ class FileOrganizerGUI(tk.Tk):
             messagebox.showerror("Error", f"No se pudo exportar: {str(e)}")
             self.logger.error(f"Error exportando formatos: {e}", exc_info=True)
 
-    def build_format_settings(self, parent):
-        """Construye el panel de configuración de formatos"""
-        main_frame = ttk.Frame(parent)
-        main_frame.pack(fill=tk.BOTH, expand=True)
-
-        # Barra de búsqueda
-        search_frame = ttk.Frame(main_frame)
-        search_frame.pack(fill=tk.X, pady=5)
-
-        ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
-        self.search_entry = ttk.Entry(search_frame)
-        self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        self.search_entry.bind("<KeyRelease>", self.filter_formats)
-
-        # Treeview de formatos
-        tree_frame = ttk.Frame(main_frame)
-        tree_frame.pack(fill=tk.BOTH, expand=True)
-
-        self.format_tree = ttk.Treeview(
-            tree_frame, columns=("ext", "folder"), show="headings", selectmode="browse"
-        )
-        self.format_tree.heading("ext", text="Extensión")
-        self.format_tree.heading("folder", text="Carpeta Destino")
-        self.format_tree.column("ext", width=100)
-        self.format_tree.column("folder", width=200)
-
-        vsb = ttk.Scrollbar(
-            tree_frame, orient="vertical", command=self.format_tree.yview
-        )
-        hsb = ttk.Scrollbar(
-            tree_frame, orient="horizontal", command=self.format_tree.xview
-        )
-        self.format_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-
-        self.format_tree.grid(row=0, column=0, sticky=tk.NSEW)
-        vsb.grid(row=0, column=1, sticky=tk.NS)
-        hsb.grid(row=1, column=0, sticky=tk.EW)
-
-        tree_frame.grid_columnconfigure(0, weight=1)
-        tree_frame.grid_rowconfigure(0, weight=1)
-
-        # Controles de formatos
-        ctrl_frame = ttk.Frame(main_frame)
-        ctrl_frame.pack(fill=tk.X, pady=5)
-
-        ttk.Button(ctrl_frame, text="Agregar", command=self.add_format).pack(
-            side=tk.LEFT, padx=5
-        )
-        ttk.Button(ctrl_frame, text="Eliminar", command=self.remove_format).pack(
-            side=tk.LEFT, padx=5
-        )
-        ttk.Button(ctrl_frame, text="Importar", command=self.import_formats).pack(
-            side=tk.RIGHT, padx=5
-        )
-        ttk.Button(ctrl_frame, text="Exportar", command=self.export_formats).pack(
-            side=tk.RIGHT, padx=5
-        )
+    # def build_format_settings(self, parent):
+    #     """Construye el panel de configuración de formatos"""
+    #     main_frame = ttk.Frame(parent)
+    #     main_frame.pack(fill=tk.BOTH, expand=True)
+    #
+    #     # Barra de búsqueda
+    #     search_frame = ttk.Frame(main_frame)
+    #     search_frame.pack(fill=tk.X, pady=5)
+    #
+    #     ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
+    #     self.search_entry = ttk.Entry(search_frame)
+    #     self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+    #     self.search_entry.bind("<KeyRelease>", self.filter_formats)
+    #
+    #     # Treeview de formatos
+    #     tree_frame = ttk.Frame(main_frame)
+    #     tree_frame.pack(fill=tk.BOTH, expand=True)
+    #
+    #     self.format_tree = ttk.Treeview(
+    #         tree_frame, columns=("ext", "folder"), show="headings", selectmode="browse"
+    #     )
+    #     self.format_tree.heading("ext", text="Extensión")
+    #     self.format_tree.heading("folder", text="Carpeta Destino")
+    #     self.format_tree.column("ext", width=100)
+    #     self.format_tree.column("folder", width=200)
+    #
+    #     vsb = ttk.Scrollbar(
+    #         tree_frame, orient="vertical", command=self.format_tree.yview
+    #     )
+    #     hsb = ttk.Scrollbar(
+    #         tree_frame, orient="horizontal", command=self.format_tree.xview
+    #     )
+    #     self.format_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+    #
+    #     self.format_tree.grid(row=0, column=0, sticky=tk.NSEW)
+    #     vsb.grid(row=0, column=1, sticky=tk.NS)
+    #     hsb.grid(row=1, column=0, sticky=tk.EW)
+    #
+    #     tree_frame.grid_columnconfigure(0, weight=1)
+    #     tree_frame.grid_rowconfigure(0, weight=1)
+    #
+    #     # Controles de formatos
+    #     ctrl_frame = ttk.Frame(main_frame)
+    #     ctrl_frame.pack(fill=tk.X, pady=5)
+    #
+    #     ttk.Button(ctrl_frame, text="Agregar", command=self.add_format).pack(
+    #         side=tk.LEFT, padx=5
+    #     )
+    #     ttk.Button(ctrl_frame, text="Eliminar", command=self.remove_format).pack(
+    #         side=tk.LEFT, padx=5
+    #     )
+    #     ttk.Button(ctrl_frame, text="Importar", command=self.import_formats).pack(
+    #         side=tk.RIGHT, padx=5
+    #     )
+    #     ttk.Button(ctrl_frame, text="Exportar", command=self.export_formats).pack(
+    #         side=tk.RIGHT, padx=5
+    #     )
 
     def change_theme(self, event=None):
         """Cambia el tema visual de toda la aplicación"""
@@ -537,37 +553,37 @@ class FileOrganizerGUI(tk.Tk):
         except Exception as e:
             self.logger.error(f"Error actualizando widgets: {e}", exc_info=True)
 
-    def build_appearance_settings(self, parent):
-        """Construye el panel de configuración de apariencia"""
-        frame = ttk.LabelFrame(parent, text="Personalización", padding=10)
-        frame.pack(fill=tk.BOTH, expand=True, pady=5)
-
-        # Selector de tema
-        ttk.Label(frame, text="Tema visual:").pack(anchor=tk.W)
-        self.theme_combo = ttk.Combobox(
-            frame, values=["Claro", "Oscuro", "Profesional", "Sistema"]
-        )
-        self.theme_combo.pack(fill=tk.X, pady=5)
-        self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
-
-        # Configuración de fuente
-        font_frame = ttk.LabelFrame(frame, text="Fuente", padding=10)
-        font_frame.pack(fill=tk.X, pady=5)
-
-        ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky=tk.W)
-        self.font_size = ttk.Combobox(
-            font_frame, values=["8", "9", "10", "11", "12"], width=5
-        )
-        self.font_size.grid(row=0, column=1, sticky=tk.W, padx=5)
-        self.font_size.set("9")
-
-        # Configuración de iconos
-        ttk.Checkbutton(
-            frame,
-            text="Mostrar iconos en los archivos",
-            variable=tk.BooleanVar(value=True),
-        ).pack(anchor=tk.W, pady=5)
-
+    # def build_appearance_settings(self, parent):
+    #     """Construye el panel de configuración de apariencia"""
+    #     frame = ttk.LabelFrame(parent, text="Personalización", padding=10)
+    #     frame.pack(fill=tk.BOTH, expand=True, pady=5)
+    #
+    #     # Selector de tema
+    #     ttk.Label(frame, text="Tema visual:").pack(anchor=tk.W)
+    #     self.theme_combo = ttk.Combobox(
+    #         frame, values=["Claro", "Oscuro", "Profesional", "Sistema"]
+    #     )
+    #     self.theme_combo.pack(fill=tk.X, pady=5)
+    #     self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
+    #
+    #     # Configuración de fuente
+    #     font_frame = ttk.LabelFrame(frame, text="Fuente", padding=10)
+    #     font_frame.pack(fill=tk.X, pady=5)
+    #
+    #     ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky=tk.W)
+    #     self.font_size = ttk.Combobox(
+    #         font_frame, values=["8", "9", "10", "11", "12"], width=5
+    #     )
+    #     self.font_size.grid(row=0, column=1, sticky=tk.W, padx=5)
+    #     self.font_size.set("9")
+    #
+    #     # Configuración de iconos
+    #     ttk.Checkbutton(
+    #         frame,
+    #         text="Mostrar iconos en los archivos",
+    #         variable=tk.BooleanVar(value=True),
+    #     ).pack(anchor=tk.W, pady=5)
+    #
     def setup_theme_system(self):
         """Sistema completo de temas"""
         self.themes = {
@@ -799,87 +815,6 @@ class FileOrganizerGUI(tk.Tk):
 
         # Captura de excepciones no manejadas
         sys.excepthook = self.handle_uncaught_exception
-
-    # def build_configuration_panel(self, parent):
-    #     # Configuración de directorio
-    #     dir_frame = ttk.LabelFrame(parent, text="Directorio")
-    #     dir_frame.pack(padx=10, pady=5, fill=X)
-    #
-    #     self.dir_entry = ttk.Entry(dir_frame)
-    #     self.dir_entry.pack(side=LEFT, fill=X, expand=True, padx=5)
-    #
-    #     ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
-    #         side=LEFT
-    #     )
-    #
-    #     # Configuración de perfiles
-    #     profile_frame = ttk.LabelFrame(parent, text="Perfiles")
-    #     profile_frame.pack(padx=10, pady=5, fill=X)
-    #
-    #     self.profile_combo = ttk.Combobox(profile_frame)
-    #     self.profile_combo.pack(side=LEFT, fill=X, expand=True, padx=5)
-    #     ttk.Button(profile_frame, text="Guardar", command=self.save_profile).pack(
-    #         side=LEFT
-    #     )
-    #     ttk.Button(profile_frame, text="Eliminar", command=self.delete_profile).pack(
-    #         side=LEFT
-    #     )
-    #
-    #     # Configuración de formatos
-    #     format_frame = ttk.LabelFrame(parent, text="Formatos de Archivo")
-    #     format_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
-    #
-    #     self.search_entry = ttk.Entry(format_frame)
-    #     self.search_entry.pack(fill=X, padx=5, pady=2)
-    #     self.search_entry.bind("<KeyRelease>", self.filter_formats)
-    #
-    #     self.format_tree = ttk.Treeview(
-    #         format_frame, columns=("ext", "folder"), show="headings"
-    #     )
-    #     self.format_tree.heading("ext", text="Extensión")
-    #     self.format_tree.heading("folder", text="Carpeta")
-    #     self.format_tree.pack(fill=BOTH, expand=True)
-    #
-    #     control_frame = ttk.Frame(format_frame)
-    #     control_frame.pack(pady=5)
-    #     ttk.Button(control_frame, text="Agregar", command=self.add_format).pack(
-    #         side=LEFT
-    #     )
-    #     ttk.Button(control_frame, text="Eliminar", command=self.remove_format).pack(
-    #         side=LEFT
-    #     )
-    #
-    #     # Configuración de programación
-    #     schedule_frame = ttk.LabelFrame(parent, text="Programación")
-    #     schedule_frame.pack(padx=10, pady=5, fill=X)
-    #
-    #     self.schedule_combo = ttk.Combobox(
-    #         schedule_frame, values=["Ninguna", "5 minutos", "1 hora", "Diario"]
-    #     )
-    #     self.schedule_combo.pack(side=LEFT, padx=5)
-    #     ttk.Button(schedule_frame, text="Activar", command=self.enable_scheduling).pack(
-    #         side=LEFT
-    #     )
-    #
-    #     # Barra de progreso
-    #     self.progress = ttk.Progressbar(parent, orient=HORIZONTAL, mode="determinate")
-    #     self.progress.pack(padx=10, pady=5, fill=X)
-    #
-    #     # Controles principales
-    #     control_frame = ttk.Frame(parent)
-    #     control_frame.pack(pady=10)
-    #     ttk.Button(
-    #         control_frame, text="Previsualizar", command=self.preview_changes
-    #     ).pack(side=LEFT, padx=5)
-    #     ttk.Button(
-    #         control_frame, text="Organizar Ahora", command=self.start_organization
-    #     ).pack(side=LEFT, padx=5)
-    #     ttk.Button(control_frame, text="Deshacer", command=self.undo_last).pack(
-    #         side=LEFT, padx=5
-    #     )
-    #     ttk.Button(control_frame, text="Tema", command=self.toggle_theme).pack(
-    #         side=LEFT, padx=5
-    #     )
 
     def build_preview_panel(self, parent):
         # Área de previsualización
@@ -1238,15 +1173,15 @@ class FileOrganizerGUI(tk.Tk):
             schedule.run_pending()
             time.sleep(1)
 
-    # def enable_scheduling(self):
-    #     interval = self.schedule_combo.get()
-    #     schedule.clear()
-    #     if interval == "5 minutos":
-    #         schedule.every(5).minutes.do(self.start_organization)
-    #     elif interval == "1 hora":
-    #         schedule.every().hour.do(self.start_organization)
-    #     elif interval == "Diario":
-    #         schedule.every().day.do(self.start_organization)
+    def enable_scheduling(self):
+        interval = self.schedule_combo.get()
+        schedule.clear()
+        if interval == "5 minutos":
+            schedule.every(5).minutes.do(self.start_organization)
+        elif interval == "1 hora":
+            schedule.every().hour.do(self.start_organization)
+        elif interval == "Diario":
+            schedule.every().day.do(self.start_organization)
 
     def preview_changes(self):
         self.preview_tree.delete(*self.preview_tree.get_children())
