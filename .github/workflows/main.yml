@@ -3,8 +3,7 @@ name: Build Windows Executable
 on:
   workflow_dispatch:
   push:
-    branches: [mejoras]
-    branches: [master]
+    branches: [mejoras, master]
   pull_request:
     branches: [master]
 
