@@ -8,7 +8,7 @@ import hashlib
 from datetime import datetime
 from collections import deque
 from queue import Queue, Empty
-from typing import Dict, Optional, List, Tuple  # Tipado adicional
+from typing import Dict, Optional, List, Tuple
 from logging.handlers import RotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from concurrent.futures import Future
@@ -45,7 +45,7 @@ class ThreadManager:
     def __init__(self):
         self.threads = {}
         self.lock = threading.Lock()
-        self.stop_event = threading.Event()  # Nuevo
+        self.stop_event = threading.Event()
 
     def _thread_wrapper(self, name, target):
         """Hilo que verifica stop_event periódicamente"""
@@ -302,7 +302,7 @@ class FileOrganizerGUI(tk.Tk):
             "": "Otros",
         }
 
-        # Luego inicializar el resto de componentes
+        # Inicializar el resto de componentes
         self.task_queue = Queue(maxsize=100)
         self.setup_logging()
         self.logger.info("Inicializando aplicación")
@@ -318,7 +318,6 @@ class FileOrganizerGUI(tk.Tk):
             img = Image.open("ico/favicon.ico")  # Puede ser PNG, JPG, etc.
             icon = ImageTk.PhotoImage(img)
             self.iconphoto(False, icon)
-            # self.tk.call("wm", "iconphoto", self._w, icon)
         except Exception as e:
             self.logger.error(f"No se pudo cargar el icono: {e}")
 
@@ -337,6 +336,7 @@ class FileOrganizerGUI(tk.Tk):
     def create_new_profile(self):
         """Placeholder para futura implementación"""
         messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")
+        self.logger.info("Función de nuevo perfil no implementada aún")
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
@@ -347,7 +347,7 @@ class FileOrganizerGUI(tk.Tk):
         self.profiles[profile_name] = {
             "directory": self.dir_entry.get(),
             "formatos": self.get_current_formats(),
-            # "schedule": self.schedule_combo.get(),
+            "schedule": self.schedule_combo.get(),
         }
 
         self.save_to_file()
@@ -410,10 +410,12 @@ class FileOrganizerGUI(tk.Tk):
 
         # Información del perfil
         info_frame = ttk.LabelFrame(frame, text="Información del Perfil", padding=10)
-        info_frame.pack(fill=tk.BOTH, expand=True, pady=5)
+        info_frame.pack(fill=tk.BOTH, expand=True, pady=10)  # valor original 5
 
         # Configurar estilo para botones pequeños
-        self.style.configure("Small.TButton", font=("Segoe UI", 8), padding=2)
+        self.style.configure(
+            "Small.TButton", font=("Segoe UI", 8), padding=4
+        )  # valor por defecto 2
 
     def _on_profile_changed(self, event):
         """Manejador para cambio de perfil seleccionado"""
@@ -422,6 +424,7 @@ class FileOrganizerGUI(tk.Tk):
             self.current_profile = selected
             self.load_profile_settings()
             self.log(f"Perfil cambiado a: {selected}")
+            self.logger.info(f"Perfil cambiado a: {selected}")  # NOTE: New
 
     def create_widgets(self):
         """
@@ -440,21 +443,25 @@ class FileOrganizerGUI(tk.Tk):
         self.setup_theme_system()
 
         # Frame principal con scroll
-        main_frame = ttk.Frame(self, padding="10")
+        main_frame = ttk.Frame(self, padding=10)  # NOTE: Defoult "10"
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Sistema de pestañas
         self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+        self.notebook.pack(
+            fill=tk.BOTH, expand=True, pady=(5, 5)
+        )  # NOTE: Defoult (0, 10)
 
         # ----------------------------
         # Pestaña de Operaciones
         # ----------------------------
-        ops_tab = ttk.Frame(self.notebook, padding=10)
+        ops_tab = ttk.Frame(self.notebook, padding=15)  # NOTE: Defoult 10
         self.notebook.add(ops_tab, text="Operaciones")
 
         # Panel de directorio
-        dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
+        dir_frame = ttk.LabelFrame(
+            ops_tab, text="Selección de Directorio", padding=5
+        )  # NOTE: Defoult 10
         dir_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
@@ -477,8 +484,8 @@ class FileOrganizerGUI(tk.Tk):
         buttons = [
             ("Previsualizar", self.preview_changes, 0, 0),
             ("Organizar Ahora", self.start_organization, 0, 1),
-            ("Deshacer", self.undo_last, 1, 0),
-            ("Estadísticas", self.show_stats, 1, 1),
+            ("Deshacer", self.undo_last, 0, 1),
+            ("Estadísticas", self.show_stats, 0, 1),
         ]
 
         for text, command, row, col in buttons:
@@ -489,7 +496,7 @@ class FileOrganizerGUI(tk.Tk):
             ToolTip(btn, f"Ejecutar acción: {text}")
 
         # Panel de previsualización
-        self.create_preview_tree(ops_tab)  # Usa la función que definimos antes
+        self.create_preview_tree(ops_tab)
 
         # Panel de progreso
         progress_frame = ttk.LabelFrame(ops_tab, text="Progreso", padding=10)
@@ -614,7 +621,9 @@ class FileOrganizerGUI(tk.Tk):
         preview_frame = ttk.LabelFrame(
             parent, text="Previsualización de Cambios", padding=10
         )
-        preview_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        preview_frame.pack(
+            fill=tk.BOTH, expand=True, padx=5, pady=10
+        )  # NOTE: Defoult pady=5
 
         # Treeview con scrollbars
         tree_container = ttk.Frame(preview_frame)
@@ -1506,7 +1515,7 @@ class FileOrganizerGUI(tk.Tk):
                 "default": {
                     "name": "default",
                     "directory": "",
-                    # "formatos": self.default_formats.copy(),  # Copia para evitar mutaciones
+                    "formatos": self.default_formats.copy(),  # Copia para evitar mutaciones
                     "created_at": datetime.now().isoformat(),  # Metadata adicional
                 }
             }
@@ -1516,7 +1525,7 @@ class FileOrganizerGUI(tk.Tk):
         profile = self.profiles[self.current_profile]
         self.dir_entry.delete(0, END)
         self.dir_entry.insert(0, profile["directory"])
-        # self.schedule_combo.set(profile["schedule"])
+        self.schedule_combo.set(profile["schedule"])
         self.update_format_tree(profile["formatos"])
 
     def undo_last(self):
