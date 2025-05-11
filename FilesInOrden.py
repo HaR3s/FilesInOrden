@@ -172,9 +172,6 @@ class FileOrganizerGUI(tk.Tk):
             ".txt": "Documentos_txt",
             "": "Otros",
         }
-
-        self.init_threads()
-        self.create_widgets()
         self.load_profiles()
         self.update_theme()
 
@@ -663,7 +660,7 @@ class FileOrganizerGUI(tk.Tk):
         self.profiles[profile_name] = {
             "directory": self.dir_entry.get(),
             "formatos": self.get_current_formats(),
-            "schedule": self.schedule_combo.get(),
+            # "schedule": self.schedule_combo.get(),
         }
 
         self.save_to_file()
@@ -730,7 +727,7 @@ class FileOrganizerGUI(tk.Tk):
         profile = self.profiles[self.current_profile]
         self.dir_entry.delete(0, END)
         self.dir_entry.insert(0, profile["directory"])
-        self.schedule_combo.set(profile["schedule"])
+        # self.schedule_combo.set(profile["schedule"])
         self.update_format_tree(profile["formatos"])
 
     def undo_last(self):
@@ -783,86 +780,86 @@ class FileOrganizerGUI(tk.Tk):
         # Captura de excepciones no manejadas
         sys.excepthook = self.handle_uncaught_exception
 
-    def build_configuration_panel(self, parent):
-        # Configuración de directorio
-        dir_frame = ttk.LabelFrame(parent, text="Directorio")
-        dir_frame.pack(padx=10, pady=5, fill=X)
-
-        self.dir_entry = ttk.Entry(dir_frame)
-        self.dir_entry.pack(side=LEFT, fill=X, expand=True, padx=5)
-
-        ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
-            side=LEFT
-        )
-
-        # Configuración de perfiles
-        profile_frame = ttk.LabelFrame(parent, text="Perfiles")
-        profile_frame.pack(padx=10, pady=5, fill=X)
-
-        self.profile_combo = ttk.Combobox(profile_frame)
-        self.profile_combo.pack(side=LEFT, fill=X, expand=True, padx=5)
-        ttk.Button(profile_frame, text="Guardar", command=self.save_profile).pack(
-            side=LEFT
-        )
-        ttk.Button(profile_frame, text="Eliminar", command=self.delete_profile).pack(
-            side=LEFT
-        )
-
-        # Configuración de formatos
-        format_frame = ttk.LabelFrame(parent, text="Formatos de Archivo")
-        format_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
-
-        self.search_entry = ttk.Entry(format_frame)
-        self.search_entry.pack(fill=X, padx=5, pady=2)
-        self.search_entry.bind("<KeyRelease>", self.filter_formats)
-
-        self.format_tree = ttk.Treeview(
-            format_frame, columns=("ext", "folder"), show="headings"
-        )
-        self.format_tree.heading("ext", text="Extensión")
-        self.format_tree.heading("folder", text="Carpeta")
-        self.format_tree.pack(fill=BOTH, expand=True)
-
-        control_frame = ttk.Frame(format_frame)
-        control_frame.pack(pady=5)
-        ttk.Button(control_frame, text="Agregar", command=self.add_format).pack(
-            side=LEFT
-        )
-        ttk.Button(control_frame, text="Eliminar", command=self.remove_format).pack(
-            side=LEFT
-        )
-
-        # Configuración de programación
-        schedule_frame = ttk.LabelFrame(parent, text="Programación")
-        schedule_frame.pack(padx=10, pady=5, fill=X)
-
-        self.schedule_combo = ttk.Combobox(
-            schedule_frame, values=["Ninguna", "5 minutos", "1 hora", "Diario"]
-        )
-        self.schedule_combo.pack(side=LEFT, padx=5)
-        ttk.Button(schedule_frame, text="Activar", command=self.enable_scheduling).pack(
-            side=LEFT
-        )
-
-        # Barra de progreso
-        self.progress = ttk.Progressbar(parent, orient=HORIZONTAL, mode="determinate")
-        self.progress.pack(padx=10, pady=5, fill=X)
-
-        # Controles principales
-        control_frame = ttk.Frame(parent)
-        control_frame.pack(pady=10)
-        ttk.Button(
-            control_frame, text="Previsualizar", command=self.preview_changes
-        ).pack(side=LEFT, padx=5)
-        ttk.Button(
-            control_frame, text="Organizar Ahora", command=self.start_organization
-        ).pack(side=LEFT, padx=5)
-        ttk.Button(control_frame, text="Deshacer", command=self.undo_last).pack(
-            side=LEFT, padx=5
-        )
-        ttk.Button(control_frame, text="Tema", command=self.toggle_theme).pack(
-            side=LEFT, padx=5
-        )
+    # def build_configuration_panel(self, parent):
+    #     # Configuración de directorio
+    #     dir_frame = ttk.LabelFrame(parent, text="Directorio")
+    #     dir_frame.pack(padx=10, pady=5, fill=X)
+    #
+    #     self.dir_entry = ttk.Entry(dir_frame)
+    #     self.dir_entry.pack(side=LEFT, fill=X, expand=True, padx=5)
+    #
+    #     ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
+    #         side=LEFT
+    #     )
+    #
+    #     # Configuración de perfiles
+    #     profile_frame = ttk.LabelFrame(parent, text="Perfiles")
+    #     profile_frame.pack(padx=10, pady=5, fill=X)
+    #
+    #     self.profile_combo = ttk.Combobox(profile_frame)
+    #     self.profile_combo.pack(side=LEFT, fill=X, expand=True, padx=5)
+    #     ttk.Button(profile_frame, text="Guardar", command=self.save_profile).pack(
+    #         side=LEFT
+    #     )
+    #     ttk.Button(profile_frame, text="Eliminar", command=self.delete_profile).pack(
+    #         side=LEFT
+    #     )
+    #
+    #     # Configuración de formatos
+    #     format_frame = ttk.LabelFrame(parent, text="Formatos de Archivo")
+    #     format_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
+    #
+    #     self.search_entry = ttk.Entry(format_frame)
+    #     self.search_entry.pack(fill=X, padx=5, pady=2)
+    #     self.search_entry.bind("<KeyRelease>", self.filter_formats)
+    #
+    #     self.format_tree = ttk.Treeview(
+    #         format_frame, columns=("ext", "folder"), show="headings"
+    #     )
+    #     self.format_tree.heading("ext", text="Extensión")
+    #     self.format_tree.heading("folder", text="Carpeta")
+    #     self.format_tree.pack(fill=BOTH, expand=True)
+    #
+    #     control_frame = ttk.Frame(format_frame)
+    #     control_frame.pack(pady=5)
+    #     ttk.Button(control_frame, text="Agregar", command=self.add_format).pack(
+    #         side=LEFT
+    #     )
+    #     ttk.Button(control_frame, text="Eliminar", command=self.remove_format).pack(
+    #         side=LEFT
+    #     )
+    #
+    #     # Configuración de programación
+    #     schedule_frame = ttk.LabelFrame(parent, text="Programación")
+    #     schedule_frame.pack(padx=10, pady=5, fill=X)
+    #
+    #     self.schedule_combo = ttk.Combobox(
+    #         schedule_frame, values=["Ninguna", "5 minutos", "1 hora", "Diario"]
+    #     )
+    #     self.schedule_combo.pack(side=LEFT, padx=5)
+    #     ttk.Button(schedule_frame, text="Activar", command=self.enable_scheduling).pack(
+    #         side=LEFT
+    #     )
+    #
+    #     # Barra de progreso
+    #     self.progress = ttk.Progressbar(parent, orient=HORIZONTAL, mode="determinate")
+    #     self.progress.pack(padx=10, pady=5, fill=X)
+    #
+    #     # Controles principales
+    #     control_frame = ttk.Frame(parent)
+    #     control_frame.pack(pady=10)
+    #     ttk.Button(
+    #         control_frame, text="Previsualizar", command=self.preview_changes
+    #     ).pack(side=LEFT, padx=5)
+    #     ttk.Button(
+    #         control_frame, text="Organizar Ahora", command=self.start_organization
+    #     ).pack(side=LEFT, padx=5)
+    #     ttk.Button(control_frame, text="Deshacer", command=self.undo_last).pack(
+    #         side=LEFT, padx=5
+    #     )
+    #     ttk.Button(control_frame, text="Tema", command=self.toggle_theme).pack(
+    #         side=LEFT, padx=5
+    #     )
 
     def build_preview_panel(self, parent):
         # Área de previsualización
@@ -1154,15 +1151,15 @@ class FileOrganizerGUI(tk.Tk):
             schedule.run_pending()
             time.sleep(1)
 
-    def enable_scheduling(self):
-        interval = self.schedule_combo.get()
-        schedule.clear()
-        if interval == "5 minutos":
-            schedule.every(5).minutes.do(self.start_organization)
-        elif interval == "1 hora":
-            schedule.every().hour.do(self.start_organization)
-        elif interval == "Diario":
-            schedule.every().day.do(self.start_organization)
+    # def enable_scheduling(self):
+    #     interval = self.schedule_combo.get()
+    #     schedule.clear()
+    #     if interval == "5 minutos":
+    #         schedule.every(5).minutes.do(self.start_organization)
+    #     elif interval == "1 hora":
+    #         schedule.every().hour.do(self.start_organization)
+    #     elif interval == "Diario":
+    #         schedule.every().day.do(self.start_organization)
 
     def preview_changes(self):
         self.preview_tree.delete(*self.preview_tree.get_children())
@@ -1272,8 +1269,116 @@ class FileOrganizerGUI(tk.Tk):
         if moved_files:
             self.undo_stack.append(moved_files)
 
-    def validate_file(self, src_path):
-        pass
+    def validate_file(self, src_path: str) -> bool:
+        """Valida un archivo antes de procesarlo.
+
+        Realiza múltiples comprobaciones para asegurar que el archivo:
+        - Existe y es accesible
+        - No está en uso por otro proceso
+        - Tiene permisos adecuados
+        - No es un archivo del sistema/protegido
+        - Cumple con requisitos básicos de seguridad
+
+        Args:
+            src_path: Ruta completa al archivo a validar
+
+        Returns:
+            bool: True si el archivo es válido para procesar, False en caso contrario
+
+        Raises:
+            OSError: Para problemas de permisos o acceso
+            IntegrityError: Para problemas de integridad del archivo
+        """
+        try:
+            # 1. Verificar que la ruta existe y es un archivo (no directorio)
+            if not os.path.isfile(src_path):
+                self.logger.warning(f"La ruta no es un archivo: {src_path}")
+                return False
+
+            # 2. Verificar permisos de lectura
+            if not os.access(src_path, os.R_OK):
+                self.logger.error(f"Sin permisos de lectura: {src_path}")
+                raise PermissionError(f"No se puede leer el archivo: {src_path}")
+
+            # 3. Verificar que el archivo no esté en uso (Multiplataforma)
+            if os.name == "nt":  # Windows
+                # Intento de apertura exclusiva
+                with open(src_path, "rb+") as f:
+                    pass
+            else:  # Linux/macOS
+                # Usar lsof para verificar si el archivo está abierto
+                import subprocess
+
+                result = subprocess.run(
+                    ["lsof", src_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                )
+                if result.returncode == 0:
+                    self.logger.warning(f"Archivo en uso (Linux): {src_path}")
+                    return False
+
+            # 4. Verificar que no sea un archivo del sistema/protegido
+            filename = os.path.basename(src_path)
+            if filename.startswith(("~$", "Thumbs.db", ".DS_Store", "desktop.ini")):
+                self.logger.debug(f"Ignorando archivo del sistema: {filename}")
+                return False
+
+            # 5. Verificar tamaño mínimo/máximo (opcional)
+            file_size = os.path.getsize(src_path)
+            if file_size == 0:
+                self.logger.warning(f"Archivo vacío: {src_path}")
+                return False
+            if file_size > 100 * 1024 * 1024:  # 100MB
+                self.logger.warning(f"Archivo demasiado grande (>100MB): {src_path}")
+                return False
+
+            # 6. Verificar extensión válida (opcional)
+            ext = os.path.splitext(filename)[1].lower()
+            if ext not in self.profiles[self.current_profile]["formatos"]:
+                self.logger.debug(f"Extensión no configurada: {ext} en {filename}")
+                # No retornamos False aquí porque queremos permitir la categoría "Otros"
+
+            # 7. Verificar integridad básica (para ciertos tipos de archivos)
+            if ext in (".jpg", ".png", ".pdf", ".docx"):
+                if not self._validate_file_signature(src_path, ext):
+                    self.logger.error(f"Firma de archivo inválida: {src_path}")
+                    raise IntegrityError(f"Archivo corrupto o inválido: {src_path}")
+
+            return True
+
+        except (IOError, PermissionError, FileNotFoundError):
+            return False
+        except Exception as e:
+            self.logger.error(f"Error verificando uso del archivo: {e}")
+            return False
+
+    def _validate_file_signature(self, filepath: str, ext: str) -> bool:
+        """Valida la firma (magic numbers) de un archivo.
+
+        Args:
+            filepath: Ruta al archivo
+            ext: Extensión del archivo
+
+        Returns:
+            bool: True si la firma coincide con la extensión
+        """
+        # Mapeo de firmas conocidas (primeros bytes)
+        SIGNATURES = {
+            ".jpg": [b"\xff\xd8\xff"],
+            ".png": [b"\x89PNG\r\n\x1a\n"],
+            ".pdf": [b"%PDF"],
+            ".docx": [b"PK\x03\x04"],  # DOCX es un ZIP
+        }
+
+        if ext not in SIGNATURES:
+            return True  # No validamos extensiones desconocidas
+
+        try:
+            with open(filepath, "rb") as f:
+                header = f.read(8)  # Leer suficientes bytes para las firmas
+
+            return any(header.startswith(sig) for sig in SIGNATURES[ext])
+        except Exception:
+            return False
 
     def safe_makedirs(self, directory: str) -> None:
         """Crea directorios de forma segura con manejo de errores.
@@ -1339,42 +1444,52 @@ class FileOrganizerGUI(tk.Tk):
     def process_single_file(
         self, directory: str, filename: str
     ) -> Optional[Tuple[str, str]]:
-        """Procesa un archivo individual de forma segura.
+        """Procesa un archivo individual de forma segura, incluyendo validaciones mejoradas.
 
         Args:
-            directory: Directorio base
-            filename: Nombre del archivo
+            directory: Directorio base donde se encuentra el archivo
+            filename: Nombre del archivo a procesar
 
         Returns:
-            Tuple[src_path, dest_path] si se movió el archivo, None si hubo error
-
-        Raises:
-            OSError: Para errores de sistema de archivos
+            Tuple[src_path, dest_path] si el archivo se movió exitosamente, None en caso de error
         """
         try:
             src_path = os.path.join(directory, filename)
 
-            # Validaciones iniciales
+            # Paso 1: Validación completa del archivo
             if not self.validate_file(src_path):
+                self.logger.debug(f"Archivo no válido, omitiendo: {filename}")
                 return None
 
-            # Determinar destino
+            # Paso 2: Determinar extensión y carpeta destino
             ext = os.path.splitext(filename)[1].lower()
             folder = self.profiles[self.current_profile]["formatos"].get(ext, "Otros")
             dest_dir = os.path.join(directory, folder)
 
-            # Crear directorio si no existe
+            # Paso 3: Crear directorio destino de forma segura
             self.safe_makedirs(dest_dir)
 
-            # Mover archivo
+            # Paso 4: Mover el archivo con verificación de integridad
             dest_path = os.path.join(dest_dir, filename)
             self.safe_move(src_path, dest_path)
 
-            self.logger.debug(f"Movido: {filename} -> {folder}")
+            # Registro de éxito
+            self.logger.info(f"Movido exitosamente: {filename} -> {folder}")
             return (src_path, dest_path)
 
+        except PermissionError as pe:
+            self.logger.error(f"Error de permisos con {filename}: {str(pe)}")
+            return None
+        except IntegrityError as ie:
+            self.logger.error(f"Error de integridad con {filename}: {str(ie)}")
+            return None
+        except OSError as oe:
+            self.logger.error(f"Error del sistema con {filename}: {str(oe)}")
+            return None
         except Exception as e:
-            self.logger.warning(f"Error procesando {filename}: {e}")
+            self.logger.error(
+                f"Error inesperado procesando {filename}: {str(e)}", exc_info=True
+            )
             return None
 
     def finalize_operation(self, moved_files):
