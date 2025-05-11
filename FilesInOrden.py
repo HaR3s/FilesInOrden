@@ -172,6 +172,7 @@ class FileOrganizerGUI(tk.Tk):
             "": "Otros",
         }
         self.load_profiles()
+        self.load_icons_async()
         self.update_theme()
 
     def create_widgets(self):
@@ -706,21 +707,37 @@ class FileOrganizerGUI(tk.Tk):
             self.format_tree.delete(selected[0])
 
     def load_profiles(self):
+        """
+        Carga los perfiles desde el archivo JSON con manejo robusto de errores.
+        Si el archivo no existe o está corrupto, crea un perfil predeterminado.
+        """
+        profile_path = os.path.abspath("profiles.json")  # Usar ruta absoluta
+        self.logger.info(f"Cargando perfiles desde: {profile_path}")
+
         try:
-            with open("profiles.json", "r") as f:
+            with open(profile_path, "r", encoding="utf-8") as f:
                 self.profiles = json.load(f)
-        except FileNotFoundError:
+
+            # Validar estructura básica
+            if not isinstance(self.profiles, dict):
+                raise json.JSONDecodeError("Formato inválido", doc=profile_path, pos=0)
+
+            self.logger.info(f"Perfiles cargados: {len(self.profiles)}")
+
+        except (FileNotFoundError, json.JSONDecodeError, AttributeError) as e:
+            self.logger.warning(
+                f"Error cargando perfiles ({type(e).__name__}), creando predeterminado"
+            )
+
             self.profiles = {
                 "default": {
+                    "name": "default",
                     "directory": "",
-                    "formatos": self.default_formats,
-                    "schedule": "Ninguna",
+                    "formatos": self.default_formats.copy(),  # Copia para evitar mutaciones
+                    "created_at": datetime.now().isoformat(),  # Metadata adicional
                 }
             }
-
-        self.profile_combo["values"] = list(self.profiles.keys())
-        self.profile_combo.set("default")
-        self.load_profile_settings()
+            self.save_to_file()  # Guardar inmediatamente
 
     def load_profile_settings(self):
         profile = self.profiles[self.current_profile]
@@ -949,17 +966,38 @@ class FileOrganizerGUI(tk.Tk):
         self.load_icons_async()
 
     def load_icons_async(self):
-        """Carga los íconos en segundo plano para no bloquear la UI"""
+        """
+        Carga los íconos en segundo plano con manejo de errores y valores por defecto.
+        """
+        self.icon_cache = {
+            "default": self.create_default_icon("gray"),
+            "error": self.create_default_icon("red"),  # Ícono para errores
+        }
 
         def _load_icons():
-            icon_names = ["file", "folder", "image", "document", "audio"]
-            for name in icon_names:
-                try:
-                    self.icon_cache[name] = tk.PhotoImage(file=f"icons/{name}.png")
-                except Exception as e:
-                    self.logger.warning(f"No se pudo cargar ícono {name}: {e}")
+            icon_mapping = {
+                "file": ("document.png", "blue"),
+                "folder": ("folder.png", "green"),
+                "image": ("image.png", "yellow"),
+                # ... otros íconos
+            }
 
-        threading.Thread(target=_load_icons, daemon=True, name="IconLoader").start()
+            for icon_name, (filename, fallback_color) in icon_mapping.items():
+                try:
+                    icon_path = os.path.join("icons", filename)
+                    if os.path.exists(icon_path):
+                        self.icon_cache[icon_name] = tk.PhotoImage(file=icon_path)
+                    else:
+                        self.logger.warning(f"Ícono no encontrado: {icon_path}")
+                        self.icon_cache[icon_name] = self.create_default_icon(
+                            fallback_color
+                        )
+                except Exception as e:
+                    self.logger.error(f"Error cargando ícono {icon_name}: {str(e)}")
+                    self.icon_cache[icon_name] = self.icon_cache["error"]
+
+        # Ejecutar en hilo con nombre para debugging
+        threading.Thread(target=_load_icons, name="IconLoader", daemon=True).start()
 
     def on_treeview_update(self, event):
         """Maneja actualizaciones eficientes del Treeview"""
@@ -1008,15 +1046,52 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.warning(f"No se pudo cargar icono {filename}: {e}")
             return None
 
-    def create_default_icon(self, color: str) -> tk.PhotoImage:
-        """Crea un icono por defecto programáticamente"""
+    def create_default_icon(
+        self, color: str, size: tuple[int, int] = (16, 16)
+    ) -> tk.PhotoImage:
+        """
+        Crea un ícono por defecto compatible con el sistema de tipos de PyCharm/IDEs.
 
+        Args:
+            color (str): Nombre del color (ej: 'gray') o código HEX (ej: '#FF0000')
+            size (tuple[int, int]): Tamaño del ícono en píxeles (ancho, alto). Default: (16, 16)
+
+        Returns:
+            tk.PhotoImage: Objeto de imagen compatible con tkinter
+
+        Raises:
+            ValueError: Si el tamaño no es una tupla de 2 enteros positivos
+        """
+        # Validación de parámetros
+        if (
+            not isinstance(size, tuple)
+            or len(size) != 2
+            or not all(isinstance(dim, int) and dim > 0 for dim in size)
+        ):
+            raise ValueError("El tamaño debe ser una tupla de 2 enteros positivos")
+
+        # Try Pillow (mejor calidad)
         try:
-            img = Image.new("RGB", (16, 16), color)
-            return ImageTk.PhotoImage(img)
-        except ImportError:
-            # Fallback si no hay PIL instalado
-            return tk.PhotoImage(width=16, height=16)
+            from PIL import Image, ImageTk
+
+            img = Image.new("RGB", size, color)
+            pil_icon = ImageTk.PhotoImage(img)
+
+            # Conversión segura al tipo tk.PhotoImage para el type checker
+            tk_icon = tk.PhotoImage(width=size[0], height=size[1])
+            tk_icon.__dict__ = pil_icon.__dict__  # Copia todas las propiedades
+            return tk_icon
+
+        except ImportError:  # Fallback a tkinter puro
+            self.logger.debug("Pillow no disponible, creando ícono básico")
+            try:
+                # Intentar crear ícono con transparencia (si el color es None)
+                if color.lower() == "transparent":
+                    icon = tk.PhotoImage(width=size[0], height=size[1])
+                    icon.transparency_set(0, 0, True)  # Hacer transparente)
+            except tk.TclError:
+                # Último fallback para versiones antiguas de tkinter
+                return tk.PhotoImage(width=size[0], height=size[1])
 
     def get_icon_for_extension(self, extension: str) -> tk.PhotoImage:
         """Versión completamente tipada que nunca devuelve None"""
