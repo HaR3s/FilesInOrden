@@ -138,7 +138,7 @@ class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
         self.task_queue = Queue(maxsize=100)
-        self.setup_logging()  # Primero el logging
+        self.setup_logging()
         self.logger.info("Inicializando aplicación")
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
@@ -147,7 +147,7 @@ class FileOrganizerGUI(tk.Tk):
         self.running = True
         self.theme_mode = "light"
         self.load_profiles()
-        self.create_widgets()
+        self.create_widgets()  # Primero crear todos los widgets
         self.setup_performance_optimizations()
         self.init_threads()
         self.load_icons_async()
@@ -158,8 +158,6 @@ class FileOrganizerGUI(tk.Tk):
         self.current_profile = "default"
         self.undo_stack = deque(maxlen=5)
         self.task_queue = Queue()
-
-        # Inicializar configuración predeterminada
         self.default_formats = {
             ".jpg": "Fotos",
             ".png": "Fotos",
@@ -175,7 +173,7 @@ class FileOrganizerGUI(tk.Tk):
             "": "Otros",
         }
         self.load_profiles()
-        self.update_theme()
+        self.update_theme()  # Ahora se llama después de create_widgets()
 
     def create_widgets(self):
         """Versión mejorada con UI profesional"""
@@ -929,7 +927,16 @@ class FileOrganizerGUI(tk.Tk):
         fg = "#ffffff" if self.theme_mode == "dark" else "#000000"
         self.configure(background=bg)
         self.style.configure(".", background=bg, foreground=fg)
-        self.log_area.configure(bg=bg, fg=fg, insertbackground=fg)
+
+        # Solo configurar log_area si existe
+        if hasattr(self, "log_area"):
+            self.log_area.configure(bg=bg, fg=fg, insertbackground=fg)
+
+        # Actualizar otros widgets si es necesario
+        if hasattr(self, "format_tree"):
+            self.format_tree.update_idletasks()
+        if hasattr(self, "preview_tree"):
+            self.preview_tree.update_idletasks()
 
     def optimize_performance(self):
         """Aplicar optimizaciones de rendimiento correctamente"""
