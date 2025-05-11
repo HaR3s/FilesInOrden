@@ -1359,7 +1359,7 @@ class FileOrganizerGUI(tk.Tk):
                 "default": {
                     "name": "default",
                     "directory": "",
-                    "formatos": self.default_formats.copy(),  # Copia para evitar mutaciones
+                    "formatos": self.default_formats,  # Copia para evitar mutaciones
                     "created_at": datetime.now().isoformat(),  # Metadata adicional
                 }
             }
