@@ -287,7 +287,7 @@ class FileOrganizerGUI(tk.Tk):
         super().__init__()
         # Inicializar atributos PRIMERO
         self.profiles = {}
-        self.current_profile = "default"  # <-- Añade esta línea
+        self.current_profile = "default"
         self.default_formats = {
             ".jpg": "Fotos",
             ".png": "Fotos",
@@ -314,6 +314,13 @@ class FileOrganizerGUI(tk.Tk):
         self.running = True
         self.theme_mode = "light"
         self.undo_stack = deque(maxlen=5)
+        self.title("Organizador de Archivos")
+        try:
+            img = Image.open("ico/favicon.ico")  # Puede ser PNG, JPG, etc.
+            icon = ImageTk.PhotoImage(img)
+            self.tk.call("wm", "iconphoto", self._w, icon)
+        except Exception as e:
+            self.logger.error(f"No se pudo cargar el icono: {e}")
 
         # Cargar perfiles después de que los atributos estén inicializados
         self.load_profiles()
