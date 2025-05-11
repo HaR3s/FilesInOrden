@@ -298,7 +298,6 @@ class FileOrganizerGUI(tk.Tk):
         }
         self.running = True
         self.theme_mode = "light"
-        self.load_profiles()
         self.create_widgets()  # Primero crear todos los widgets
         self.setup_performance_optimizations()
         self.init_threads()
@@ -308,6 +307,7 @@ class FileOrganizerGUI(tk.Tk):
         self.configure(bg="#f0f0f0")
         self.profiles = {}
         self.current_profile = "default"
+        self.load_profiles()
         self.undo_stack = deque(maxlen=5)
         self.task_queue = Queue()
         self.default_formats = {
@@ -874,18 +874,70 @@ class FileOrganizerGUI(tk.Tk):
             self.preview_tree.pack_forget()
 
     def update_font_settings(self, event=None):
-        """Actualiza la configuración de fuentes"""
-        font_family = self.font_family_combo.get()
-        font_size = self.font_size_combo.get()
+        """
+        Actualiza la configuración de fuentes en toda la aplicación.
+        Afecta a todos los widgets para mantener consistencia visual.
 
+        Args:
+            event: Parámetro opcional para manejar eventos de tkinter
+        """
         try:
-            self.style.configure(".", font=(font_family, int(font_size)))
-            # Actualizar widgets específicos
-            self.style.configure("Treeview", font=(font_family, int(font_size)))
-            self.style.configure("TLabel", font=(font_family, int(font_size)))
-            self.log_area.configure(font=(font_family, int(font_size)))
+            # Obtener configuración seleccionada
+            font_family = self.font_family_combo.get()
+            font_size = int(self.font_size_combo.get())
+
+            # Validar valores
+            if not font_family or font_size < 8 or font_size > 16:
+                raise ValueError("Configuración de fuente inválida")
+
+            # 1. Configurar fuente base para todos los widgets ttk
+            self.style.configure(".", font=(font_family, font_size))
+
+            # 2. Configuración específica para widgets importantes
+
+            # Área de log
+            self.log_area.configure(font=(font_family, font_size))
+
+            # Treeviews (ajustar rowheight proporcional al tamaño de fuente)
+            rowheight = max(25, font_size + 10)
+            self.style.configure(
+                "Treeview", font=(font_family, font_size), rowheight=rowheight
+            )
+
+            # Encabezados de Treeview
+            self.style.configure(
+                "Treeview.Heading", font=(font_family, font_size, "bold")
+            )
+
+            # Botones
+            self.style.configure("TButton", font=(font_family, font_size))
+
+            # Comboboxes
+            self.style.configure("TCombobox", font=(font_family, font_size), padding=5)
+
+            # 3. Ajustar diseño para widgets especiales
+            if hasattr(self, "preview_tree"):
+                self.preview_tree.configure(style="Treeview")
+                for col in self.preview_tree["columns"]:
+                    self.preview_tree.heading(
+                        col, font=(font_family, font_size, "bold")
+                    )
+
+            # 4. Registrar cambio
+            self.logger.info(f"Fuente actualizada: {font_family} {font_size}pt")
+            self.log(f"Configuración de fuente actualizada")
+
+        except ValueError as ve:
+            self.logger.warning(f"Configuración de fuente no válida: {ve}")
+            messagebox.showwarning(
+                "Fuente Inválida", "Por favor seleccione un tamaño entre 8 y 16"
+            )
         except Exception as e:
-            self.logger.error(f"Error actualizando fuentes: {e}")
+            self.logger.error(f"Error actualizando fuentes: {e}", exc_info=True)
+            messagebox.showerror(
+                "Error de Fuente",
+                f"No se pudo aplicar la configuración de fuente:\n{str(e)}",
+            )
 
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
@@ -1086,79 +1138,137 @@ class FileOrganizerGUI(tk.Tk):
         dialog.destroy()
 
     def change_theme(self, event=None):
-        """Cambia el tema visual de toda la aplicación"""
+        """
+        Cambia el tema visual de toda la aplicación basado en la selección del usuario.
+        Maneja temas claros, oscuros y profesionales con configuración completa de estilos.
+
+        Args:
+            event: Parámetro opcional para manejar eventos de tkinter (como selección en combobox)
+        """
         try:
-            # Mapeo de nombres de temas a configuraciones
+            # Mapeo de nombres de temas a configuraciones internas
             theme_mapping = {
                 "Claro": {
                     "style": "light",
-                    "bg": "#f0f0f0",
-                    "fg": "#000000",
-                    "accent": "#0078d7",
+                    "colors": {
+                        "primary": "#f0f0f0",
+                        "secondary": "#ffffff",
+                        "text": "#000000",
+                        "accent": "#0078d7",
+                        "highlight": "#e1e1e1",
+                    },
                 },
                 "Oscuro": {
                     "style": "dark",
-                    "bg": "#2d2d2d",
-                    "fg": "#ffffff",
-                    "accent": "#0e639c",
+                    "colors": {
+                        "primary": "#2d2d2d",
+                        "secondary": "#3d3d3d",
+                        "text": "#ffffff",
+                        "accent": "#0e639c",
+                        "highlight": "#4d4d4d",
+                    },
                 },
                 "Profesional": {
                     "style": "professional",
-                    "bg": "#f5f5f5",
-                    "fg": "#212121",
-                    "accent": "#607d8b",
+                    "colors": {
+                        "primary": "#f5f5f5",
+                        "secondary": "#e0e0e0",
+                        "text": "#212121",
+                        "accent": "#607d8b",
+                        "highlight": "#d0d0d0",
+                    },
                 },
                 "Sistema": {
                     "style": "clam",
-                    "bg": "default",
-                    "fg": "default",
-                    "accent": "default",
+                    "colors": {
+                        "primary": "default",
+                        "secondary": "default",
+                        "text": "default",
+                        "accent": "default",
+                        "highlight": "default",
+                    },
                 },
             }
 
             selected_theme = self.theme_combo.get()
-            theme_config = theme_mapping.get(selected_theme, theme_mapping["Sistema"])
+            theme_config = theme_mapping.get(
+                selected_theme, theme_mapping["Profesional"]
+            )
 
-            # 1. Aplicar estilo ttk
+            # 1. Aplicar estilo ttk principal
             self.style.theme_use(theme_config["style"])
 
-            # 2. Configurar colores base
+            # 2. Configurar colores base para todos los widgets
             self.style.configure(
                 ".",
-                background=theme_config["bg"],
-                foreground=theme_config["fg"],
-                fieldbackground=theme_config["bg"],
+                background=theme_config["colors"]["primary"],
+                foreground=theme_config["colors"]["text"],
+                fieldbackground=theme_config["colors"]["primary"],
+                selectbackground=theme_config["colors"]["accent"],
+                selectforeground="white",
             )
 
-            # 3. Configurar widgets específicos
-            self.style.configure("TFrame", background=theme_config["bg"])
+            # 3. Configuración específica para widgets importantes
+            self.style.configure("TFrame", background=theme_config["colors"]["primary"])
+
             self.style.configure(
-                "TLabel", background=theme_config["bg"], foreground=theme_config["fg"]
+                "TLabel",
+                background=theme_config["colors"]["primary"],
+                foreground=theme_config["colors"]["text"],
+                font=("Segoe UI", 10),
             )
+
             self.style.configure(
                 "TButton",
-                background=theme_config["accent"],
+                background=theme_config["colors"]["accent"],
                 foreground="white",
                 font=("Segoe UI", 9),
+                borderwidth=1,
+                relief="raised",
             )
+
             self.style.map(
                 "TButton",
                 background=[
-                    ("active", theme_config["accent"]),
-                    ("disabled", "#cccccc"),
+                    ("active", theme_config["colors"]["accent"]),
+                    ("disabled", theme_config["colors"]["highlight"]),
                 ],
             )
 
-            # 4. Actualizar widgets no-ttk
-            self.update_non_ttk_widgets(theme_config)
+            # 4. Configuración especial para Treeviews
+            self.style.configure(
+                "Treeview",
+                background=theme_config["colors"]["secondary"],
+                foreground=theme_config["colors"]["text"],
+                fieldbackground=theme_config["colors"]["secondary"],
+                rowheight=25,
+            )
 
-            # 5. Guardar preferencia
-            self.theme_mode = theme_config["style"]
+            self.style.map(
+                "Treeview",
+                background=[("selected", theme_config["colors"]["accent"])],
+                foreground=[("selected", "white")],
+            )
+
+            # 5. Actualizar widgets no-ttk (como el área de texto del log)
+            self.log_area.configure(
+                bg=theme_config["colors"]["secondary"],
+                fg=theme_config["colors"]["text"],
+                insertbackground=theme_config["colors"]["text"],
+            )
+
+            # 6. Actualizar ventana principal
+            self.configure(background=theme_config["colors"]["primary"])
+
+            # 7. Registrar cambio
             self.logger.info(f"Tema cambiado a: {selected_theme}")
+            self.log(f"Tema visual actualizado a {selected_theme}")
 
         except Exception as e:
             self.logger.error(f"Error cambiando tema: {e}", exc_info=True)
-            messagebox.showerror("Error", f"No se pudo cambiar el tema: {str(e)}")
+            messagebox.showerror(
+                "Error de Tema", f"No se pudo aplicar el tema seleccionado:\n{str(e)}"
+            )
 
     def update_non_ttk_widgets(self, theme_config):
         """Actualiza widgets que no son ttk y ajusta los Treeviews"""
