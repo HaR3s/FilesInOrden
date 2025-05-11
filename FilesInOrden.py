@@ -1642,6 +1642,8 @@ class FileOrganizerGUI(tk.Tk):
             self.format_tree.update_idletasks()
         if hasattr(self, "preview_tree"):
             self.preview_tree.update_idletasks()
+        if hasattr(self, "preview_tree"):
+            self.update_idletasks()
 
     def optimize_performance(self):
         """Aplicar optimizaciones de rendimiento correctamente"""
@@ -1693,9 +1695,12 @@ class FileOrganizerGUI(tk.Tk):
 
         def _load_icons():
             icon_mapping = {
-                "file": ("document.png", "blue"),
-                "folder": ("folder.png", "green"),
-                "image": ("image.png", "yellow"),
+                "file": ("ico/document.png", "blue"),
+                "folder": ("ico/folder.png", "green"),
+                "image": ("ico/image.png", "yellow"),
+                "PDFs": ("ico/PDFs.png", "red"),
+                "Documents": ("ico/documents.png", "darkblue"),
+                "Audio": ("ico/audio.png", "cyan"),
                 # ... otros íconos
             }
 
@@ -1758,7 +1763,7 @@ class FileOrganizerGUI(tk.Tk):
     def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
         """Carga un icono con manejo de errores"""
         try:
-            return tk.PhotoImage(file=f"icons/{filename}")
+            return tk.PhotoImage(file=f"ico/{filename}")
         except Exception as e:
             self.logger.warning(f"No se pudo cargar icono {filename}: {e}")
             return None
@@ -1831,9 +1836,11 @@ class FileOrganizerGUI(tk.Tk):
                 return icon_type
         return "file"
 
+    # TODO: Completar la funcion
     def setup_animations(self):
         pass
 
+    # TODO: Completar la funcion
     def setup_statusbar(self):
         pass
 
@@ -1905,14 +1912,14 @@ class FileOrganizerGUI(tk.Tk):
             "organize_button": ToolTip(
                 self.organize_files,
                 text="<b>Organizar Archivos</b><br>Clasifica los archivos según las reglas definidas",
-                bg="white",
+                bg="blue",
                 fg="black",
                 font=("Arial", 9),
             ),
             "undo_button": ToolTip(
                 self.undo_last,
                 text="<b>Deshacer</b><br>Revierte la última operación realizada",
-                bg="white",
+                bg="blue",
                 fg="black",
                 font=("Arial", 9),
             ),
@@ -1940,7 +1947,7 @@ class FileOrganizerGUI(tk.Tk):
     def run_scheduled_tasks(self):
         while self.running:
             schedule.run_pending()
-            time.sleep(1)
+            time.sleep(0.5)  # INFO: Defoult 1
 
     def enable_scheduling(self):
         interval = self.schedule_combo.get()
@@ -1956,6 +1963,8 @@ class FileOrganizerGUI(tk.Tk):
         self.preview_tree.delete(*self.preview_tree.get_children())
         directory = self.dir_entry.get()
         if not os.path.exists(directory):
+            self.logger.error(f"Path prevew changes: {directory} ")
+            self.log(f"Path prevew changes: {directory} ")
             return
 
         for filename in os.listdir(directory):
@@ -1967,12 +1976,12 @@ class FileOrganizerGUI(tk.Tk):
                 )
                 dest_path = os.path.join(directory, folder, filename)
                 self.preview_tree.insert("", "end", values=(src_path, dest_path))
-                self.logger.info(f"src_path: {src_path} dest_path: {dest_path}")
 
     def start_organization(self):
         directory = self.dir_entry.get()
         if not directory:
             messagebox.showerror("Error", "Seleccione un directorio primero")
+            self.log("Seleccione un directorio primero")
             return
 
         thread = threading.Thread(
@@ -1982,8 +1991,12 @@ class FileOrganizerGUI(tk.Tk):
 
     def validate_directory(self, directory):
         if not os.path.isdir(directory):
+            self.logger.error(f"Directorio no válido: {directory}")
+            self.log(f"Directorio no válido: {directory}")
             raise ValueError(f"Directorio no válido: {directory}")
         if not os.access(directory, os.R_OK | os.W_OK):
+            self.logger.error(f"Sin permisos en: {directory}")
+            self.log(f"Sin permisos en: {directory}")
             raise PermissionError(f"Sin permisos en: {directory}")
         return True
 
@@ -2005,6 +2018,7 @@ class FileOrganizerGUI(tk.Tk):
             ]  # Ignorar archivos ocultos
         except Exception as e:
             self.logger.error(f"Error leyendo directorio {directory}: {e}")
+            self.log(f"Error leyendo directorio {directory}: {e}")
             raise OSError(f"No se pudo leer el directorio: {directory}") from e
 
     def show_stats(self, moved_files):
@@ -2021,9 +2035,11 @@ class FileOrganizerGUI(tk.Tk):
         message = f"Archivos movidos: {stats['total']}\n"
         message += f"Espacio liberado: {stats['size'] / 1024:.2f} KB\n"
         message += "Distribución por tipo:\n"
+
         for ext, count in stats["extensions"].items():
             message += f"- {ext}: {count}\n"
 
+        self.log(message)
         self.task_queue.put(lambda: messagebox.showinfo("Estadísticas", message))
 
     def process_results(self, futures: List[Future]) -> None:
@@ -2052,6 +2068,7 @@ class FileOrganizerGUI(tk.Tk):
                     )
 
             except Exception as e:
+                self.log(f"Error procesando archivo: {e}")
                 self.logger.warning(f"Error procesando archivo: {e}")
 
         # Mostrar estadísticas finales
@@ -2069,7 +2086,6 @@ class FileOrganizerGUI(tk.Tk):
         - No está en uso por otro proceso
         - Tiene permisos adecuados
         - No es un archivo del sistema/protegido
-        - Cumple con requisitos básicos de seguridad
 
         Args:
             src_path: Ruta completa al archivo a validar
@@ -2084,11 +2100,13 @@ class FileOrganizerGUI(tk.Tk):
         try:
             # 1. Verificar que la ruta existe y es un archivo (no directorio)
             if not os.path.isfile(src_path):
+                self.log(f"La ruta no es un archivo: {src_path}")
                 self.logger.warning(f"La ruta no es un archivo: {src_path}")
                 return False
 
             # 2. Verificar permisos de lectura
             if not os.access(src_path, os.R_OK):
+                self.log(f"Sin permisos de lectura: {src_path}")
                 self.logger.error(f"Sin permisos de lectura: {src_path}")
                 raise PermissionError(f"No se puede leer el archivo: {src_path}")
 
@@ -2099,39 +2117,43 @@ class FileOrganizerGUI(tk.Tk):
                     pass
             else:  # Linux/macOS
                 # Usar lsof para verificar si el archivo está abierto
-                import subprocess
-
                 result = subprocess.run(
                     ["lsof", src_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
                 if result.returncode == 0:
+                    self.log(f"Archivo en uso (Linux): {src_path}")
                     self.logger.warning(f"Archivo en uso (Linux): {src_path}")
                     return False
 
             # 4. Verificar que no sea un archivo del sistema/protegido
             filename = os.path.basename(src_path)
             if filename.startswith(("~$", "Thumbs.db", ".DS_Store", "desktop.ini")):
+                self.log(f"Ignorando archivo del sistema: {filename}")
                 self.logger.debug(f"Ignorando archivo del sistema: {filename}")
                 return False
 
             # 5. Verificar tamaño mínimo/máximo (opcional)
             file_size = os.path.getsize(src_path)
             if file_size == 0:
+                self.log(f"Archivo vacío: {src_path}")
                 self.logger.warning(f"Archivo vacío: {src_path}")
                 return False
             if file_size > 100 * 1024 * 1024:  # 100MB
+                self.log(f"Archivo demasiado grande (>100MB): {src_path}")
                 self.logger.warning(f"Archivo demasiado grande (>100MB): {src_path}")
                 return False
 
             # 6. Verificar extensión válida (opcional)
             ext = os.path.splitext(filename)[1].lower()
             if ext not in self.profiles[self.current_profile]["formatos"]:
+                self.log(f"Extensión no configurada: {ext} en {filename}")
                 self.logger.debug(f"Extensión no configurada: {ext} en {filename}")
                 # No retornamos False aquí porque queremos permitir la categoría "Otros"
 
             # 7. Verificar integridad básica (para ciertos tipos de archivos)
             if ext in (".jpg", ".png", ".pdf", ".docx"):
                 if not self._validate_file_signature(src_path, ext):
+                    self.log(f"Firma de archivo inválida: {src_path}")
                     self.logger.error(f"Firma de archivo inválida: {src_path}")
                     raise IntegrityError(f"Archivo corrupto o inválido: {src_path}")
 
@@ -2140,6 +2162,7 @@ class FileOrganizerGUI(tk.Tk):
         except (IOError, PermissionError, FileNotFoundError):
             return False
         except Exception as e:
+            self.log(f"Error verificando uso del archivo: {e}")
             self.logger.error(f"Error verificando uso del archivo: {e}")
             return False
 
