@@ -4,6 +4,7 @@ import time
 import json
 import logging
 import threading
+import subprocess
 import hashlib
 from datetime import datetime
 from collections import deque
@@ -1966,6 +1967,7 @@ class FileOrganizerGUI(tk.Tk):
                 )
                 dest_path = os.path.join(directory, folder, filename)
                 self.preview_tree.insert("", "end", values=(src_path, dest_path))
+                self.logger.info(f"src_path: {src_path} dest_path: {dest_path}")
 
     def start_organization(self):
         directory = self.dir_entry.get()
