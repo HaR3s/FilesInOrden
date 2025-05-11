@@ -1,25 +1,18 @@
-[32m2025-05-10 22:59:14[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
-[32m2025-05-10 22:59:14[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: '_tkinter.tkapp' object has no attribute 'profiles'[0m
-[32m2025-05-10 22:59:14[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Optimizaciones de rendimiento configuradas correctamente
-[32m2025-05-10 22:59:15[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
-[32m2025-05-10 22:59:15[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
-[32m2025-05-10 22:59:15[0m - [34mFileOrganizer[0m - [1;30mCRITICAL[0m - [1;31mUncaught exception[0m
+[32m2025-05-10 23:12:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
+[32m2025-05-10 23:12:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-10 23:12:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-10 23:12:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Optimizaciones de rendimiento configuradas correctamente
+[32m2025-05-10 23:12:16[0m - [34mFileOrganizer[0m - [1;30mCRITICAL[0m - [1;31mUncaught exception[0m
 Traceback (most recent call last):
-  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 1875, in <module>
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 1876, in <module>
     app = FileOrganizerGUI()
           ^^^^^^^^^^^^^^^^^^
-  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 177, in __init__
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 152, in __init__
     self.update_theme()
-  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 931, in update_theme
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 932, in update_theme
     self.log_area.configure(bg=bg, fg=fg, insertbackground=fg)
     ^^^^^^^^^^^^^
   File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 2433, in __getattr__
     return getattr(self.tk, attr)
            ^^^^^^^^^^^^^^^^^^^^^^
 AttributeError: '_tkinter.tkapp' object has no attribute 'log_area'
-[32m2025-05-10 22:59:15[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/document.png[0m
-[32m2025-05-10 22:59:16[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError cargando ícono file: main thread is not in main loop[0m
-[32m2025-05-10 22:59:16[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/folder.png[0m
-[32m2025-05-10 22:59:17[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError cargando ícono folder: main thread is not in main loop[0m
-[32m2025-05-10 22:59:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/image.png[0m
-[32m2025-05-10 22:59:18[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError cargando ícono image: main thread is not in main loop[0m
