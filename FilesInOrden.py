@@ -873,6 +873,20 @@ class FileOrganizerGUI(tk.Tk):
         else:
             self.preview_tree.pack_forget()
 
+    def update_font_settings(self, event=None):
+        """Actualiza la configuración de fuentes"""
+        font_family = self.font_family_combo.get()
+        font_size = self.font_size_combo.get()
+
+        try:
+            self.style.configure(".", font=(font_family, int(font_size)))
+            # Actualizar widgets específicos
+            self.style.configure("Treeview", font=(font_family, int(font_size)))
+            self.style.configure("TLabel", font=(font_family, int(font_size)))
+            self.log_area.configure(font=(font_family, int(font_size)))
+        except Exception as e:
+            self.logger.error(f"Error actualizando fuentes: {e}")
+
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
         self.change_theme()
