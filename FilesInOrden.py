@@ -336,12 +336,15 @@ class FileOrganizerGUI(tk.Tk):
     def create_new_profile(self):
         """Placeholder para futura implementación"""
         messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")
+        self.log("Función de nuevo perfil no implementada aún")
         self.logger.info("Función de nuevo perfil no implementada aún")
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
         if not profile_name:
             messagebox.showerror("Error", "Ingrese un nombre para el perfil")
+            self.log("Error", "Ingrese un nombre para el perfil")
+            self.logger.info("Error", "Ingrese un nombre para el perfil")
             return
 
         self.profiles[profile_name] = {
@@ -353,6 +356,8 @@ class FileOrganizerGUI(tk.Tk):
         self.save_to_file()
         self.load_profiles()
         messagebox.showinfo("Éxito", f"Perfil '{profile_name}' guardado")
+        self.log(f"Perfil {profile_name} guardado")
+        self.logger.info("Éxito", f"Perfil '{profile_name}' guardado")
 
     def delete_profile(self):
         profile_name = self.profile_combo.get()
@@ -360,12 +365,17 @@ class FileOrganizerGUI(tk.Tk):
             messagebox.showerror(
                 "Error", "No se puede eliminar el perfil predeterminado"
             )
+            self.log("Error", "No se puede eliminar el perfil predeterminado")
+            self.logger.info("Error", "No se puede eliminar el perfil predeterminado")
+
             return
 
         del self.profiles[profile_name]
         self.save_to_file()
         self.load_profiles()
         messagebox.showinfo("Éxito", f"Perfil '{profile_name}' eliminado")
+        self.log(f"Perfil '{profile_name}' eliminado")
+        self.logger.info("Éxito", f"Perfil '{profile_name}' eliminado")
 
     def build_profile_settings(self, parent):
         """
@@ -410,7 +420,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Información del perfil
         info_frame = ttk.LabelFrame(frame, text="Información del Perfil", padding=10)
-        info_frame.pack(fill=tk.BOTH, expand=True, pady=10)  # valor original 5
+        info_frame.pack(fill=tk.BOTH, expand=True, pady=5)
 
         # Configurar estilo para botones pequeños
         self.style.configure(
@@ -424,7 +434,7 @@ class FileOrganizerGUI(tk.Tk):
             self.current_profile = selected
             self.load_profile_settings()
             self.log(f"Perfil cambiado a: {selected}")
-            self.logger.info(f"Perfil cambiado a: {selected}")  # NOTE: New
+            self.logger.info(f"Perfil cambiado a: {selected}")
 
     def create_widgets(self):
         """
@@ -443,25 +453,21 @@ class FileOrganizerGUI(tk.Tk):
         self.setup_theme_system()
 
         # Frame principal con scroll
-        main_frame = ttk.Frame(self, padding=10)  # NOTE: Defoult "10"
+        main_frame = ttk.Frame(self, padding=10)
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Sistema de pestañas
         self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(
-            fill=tk.BOTH, expand=True, pady=(5, 5)
-        )  # NOTE: Defoult (0, 10)
+        self.notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
         # ----------------------------
         # Pestaña de Operaciones
         # ----------------------------
-        ops_tab = ttk.Frame(self.notebook, padding=15)  # NOTE: Defoult 10
+        ops_tab = ttk.Frame(self.notebook, padding=10)
         self.notebook.add(ops_tab, text="Operaciones")
 
         # Panel de directorio
-        dir_frame = ttk.LabelFrame(
-            ops_tab, text="Selección de Directorio", padding=5
-        )  # NOTE: Defoult 10
+        dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
         dir_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
@@ -484,8 +490,8 @@ class FileOrganizerGUI(tk.Tk):
         buttons = [
             ("Previsualizar", self.preview_changes, 0, 0),
             ("Organizar Ahora", self.start_organization, 0, 1),
-            ("Deshacer", self.undo_last, 0, 1),
-            ("Estadísticas", self.show_stats, 0, 1),
+            ("Deshacer", self.undo_last, 0, 2),
+            ("Estadísticas", self.show_stats, 0, 3),
         ]
 
         for text, command, row, col in buttons:
