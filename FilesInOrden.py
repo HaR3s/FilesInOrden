@@ -11,7 +11,6 @@ from queue import Queue, Empty
 from typing import Dict, Optional, List, Tuple  # Tipado adicional
 from logging.handlers import RotatingFileHandler
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable
 from concurrent.futures import Future
 
 # Tkinter y GUI
