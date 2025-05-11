@@ -305,8 +305,8 @@ class FileOrganizerGUI(tk.Tk):
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
-        self.profiles = {}
         self.current_profile = "default"
+        self.profiles = {}
         self.load_profiles()
         self.undo_stack = deque(maxlen=5)
         self.task_queue = Queue()
