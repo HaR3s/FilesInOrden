@@ -137,6 +137,7 @@ class ToolTip:
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.task_queue = Queue(maxsize=100)
         self.setup_logging()  # Primero el logging
         self.logger.info("Inicializando aplicación")
         self.performance_cache = {
@@ -1516,54 +1517,149 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.error(f"Error inesperado {e}")
 
     def process_single_file(
-        self, directory: str, filename: str
+        self,
+        directory: str,
+        filename: str,
+        conflict_resolution: str = "rename",  # Options: "rename", "skip", "overwrite"
     ) -> Optional[Tuple[str, str]]:
-        """Procesa un archivo individual de forma segura, incluyendo validaciones mejoradas.
+        """
+        Processes a single file with comprehensive validation and error handling.
 
         Args:
-            directory: Directorio base donde se encuentra el archivo
-            filename: Nombre del archivo a procesar
+            directory: Base directory where the file is located
+            filename: Name of the file to process
+            conflict_resolution: Strategy for handling filename conflicts:
+                - "rename": Add suffix to duplicate files
+                - "skip": Keep both files (skip moving)
+                - "overwrite": Replace existing file (dangerous)
 
         Returns:
-            Tuple[src_path, dest_path] si el archivo se movió exitosamente, None en caso de error
-        """
-        try:
-            src_path = os.path.join(directory, filename)
+            Tuple of (source_path, destination_path) if file was moved successfully,
+            None if file was skipped or error occurred.
 
-            # Paso 1: Validación completa del archivo
-            if not self.validate_file(src_path):
-                self.logger.debug(f"Archivo no válido, omitiendo: {filename}")
+        Raises:
+            OSError: For filesystem-related errors
+            IntegrityError: For file validation failures
+        """
+        src_path = os.path.join(directory, filename)
+        log_prefix = f"[Procesando {filename}]"
+
+        try:
+            # 1. Initial validations
+            if not os.path.exists(src_path):
+                self.logger.warning(f"{log_prefix} Archivo no encontrado, omitiendo")
                 return None
 
-            # Paso 2: Determinar extensión y carpeta destino
+            if os.path.isdir(src_path):
+                self.logger.debug(f"{log_prefix} Es un directorio, omitiendo")
+                return None
+
+            # 2. Detailed file validation
+            if not self.validate_file(src_path):
+                self.logger.warning(f"{log_prefix} Falló validación, omitiendo")
+                return None
+
+            # 3. Calculate file hash for integrity verification
+            original_hash = self.file_hash(src_path)
+            self.logger.debug(f"{log_prefix} Hash calculado: {original_hash[:8]}...")
+
+            # 4. Determine destination
             ext = os.path.splitext(filename)[1].lower()
             folder = self.profiles[self.current_profile]["formatos"].get(ext, "Otros")
             dest_dir = os.path.join(directory, folder)
 
-            # Paso 3: Crear directorio destino de forma segura
-            self.safe_makedirs(dest_dir)
+            # 5. Create destination directory if needed
+            if not os.path.exists(dest_dir):
+                try:
+                    os.makedirs(dest_dir, exist_ok=True)
+                    self.logger.info(f"{log_prefix} Directorio creado: {dest_dir}")
+                except OSError as e:
+                    self.logger.error(f"{log_prefix} Error creando directorio: {e}")
+                    raise
 
-            # Paso 4: Mover el archivo con verificación de integridad
+            # 6. Handle filename conflicts
+            base_name, ext = os.path.splitext(filename)
             dest_path = os.path.join(dest_dir, filename)
-            self.safe_move(src_path, dest_path)
 
-            # Registro de éxito
-            self.logger.info(f"Movido exitosamente: {filename} -> {folder}")
-            return (src_path, dest_path)
+            if os.path.exists(dest_path):
+                if conflict_resolution == "skip":
+                    self.logger.info(
+                        f"{log_prefix} Archivo existe, omitiendo (conflict_resolution=skip)"
+                    )
+                    return None
+                elif conflict_resolution == "overwrite":
+                    if not os.access(dest_path, os.W_OK):
+                        self.logger.warning(
+                            f"{log_prefix} Sin permisos para sobrescribir, omitiendo"
+                        )
+                        return None
+                    self.logger.warning(
+                        f"{log_prefix} Sobrescribiendo archivo existente"
+                    )
+                else:  # rename (default)
+                    counter = 1
+                    while os.path.exists(dest_path):
+                        new_name = f"{base_name}_{counter}{ext}"
+                        dest_path = os.path.join(dest_dir, new_name)
+                        counter += 1
+                    self.logger.info(
+                        f"{log_prefix} Renombrado a {os.path.basename(dest_path)} para evitar colisión"
+                    )
+
+            # 7. Move file with integrity check
+            try:
+                # First copy then verify (safer than direct move)
+                temp_path = dest_path + ".tmp"
+                shutil.copy2(src_path, temp_path)
+
+                # Verify copied file
+                if self.file_hash(temp_path) != original_hash:
+                    os.remove(temp_path)
+                    raise IntegrityError(
+                        f"{log_prefix} Error de integridad después de copiar"
+                    )
+
+                # Rename temp to final name
+                os.rename(temp_path, dest_path)
+
+                # Remove original only after successful copy+verify
+                os.remove(src_path)
+
+                self.logger.info(f"{log_prefix} Movido exitosamente a {dest_path}")
+                return (src_path, dest_path)
+
+            except Exception as move_error:
+                # Cleanup in case of partial failure
+                if os.path.exists(temp_path):
+                    try:
+                        os.remove(temp_path)
+                    except Exception as cleanup_error:
+                        self.logger.error(
+                            f"{log_prefix} Error limpiando archivo temporal: {cleanup_error}"
+                        )
+
+                self.logger.error(f"{log_prefix} Error moviendo archivo: {move_error}")
+                raise
 
         except PermissionError as pe:
-            self.logger.error(f"Error de permisos con {filename}: {str(pe)}")
-            return None
-        except IntegrityError as ie:
-            self.logger.error(f"Error de integridad con {filename}: {str(ie)}")
-            return None
-        except OSError as oe:
-            self.logger.error(f"Error del sistema con {filename}: {str(oe)}")
-            return None
-        except Exception as e:
-            self.logger.error(
-                f"Error inesperado procesando {filename}: {str(e)}", exc_info=True
+            self.logger.error(f"{log_prefix} Error de permisos: {pe}")
+            self.update_ui_from_thread(
+                lambda: messagebox.showwarning(
+                    "Permiso Denegado", "No se pudo procesar )"
+                )
             )
+            return None
+
+        except IntegrityError as ie:
+            self.logger.error(f"{log_prefix} Error de integridad: {ie}")
+            return None
+
+        except OSError as ose:
+            self.logger.error(f"{log_prefix} Error del sistema: {ose}")
+            return None
+
+        except Exception as e:
+            self.logger.error(f"{log_prefix} Error inesperado: {e}", exc_info=True)
             return None
 
     def finalize_operation(self, moved_files):
