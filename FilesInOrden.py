@@ -318,7 +318,8 @@ class FileOrganizerGUI(tk.Tk):
         try:
             img = Image.open("ico/favicon.ico")  # Puede ser PNG, JPG, etc.
             icon = ImageTk.PhotoImage(img)
-            self.tk.call("wm", "iconphoto", self._w, icon)
+            self.iconphoto(False, icon)
+            # self.tk.call("wm", "iconphoto", self._w, icon)
         except Exception as e:
             self.logger.error(f"No se pudo cargar el icono: {e}")
 

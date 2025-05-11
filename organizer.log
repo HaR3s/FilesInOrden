@@ -490,3 +490,187 @@ _tkinter.TclError: unknown option "-font"
 [32m2025-05-11 04:47:49[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
 [32m2025-05-11 04:47:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando cierre de aplicación
 [32m2025-05-11 04:47:51[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Aplicación cerrada correctamente
+[32m2025-05-11 05:44:57[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Optimizaciones de rendimiento configuradas correctamente
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/document.png[0m
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/folder.png[0m
+[32m2025-05-11 05:44:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/image.png[0m
+[32m2025-05-11 05:45:03[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:08[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:13[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:18[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:28[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:33[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:38[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:43[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:48[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:53[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:45:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:03[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:08[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:13[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:18[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:28[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:33[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:38[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:43[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:48[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:53[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando organización en: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/DVWA_v1.3.pdf
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mFirma de archivo inválida: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError verificando uso del archivo: Archivo corrupto o inválido: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando file4.docx] Falló validación, omitiendo[0m
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando n01.png] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/n01.png
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando notification.mp3] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/notification.mp3
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mArchivo vacío: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/cookies.txt[0m
+[32m2025-05-11 05:46:56[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando cookies.txt] Falló validación, omitiendo[0m
+[32m2025-05-11 05:46:57[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4
+[32m2025-05-11 05:46:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:03[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:08[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:13[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:18[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:28[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:33[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:38[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:43[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:48[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:53[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:47:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:03[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:08[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:13[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:18[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:28[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:33[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:38[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:40[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
+[32m2025-05-11 05:48:43[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:48[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:48[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Configuración de fuente actualizada: Times New Roman 10pt
+[32m2025-05-11 05:48:53[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:48:57[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Configuración de fuente actualizada: Times New Roman 12pt
+[32m2025-05-11 05:48:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:03[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:04[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Profesional
+[32m2025-05-11 05:49:05[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Configuración de fuente actualizada: Times New Roman 12pt
+[32m2025-05-11 05:49:07[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iconos activados
+[32m2025-05-11 05:49:07[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
+[32m2025-05-11 05:49:08[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:13[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Oscuro
+[32m2025-05-11 05:49:13[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:17[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Profesional
+[32m2025-05-11 05:49:18[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:21[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError cambiando tema: unknown color name "default"[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 1291, in change_theme
+    self.log_area.configure(
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 1722, in configure
+    return self._configure('configure', cnf, kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 1712, in _configure
+    self.tk.call(_flatten((self._w, cmd)) + self._options(cnf))
+_tkinter.TclError: unknown color name "default"
+[32m2025-05-11 05:49:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:26[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Claro
+[32m2025-05-11 05:49:28[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:33[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:38[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:43[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:48[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:53[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:49:58[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:03[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:08[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:13[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:18[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:19[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando organización en: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/DVWA_v1.3.pdf
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mFirma de archivo inválida: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError verificando uso del archivo: Archivo corrupto o inválido: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando file4.docx] Falló validación, omitiendo[0m
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mArchivo vacío: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/cookies.txt[0m
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando n01.png] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/n01.png
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando cookies.txt] Falló validación, omitiendo[0m
+[32m2025-05-11 05:50:20[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando notification.mp3] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/notification.mp3
+[32m2025-05-11 05:50:21[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4
+[32m2025-05-11 05:50:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:28[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:33[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:38[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:43[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:48[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando cierre de aplicación
+[32m2025-05-11 05:50:48[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Aplicación cerrada correctamente
+[32m2025-05-11 05:50:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
+[32m2025-05-11 05:50:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-11 05:50:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-11 05:50:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:50:57[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Optimizaciones de rendimiento configuradas correctamente
+[32m2025-05-11 05:50:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/document.png[0m
+[32m2025-05-11 05:50:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/folder.png[0m
+[32m2025-05-11 05:50:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/image.png[0m
+[32m2025-05-11 05:51:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:51:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:22[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando organización en: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando n01.png] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/n01.png
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mFirma de archivo inválida: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError verificando uso del archivo: Archivo corrupto o inválido: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando file4.docx] Falló validación, omitiendo[0m
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/DVWA_v1.3.pdf
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando notification.mp3] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/notification.mp3
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mArchivo vacío: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/cookies.txt[0m
+[32m2025-05-11 05:52:23[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando cookies.txt] Falló validación, omitiendo[0m
+[32m2025-05-11 05:52:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Configuración de fuente actualizada: Helvetica 10pt
+[32m2025-05-11 05:52:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Profesional
+[32m2025-05-11 05:52:56[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Configuración de fuente actualizada: Helvetica 10pt
+[32m2025-05-11 05:52:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:52:58[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iconos activados
+[32m2025-05-11 05:52:58[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista normal activada
+[32m2025-05-11 05:53:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:53:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:53:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando organización en: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mFirma de archivo inválida: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mERROR[0m - [31mError verificando uso del archivo: Archivo corrupto o inválido: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/file4.docx[0m
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando file4.docx] Falló validación, omitiendo[0m
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando n01.png] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/n01.png
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando DVWA_v1.3.pdf] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/DVWA_v1.3.pdf
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/Que+mas+se+puede+sacar+de+un+coco%3F+%F0%9F%A5%A5%F0%9F%A4%94.mp4
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - [Procesando notification.mp3] Movido exitosamente a /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/Otros/notification.mp3
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mArchivo vacío: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/test/cookies.txt[0m
+[32m2025-05-11 05:53:16[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33m[Procesando cookies.txt] Falló validación, omitiendo[0m
+[32m2025-05-11 05:53:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:53:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:53:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 05:53:28[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando cierre de aplicación
+[32m2025-05-11 05:53:29[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Aplicación cerrada correctamente
