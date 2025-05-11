@@ -149,7 +149,6 @@ class FileOrganizerGUI(tk.Tk):
         self.load_profiles()
         self.create_widgets()
         self.setup_performance_optimizations()
-        self.update_theme()
         self.init_threads()
         self.load_icons_async()
         self.title("Organizador Avanzado de Archivos")
@@ -176,6 +175,7 @@ class FileOrganizerGUI(tk.Tk):
             "": "Otros",
         }
         self.load_profiles()
+        self.update_theme()
 
     def create_widgets(self):
         """Versión mejorada con UI profesional"""
