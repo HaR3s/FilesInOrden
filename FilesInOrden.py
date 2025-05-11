@@ -144,9 +144,14 @@ class FileOrganizerGUI(tk.Tk):
             "directory_scan": TTLCache(maxsize=100, ttl=30),
             "file_operations": TTLCache(maxsize=500, ttl=60),
         }
-        self.setup_performance_optimizations()
-        self.init_threads()
+        self.running = True
+        self.theme_mode = "light"
+        self.load_profiles()
         self.create_widgets()
+        self.setup_performance_optimizations()
+        self.update_theme()
+        self.init_threads()
+        self.load_icons_async()
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
@@ -154,8 +159,6 @@ class FileOrganizerGUI(tk.Tk):
         self.current_profile = "default"
         self.undo_stack = deque(maxlen=5)
         self.task_queue = Queue()
-        self.running = True
-        self.theme_mode = "light"
 
         # Inicializar configuración predeterminada
         self.default_formats = {
@@ -173,8 +176,6 @@ class FileOrganizerGUI(tk.Tk):
             "": "Otros",
         }
         self.load_profiles()
-        self.load_icons_async()
-        self.update_theme()
 
     def create_widgets(self):
         """Versión mejorada con UI profesional"""
@@ -300,8 +301,7 @@ class FileOrganizerGUI(tk.Tk):
         profile_buttons = [
             ("Guardar", self.save_profile),
             ("Eliminar", self.delete_profile),
-            ("Nuevo",),
-            # ("Nuevo", self.create_new_profile),
+            ("Nuevo", self.create_new_profile),
         ]
 
         for text, command in profile_buttons:
@@ -651,6 +651,10 @@ class FileOrganizerGUI(tk.Tk):
     def save_to_file(self):
         with open("profiles.json", "w") as f:
             json.dump(self.profiles, f)
+
+    def create_new_profile(self):
+        """Placeholder para futura implementación"""
+        messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
