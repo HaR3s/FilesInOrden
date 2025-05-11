@@ -27,7 +27,7 @@ jobs:
         
     - name: Build executable
       run: |
-        pyinstaller --onefile --ico="ico/favicon.ico --windowed --name FileOrganizer FilesInOrden.py
+        pyinstaller --onefile --ico="ico/favicon.ico" --windowed --name FileOrganizer FilesInOrden.py
         
     - name: Upload artifact
       uses: actions/upload-artifact@v2
