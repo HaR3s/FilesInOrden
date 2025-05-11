@@ -47,11 +47,21 @@ class IntegrityError(Exception):
 
 
 class ThreadManager:
-    """Gestor profesional de hilos con supervisión"""
-
     def __init__(self):
         self.threads = {}
         self.lock = threading.Lock()
+        self.stop_event = threading.Event()  # Nuevo
+
+    def _thread_wrapper(self, name, target):
+        """Hilo que verifica stop_event periódicamente"""
+        while not self.stop_event.is_set():  # <-- Bucle controlado
+            try:
+                self.threads[name]["active"] = True
+                target()  # Debe ser una función en bucle
+            except Exception as e:
+                logging.error(f"Thread {name} error: {str(e)}", exc_info=True)
+            finally:
+                self.threads[name]["active"] = False
 
     def add_thread(self, name, target, daemon=False):
         with self.lock:
@@ -66,26 +76,15 @@ class ThreadManager:
                 "target": target,
             }
 
-    def _thread_wrapper(self, name, target):
-        """Envuelve cada hilo para manejo de errores"""
-        try:
-            self.threads[name]["active"] = True
-            target()
-        except Exception as e:
-            logging.error(f"Thread {name} crashed: {str(e)}", exc_info=True)
-        finally:
-            self.threads[name]["active"] = False
-
     def start_all(self):
         for thread_info in self.threads.values():
             thread_info["thread"].start()
 
     def stop_all(self, timeout=5):
+        self.stop_event.set()  # Señal de parada para todos los hilos
         for name, thread_info in self.threads.items():
             if thread_info["thread"].is_alive():
                 thread_info["thread"].join(timeout)
-                if thread_info["thread"].is_alive():
-                    logging.warning(f"Thread {name} didn't stop gracefully")
 
 
 class ToolTip:
@@ -1565,18 +1564,29 @@ class FileOrganizerGUI(tk.Tk):
         return formatos
 
     def on_closing(self):
-        """Cierre profesional con limpieza"""
+        """Cierre profesional con limpieza mejorada"""
         self.logger.info("Iniciando cierre de aplicación")
-        try:
-            if hasattr(self, "thread_manager"):
-                self.thread_manager.stop_all()
+        self.running = False  # Señal global de parada
 
-            # Guardar estado
-            self.save_to_file()
+        try:
+            # 1. Detener hilos (máximo 3 segundos de espera)
+            if hasattr(self, "thread_manager"):
+                self.thread_manager.stop_all(timeout=3)
+
+            # 2. Guardar estado en segundo plano (con timeout)
+            save_thread = threading.Thread(target=self.save_to_file, daemon=True)
+            save_thread.start()
+            save_thread.join(timeout=2)  # Espera 2 segundos
+
             self.logger.info("Aplicación cerrada correctamente")
         except Exception as e:
-            self.logger.error(f"Error durante el cierre: {e}")
+            self.logger.error(f"Error durante el cierre: {e}", exc_info=True)
+            messagebox.showerror(
+                "Error al cerrar",
+                "No se pudieron guardar todos los datos. Verifique el log.",
+            )
         finally:
+            # 3. Forzar cierre incluso si hay errores
             self.destroy()
 
     def setup_performance_optimizations(self):
