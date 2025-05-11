@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [mejoras]
+    branches: [master]
   pull_request:
     branches: [master]
 
