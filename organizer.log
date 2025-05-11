@@ -212,3 +212,28 @@ _tkinter.TclError: unknown color name "default"
 [32m2025-05-11 04:02:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
 [32m2025-05-11 04:02:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
 [32m2025-05-11 04:02:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:02:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:02:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:02:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:02:40[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iniciando cierre de aplicación
+[32m2025-05-11 04:02:41[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Aplicación cerrada correctamente
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mCRITICAL[0m - [1;31mUncaught exception[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 2425, in <module>
+    app = FileOrganizerGUI()
+          ^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 302, in __init__
+    self.create_widgets()  # Primero crear todos los widgets
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 513, in create_widgets
+    self.build_format_settings(format_tab)
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 1062, in build_format_settings
+    self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
+                                          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 2433, in __getattr__
+    return getattr(self.tk, attr)
+           ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: '_tkinter.tkapp' object has no attribute 'current_profile'

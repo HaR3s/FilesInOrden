@@ -1,93 +1,20 @@
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Optimizaciones de rendimiento configuradas correctamente
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/document.png[0m
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/folder.png[0m
-[32m2025-05-11 03:55:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mÍcono no encontrado: icons/image.png[0m
-[32m2025-05-11 03:55:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:55:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:28[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
-[32m2025-05-11 03:56:31[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Tema cambiado a: Profesional
-[32m2025-05-11 03:56:31[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Iconos activados
-[32m2025-05-11 03:56:31[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Vista compacta activada
-[32m2025-05-11 03:56:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:56:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:57:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:58:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 03:59:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:00:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:27[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:32[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:37[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:42[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:47[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:52[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:01:57[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:02:02[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:02:07[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:02:12[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:02:17[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
-[32m2025-05-11 04:02:22[0m - [34mFileOrganizer[0m - [1;30mWARNING[0m - [33mError en cache_builder: 'name'[0m
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Inicializando aplicación
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Cargando perfiles desde: /data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/profiles.json
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mINFO[0m - Perfiles cargados: 1
+[32m2025-05-11 04:02:50[0m - [34mFileOrganizer[0m - [1;30mCRITICAL[0m - [1;31mUncaught exception[0m
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 2425, in <module>
+    app = FileOrganizerGUI()
+          ^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 302, in __init__
+    self.create_widgets()  # Primero crear todos los widgets
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 513, in create_widgets
+    self.build_format_settings(format_tab)
+  File "/data/data/com.termux/files/home/WorkSpace/Python/automatPy/files_organizer/FilesInOrden/FilesInOrden.py", line 1062, in build_format_settings
+    self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
+                                          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.12/tkinter/__init__.py", line 2433, in __getattr__
+    return getattr(self.tk, attr)
+           ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: '_tkinter.tkapp' object has no attribute 'current_profile'
