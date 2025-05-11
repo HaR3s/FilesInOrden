@@ -88,32 +88,104 @@ class ThreadManager:
 
 
 class ToolTip:
-    """Implementación profesional de tooltips"""
+    """
+    Implementación profesional de tooltips para widgets Tkinter.
 
-    def __init__(self, widget, text, bg, fg, font):
+    Características:
+    - Valores por defecto sensibles
+    - Retardo configurable para aparición/desaparición
+    - Soporte para formato de texto
+    - Manejo seguro de eventos
+    - Compatibilidad con temas
+
+    Uso básico:
+        ToolTip(widget, "Texto del tooltip")
+
+    Uso avanzado:
+        ToolTip(widget, text="Texto", bg="#ffffe0", fg="#000000",
+               font=('Arial', 9), delay=500, wraplength=200)
+    """
+
+    def __init__(
+        self, widget, text=None, bg=None, fg=None, font=None, delay=500, wraplength=200
+    ):
+        """
+        Inicializa el tooltip.
+
+        Args:
+            widget: Widget al que se asociará el tooltip
+            text: Texto a mostrar (puede contener \n para saltos de línea)
+            bg: Color de fondo (default: sistema)
+            fg: Color de texto (default: sistema)
+            font: Fuente a usar (default: sistema)
+            delay: Milisegundos antes de mostrar (default: 500ms)
+            wraplength: Ancho máximo en píxeles antes de envolver texto
+        """
         self.widget = widget
         self.text = text
         self.bg = bg
         self.fg = fg
         self.font = font
+        self.delay = delay
+        self.wraplength = wraplength
         self.tip_window = None
         self.id = None
         self.x = self.y = 0
-        self.widget.bind("<Enter>", self.show)
-        self.widget.bind("<Leave>", self.hide)
+        self._schedule_id = None
+        self._hide_id = None
+
+        # Establecer colores por defecto según el tema del sistema
+        if bg is None:
+            self.bg = "#ffffe0"  # Amarillo claro por defecto
+        if fg is None:
+            self.fg = "#000000"  # Negro por defecto
+        if font is None:
+            self.font = ("TkDefaultFont", 9)
+
+        # Vincular eventos
+        self.widget.bind("<Enter>", self._on_enter)
+        self.widget.bind("<Leave>", self._on_leave)
+        self.widget.bind("<ButtonPress>", self._on_leave)
+
+    def _on_enter(self, event=None):
+        """Programa la aparición del tooltip"""
+        self._schedule_show()
+
+    def _on_leave(self, event=None):
+        """Oculta el tooltip inmediatamente"""
+        self._unschedule()
+        self.hide()
+
+    def _schedule_show(self):
+        """Programa la aparición del tooltip después del delay"""
+        self._unschedule()
+        self._schedule_id = self.widget.after(self.delay, self.show)
+
+    def _unschedule(self):
+        """Cancela cualquier aparición programada"""
+        if self._schedule_id:
+            self.widget.after_cancel(self._schedule_id)
+            self._schedule_id = None
+        if self._hide_id:
+            self.widget.after_cancel(self._hide_id)
+            self._hide_id = None
 
     def show(self, event=None):
         """Muestra el tooltip con formato profesional"""
         if self.tip_window or not self.text:
             return
+
+        # Posicionamiento relativo al widget
         x, y, _, _ = self.widget.bbox("insert")
         x += self.widget.winfo_rootx() + 25
         y += self.widget.winfo_rooty() + 25
 
+        # Crear ventana tooltip
         self.tip_window = tw = tk.Toplevel(self.widget)
         tw.wm_overrideredirect(True)
         tw.wm_geometry(f"+{x}+{y}")
 
+        # Configurar etiqueta con texto
         label = tk.Label(
             tw,
             text=self.text,
@@ -123,15 +195,95 @@ class ToolTip:
             relief=tk.SOLID,
             borderwidth=1,
             font=self.font,
-            wraplength=200,
+            wraplength=self.wraplength,
+            padx=4,
+            pady=2,
         )
-        label.pack(ipadx=1)
+        label.pack(ipadx=1, ipady=1)
+
+        # Actualizar posición si excede la pantalla
+        self._adjust_position(tw)
+
+    def _adjust_position(self, tip_window):
+        """Ajusta la posición si el tooltip se sale de la pantalla"""
+        screen_width = self.widget.winfo_screenwidth()
+        screen_height = self.widget.winfo_screenheight()
+
+        # Obtener dimensiones del tooltip (requiere actualización)
+        tip_window.update_idletasks()
+        width = tip_window.winfo_width()
+        height = tip_window.winfo_height()
+
+        # Ajustar coordenada x
+        x, y = tip_window.winfo_x(), tip_window.winfo_y()
+        if x + width > screen_width:
+            x = screen_width - width - 5
+        if x < 0:
+            x = 5
+
+        # Ajustar coordenada y
+        if y + height > screen_height:
+            y = screen_height - height - 5
+        if y < 0:
+            y = 5
+
+        tip_window.wm_geometry(f"+{x}+{y}")
 
     def hide(self, event=None):
-        """Oculta el tooltip"""
+        """Oculta el tooltip con animación suave"""
         if self.tip_window:
+            try:
+                # Efecto de desvanecimiento opcional
+                self._fade_out()
+            except:
+                # Fallback a ocultar inmediatamente si hay error
+                self.tip_window.destroy()
+                self.tip_window = None
+
+    def _fade_out(self, alpha=1.0):
+        """Efecto de desvanecimiento (opcional)"""
+        if alpha <= 0:
             self.tip_window.destroy()
             self.tip_window = None
+            return
+
+        if self.tip_window:
+            self.tip_window.attributes("-alpha", alpha)
+            self._hide_id = self.widget.after(50, lambda: self._fade_out(alpha - 0.1))
+
+    def update_text(self, new_text):
+        """Actualiza el texto del tooltip dinámicamente"""
+        self.text = new_text
+        if self.tip_window:
+            for child in self.tip_window.winfo_children():
+                if isinstance(child, tk.Label):
+                    child.config(text=new_text)
+                    self._adjust_position(self.tip_window)
+
+    def destroy(self):
+        """Limpia todos los recursos del tooltip"""
+        self._unschedule()
+        self.hide()
+        self.widget.unbind("<Enter>")
+        self.widget.unbind("<Leave>")
+        self.widget.unbind("<ButtonPress>")
+
+
+class TextRedirector(object):
+    """Clase para redirigir stdout/stderr al área de texto"""
+
+    def __init__(self, widget, tag="stdout"):
+        self.widget = widget
+        self.tag = tag
+
+    def write(self, str):
+        self.widget.configure(state="normal")
+        self.widget.insert("end", str, (self.tag,))
+        self.widget.configure(state="disabled")
+        self.widget.see("end")
+
+    def flush(self):
+        pass
 
 
 class FileOrganizerGUI(tk.Tk):
@@ -175,37 +327,372 @@ class FileOrganizerGUI(tk.Tk):
         self.load_profiles()
         self.update_theme()  # Ahora se llama después de create_widgets()
 
+    def create_new_profile(self):
+        """Placeholder para futura implementación"""
+        messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")
+
+    def save_profile(self):
+        profile_name = self.profile_combo.get()
+        if not profile_name:
+            messagebox.showerror("Error", "Ingrese un nombre para el perfil")
+            return
+
+        self.profiles[profile_name] = {
+            "directory": self.dir_entry.get(),
+            "formatos": self.get_current_formats(),
+            # "schedule": self.schedule_combo.get(),
+        }
+
+        self.save_to_file()
+        self.load_profiles()
+        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' guardado")
+
+    def delete_profile(self):
+        profile_name = self.profile_combo.get()
+        if profile_name == "default":
+            messagebox.showerror(
+                "Error", "No se puede eliminar el perfil predeterminado"
+            )
+            return
+
+        del self.profiles[profile_name]
+        self.save_to_file()
+        self.load_profiles()
+        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' eliminado")
+
+    def build_profile_settings(self, parent):
+        """
+        Construye el panel de configuración de perfiles con:
+        - Selección de perfil existente
+        - Creación de nuevos perfiles
+        - Eliminación de perfiles
+        - Importación/exportación de perfiles
+        """
+        # Frame principal
+        frame = ttk.LabelFrame(parent, text="Gestión de Perfiles", padding=10)
+        frame.pack(fill=tk.BOTH, expand=True, pady=5)
+
+        # Contenedor para controles superiores
+        top_frame = ttk.Frame(frame)
+        top_frame.pack(fill=tk.X, pady=5)
+
+        # Combo box para selección de perfiles
+        ttk.Label(top_frame, text="Perfil actual:").pack(side=tk.LEFT, padx=5)
+        self.profile_combo = ttk.Combobox(
+            top_frame, values=list(self.profiles.keys()), state="readonly"
+        )
+        self.profile_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        self.profile_combo.set(self.current_profile)
+        self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_changed)
+
+        # Botones de acción
+        btn_frame = ttk.Frame(frame)
+        btn_frame.pack(fill=tk.X, pady=5)
+
+        profile_buttons = [
+            ("Guardar", self.save_profile),
+            ("Eliminar", self.delete_profile),
+            ("Nuevo", self.create_new_profile),
+        ]
+
+        for text, command in profile_buttons:
+            btn = ttk.Button(
+                btn_frame, text=text, command=command, style="Small.TButton"
+            )
+            btn.pack(side=tk.LEFT, padx=5, expand=True)
+
+        # Información del perfil
+        info_frame = ttk.LabelFrame(frame, text="Información del Perfil", padding=10)
+        info_frame.pack(fill=tk.BOTH, expand=True, pady=5)
+
+        # Configurar estilo para botones pequeños
+        self.style.configure("Small.TButton", font=("Segoe UI", 8), padding=2)
+
+    def _on_profile_changed(self, event):
+        """Manejador para cambio de perfil seleccionado"""
+        selected = self.profile_combo.get()
+        if selected and selected in self.profiles:
+            self.current_profile = selected
+            self.load_profile_settings()
+            self.log(f"Perfil cambiado a: {selected}")
+
     def create_widgets(self):
-        """Versión mejorada con UI profesional"""
+        """
+        Crea todos los widgets de la interfaz gráfica, organizados en pestañas y secciones.
+        Incluye:
+        - Barra de menú
+        - Pestañas principales (Operaciones y Configuración)
+        - Área de registro
+        - Barra de estado
+        """
         # Configuración de estilo avanzado
         self.style = ttk.Style()
+        self.style.theme_use("clam")
+
+        # Configurar colores según el tema
         self.setup_theme_system()
 
-        # Frame principal con mejor organización
+        # Frame principal con scroll
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Sistema de pestañas
         self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
+        self.notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
-        # Pestaña de operaciones
-        ops_tab = ttk.Frame(self.notebook)
-        self.build_operations_tab(ops_tab)
+        # ----------------------------
+        # Pestaña de Operaciones
+        # ----------------------------
+        ops_tab = ttk.Frame(self.notebook, padding=10)
         self.notebook.add(ops_tab, text="Operaciones")
 
-        # Pestaña de configuración
-        config_tab = ttk.Frame(self.notebook)
-        self.build_config_tab(config_tab)
+        # Panel de directorio
+        dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
+        dir_frame.pack(fill=tk.X, pady=(0, 10))
+
+        ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
+        self.dir_entry = ttk.Entry(dir_frame)
+        self.dir_entry.pack(fill=tk.X, pady=5)
+
+        browse_btn = ttk.Button(
+            dir_frame, text="Examinar", command=self.select_directory
+        )
+        browse_btn.pack(pady=5)
+        ToolTip(browse_btn, "Seleccione el directorio que desea organizar")
+
+        # Panel de acciones
+        action_frame = ttk.LabelFrame(ops_tab, text="Acciones", padding=10)
+        action_frame.pack(fill=tk.X, pady=(0, 10))
+
+        btn_grid = ttk.Frame(action_frame)
+        btn_grid.pack()
+
+        buttons = [
+            ("Previsualizar", self.preview_changes, 0, 0),
+            ("Organizar Ahora", self.start_organization, 0, 1),
+            ("Deshacer", self.undo_last, 1, 0),
+            ("Estadísticas", self.show_stats, 1, 1),
+        ]
+
+        for text, command, row, col in buttons:
+            btn = ttk.Button(
+                btn_grid, text=text, command=command, style="Accent.TButton"
+            )
+            btn.grid(row=row, column=col, padx=5, pady=5, sticky=tk.NSEW)
+            ToolTip(btn, f"Ejecutar acción: {text}")
+
+        # Panel de previsualización
+        self.create_preview_tree(ops_tab)  # Usa la función que definimos antes
+
+        # Panel de progreso
+        progress_frame = ttk.LabelFrame(ops_tab, text="Progreso", padding=10)
+        progress_frame.pack(fill=tk.X)
+
+        self.progress = ttk.Progressbar(
+            progress_frame, orient=tk.HORIZONTAL, mode="determinate", length=300
+        )
+        self.progress.pack(fill=tk.X, pady=5)
+
+        # ----------------------------
+        # Pestaña de Configuración
+        # ----------------------------
+        config_tab = ttk.Frame(self.notebook, padding=10)
         self.notebook.add(config_tab, text="Configuración")
 
-        # Barra de estado profesional
+        # Subpestañas dentro de Configuración
+        config_notebook = ttk.Notebook(config_tab)
+        config_notebook.pack(fill=tk.BOTH, expand=True)
+
+        # Subpestaña de Perfiles
+        profile_tab = ttk.Frame(config_notebook, padding=10)
+        self.build_profile_settings(profile_tab)
+        config_notebook.add(profile_tab, text="Perfiles")
+
+        # Subpestaña de Formatos
+        format_tab = ttk.Frame(config_notebook, padding=10)
+        self.build_format_settings(format_tab)
+        config_notebook.add(format_tab, text="Formatos")
+
+        # Subpestaña de Apariencia
+        appearance_tab = ttk.Frame(config_notebook, padding=10)
+        self.build_appearance_settings(appearance_tab)
+        config_notebook.add(appearance_tab, text="Apariencia")
+
+        # ----------------------------
+        # Área de Registro (parte inferior)
+        # ----------------------------
+        self.create_log_area(main_frame)  # Usa la función que definimos antes
+
+        # ----------------------------
+        # Barra de Estado
+        # ----------------------------
         self.setup_status_bar(main_frame)
 
-    def log(self, message):
+        # Configuración de estilo para botón destacado
+        self.style.configure(
+            "Accent.TButton",
+            foreground="white",
+            background="#0078d7",
+            font=("Segoe UI", 9, "bold"),
+        )
+
+        self.style.map(
+            "Accent.TButton",
+            background=[("active", "#005fa3"), ("disabled", "#cccccc")],
+        )
+
+        # Asegurar que los grids se expandan correctamente
+        btn_grid.columnconfigure(0, weight=1)
+        btn_grid.columnconfigure(1, weight=1)
+
+    def log(self, message, level="INFO"):
+        """
+        Escribe un mensaje en el área de registro.
+
+        Args:
+            message: Texto del mensaje
+            level: Nivel de log (INFO, WARNING, ERROR, CRITICAL)
+        """
+        if not hasattr(self, "log_area"):
+            return
+
         timestamp = datetime.now().strftime("%H:%M:%S")
-        self.log_area.insert(END, f"[{timestamp}] {message}\n")
-        self.log_area.see(END)
+        self.log_area.configure(state="normal")
+        self.log_area.insert(tk.END, f"[{timestamp}] {message}\n", (level,))
+        self.log_area.configure(state="disabled")
+        self.log_area.see(tk.END)
+
+    def create_log_area(self, parent):
+        """
+        Crea un área de registro con scroll para mostrar mensajes de la aplicación.
+
+        Args:
+            parent: Widget padre donde se ubicará el área de registro
+        """
+        # Frame contenedor
+        log_frame = ttk.LabelFrame(parent, text="Registro de Actividades", padding=10)
+        log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+        # Área de texto con scroll
+        self.log_area = scrolledtext.ScrolledText(
+            log_frame,
+            wrap=tk.WORD,
+            width=80,
+            height=15,
+            font=("Consolas", 9),  # Fuente monoespaciada para mejor visualización
+        )
+        self.log_area.pack(fill=tk.BOTH, expand=True)
+
+        # Configuración inicial
+        self.log_area.configure(state="disabled")  # Solo lectura
+
+        # Configuración de tags para diferentes niveles de log
+        self.log_area.tag_config("INFO", foreground="black")
+        self.log_area.tag_config("WARNING", foreground="orange")
+        self.log_area.tag_config("ERROR", foreground="red")
+        self.log_area.tag_config("CRITICAL", foreground="red", background="yellow")
+
+        # Redirigir stdout y stderr al log
+        sys.stdout = TextRedirector(self.log_area, "stdout")
+        sys.stderr = TextRedirector(self.log_area, "stderr")
+
+    def create_preview_tree(self, parent):
+        """
+        Crea un Treeview para previsualizar los cambios de organización.
+
+        Args:
+            parent: Widget padre donde se ubicará el treeview
+        """
+        # Frame contenedor
+        preview_frame = ttk.LabelFrame(
+            parent, text="Previsualización de Cambios", padding=10
+        )
+        preview_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+        # Treeview con scrollbars
+        tree_container = ttk.Frame(preview_frame)
+        tree_container.pack(fill=tk.BOTH, expand=True)
+
+        # Configurar scrollbars
+        vsb = ttk.Scrollbar(tree_container, orient="vertical")
+        hsb = ttk.Scrollbar(tree_container, orient="horizontal")
+
+        # Crear el Treeview
+        self.preview_tree = ttk.Treeview(
+            tree_container,
+            columns=("original", "destino", "estado"),
+            show="headings",
+            yscrollcommand=vsb.set,
+            xscrollcommand=hsb.set,
+            selectmode="extended",
+            height=10,
+        )
+
+        # Configurar columnas
+        self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
+        self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
+        self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
+
+        self.preview_tree.column("original", width=300, stretch=tk.YES)
+        self.preview_tree.column("destino", width=300, stretch=tk.YES)
+        self.preview_tree.column("estado", width=100, stretch=tk.NO)
+
+        # Configurar scrollbars
+        vsb.config(command=self.preview_tree.yview)
+        hsb.config(command=self.preview_tree.xview)
+
+        # Layout
+        self.preview_tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
+
+        # Configurar el grid para expandirse
+        tree_container.grid_rowconfigure(0, weight=1)
+        tree_container.grid_columnconfigure(0, weight=1)
+
+        # Context menu
+        self._setup_preview_context_menu()
+
+    def _setup_preview_context_menu(self):
+        """Configura el menú contextual para el treeview de previsualización"""
+        self.preview_menu = tk.Menu(self.preview_tree, tearoff=0)
+        self.preview_menu.add_command(
+            label="Copiar ubicación", command=lambda: self._copy_preview_location()
+        )
+        self.preview_menu.add_separator()
+        self.preview_menu.add_command(
+            label="Examinar archivo", command=lambda: self._explore_preview_file()
+        )
+
+        self.preview_tree.bind("<Button-3>", self._show_preview_context_menu)
+
+    def _show_preview_context_menu(self, event):
+        """Muestra el menú contextual en el treeview de previsualización"""
+        item = self.preview_tree.identify_row(event.y)
+        if item:
+            self.preview_tree.selection_set(item)
+            self.preview_menu.post(event.x_root, event.y_root)
+
+    def _copy_preview_location(self):
+        """Copia la ubicación del archivo seleccionado al portapapeles"""
+        selected = self.preview_tree.selection()
+        if selected:
+            values = self.preview_tree.item(selected[0], "values")
+            self.clipboard_clear()
+            self.clipboard_append(values[1])  # Copia la ubicación destino
+            self.log("Ubicación copiada al portapapeles")
+
+    def _explore_preview_file(self):
+        """Abre el explorador de archivos en la ubicación del archivo seleccionado"""
+        selected = self.preview_tree.selection()
+        if selected:
+            values = self.preview_tree.item(selected[0], "values")
+            path = values[1]  # Ubicación destino
+
+            if os.name == "nt":  # Windows
+                os.startfile(os.path.dirname(path))
+            elif os.name == "posix":  # Linux, Mac
+                subprocess.run(["xdg-open", os.path.dirname(path)])
 
     def select_directory(self):
         directory = filedialog.askdirectory(title="Seleccionar carpeta a organizar")
@@ -301,28 +788,6 @@ class FileOrganizerGUI(tk.Tk):
             side=tk.LEFT
         )
 
-    # def build_profile_settings(self, parent):
-    #     """Construye el panel de configuración de perfiles"""
-    #     frame = ttk.LabelFrame(parent, text="Gestión de Perfiles", padding=10)
-    #     frame.pack(fill=tk.X, pady=5)
-    #
-    #     ttk.Label(frame, text="Perfil actual:").pack(anchor=tk.W)
-    #     self.profile_combo = ttk.Combobox(frame)
-    #     self.profile_combo.pack(fill=tk.X, pady=5)
-    #
-    #     btn_frame = ttk.Frame(frame)
-    #     btn_frame.pack(fill=tk.X)
-    #
-    #     profile_buttons = [
-    #         ("Guardar", self.save_profile),
-    #         ("Eliminar", self.delete_profile),
-    #         ("Nuevo", self.create_new_profile),
-    #     ]
-    #
-    #     for text, command in profile_buttons:
-    #         btn = ttk.Button(btn_frame, text=text, command=command)
-    #         btn.pack(side=tk.LEFT, padx=5, pady=5, expand=True)
-
     def import_formats(self):
         """Importa formatos desde un archivo JSON"""
         filepath = filedialog.askopenfilename(
@@ -383,63 +848,133 @@ class FileOrganizerGUI(tk.Tk):
             messagebox.showerror("Error", f"No se pudo exportar: {str(e)}")
             self.logger.error(f"Error exportando formatos: {e}", exc_info=True)
 
-    # def build_format_settings(self, parent):
-    #     """Construye el panel de configuración de formatos"""
-    #     main_frame = ttk.Frame(parent)
-    #     main_frame.pack(fill=tk.BOTH, expand=True)
-    #
-    #     # Barra de búsqueda
-    #     search_frame = ttk.Frame(main_frame)
-    #     search_frame.pack(fill=tk.X, pady=5)
-    #
-    #     ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
-    #     self.search_entry = ttk.Entry(search_frame)
-    #     self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-    #     self.search_entry.bind("<KeyRelease>", self.filter_formats)
-    #
-    #     # Treeview de formatos
-    #     tree_frame = ttk.Frame(main_frame)
-    #     tree_frame.pack(fill=tk.BOTH, expand=True)
-    #
-    #     self.format_tree = ttk.Treeview(
-    #         tree_frame, columns=("ext", "folder"), show="headings", selectmode="browse"
-    #     )
-    #     self.format_tree.heading("ext", text="Extensión")
-    #     self.format_tree.heading("folder", text="Carpeta Destino")
-    #     self.format_tree.column("ext", width=100)
-    #     self.format_tree.column("folder", width=200)
-    #
-    #     vsb = ttk.Scrollbar(
-    #         tree_frame, orient="vertical", command=self.format_tree.yview
-    #     )
-    #     hsb = ttk.Scrollbar(
-    #         tree_frame, orient="horizontal", command=self.format_tree.xview
-    #     )
-    #     self.format_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-    #
-    #     self.format_tree.grid(row=0, column=0, sticky=tk.NSEW)
-    #     vsb.grid(row=0, column=1, sticky=tk.NS)
-    #     hsb.grid(row=1, column=0, sticky=tk.EW)
-    #
-    #     tree_frame.grid_columnconfigure(0, weight=1)
-    #     tree_frame.grid_rowconfigure(0, weight=1)
-    #
-    #     # Controles de formatos
-    #     ctrl_frame = ttk.Frame(main_frame)
-    #     ctrl_frame.pack(fill=tk.X, pady=5)
-    #
-    #     ttk.Button(ctrl_frame, text="Agregar", command=self.add_format).pack(
-    #         side=tk.LEFT, padx=5
-    #     )
-    #     ttk.Button(ctrl_frame, text="Eliminar", command=self.remove_format).pack(
-    #         side=tk.LEFT, padx=5
-    #     )
-    #     ttk.Button(ctrl_frame, text="Importar", command=self.import_formats).pack(
-    #         side=tk.RIGHT, padx=5
-    #     )
-    #     ttk.Button(ctrl_frame, text="Exportar", command=self.export_formats).pack(
-    #         side=tk.RIGHT, padx=5
-    #     )
+    def remove_format(self):
+        selected = self.format_tree.selection()
+        if selected:
+            self.format_tree.delete(selected[0])
+
+    def build_appearance_settings(self, parent):
+        """
+        Construye el panel de configuración de apariencia con:
+        - Selector de tema visual
+        - Configuración de fuentes
+        - Opciones de iconos
+        """
+        frame = ttk.LabelFrame(parent, text="Personalización", padding=10)
+        frame.pack(fill=tk.BOTH, expand=True, pady=5)
+
+        # Selector de tema
+        theme_frame = ttk.LabelFrame(frame, text="Tema Visual", padding=10)
+        theme_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(theme_frame, text="Estilo:").grid(row=0, column=0, sticky="e", padx=5)
+        self.theme_combo = ttk.Combobox(
+            theme_frame,
+            values=["Claro", "Oscuro", "Profesional", "Sistema"],
+            state="readonly",
+        )
+        self.theme_combo.grid(row=0, column=1, sticky="we", padx=5)
+        self.theme_combo.set("Profesional")
+
+    def build_format_settings(self, parent):
+        """
+        Construye el panel de configuración de formatos con:
+        - Lista editable de extensiones y carpetas destino
+        - Búsqueda/filtrado
+        - Importación/exportación de configuraciones
+        """
+        main_frame = ttk.Frame(parent)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Barra de búsqueda
+        search_frame = ttk.Frame(main_frame)
+        search_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
+        self.search_entry = ttk.Entry(search_frame)
+        self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        self.search_entry.bind("<KeyRelease>", self.filter_formats)
+
+        # Treeview de formatos
+        tree_frame = ttk.Frame(main_frame)
+        tree_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Configurar scrollbars
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical")
+        hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
+
+        # Crear el Treeview
+        self.format_tree = ttk.Treeview(
+            tree_frame,
+            columns=("ext", "folder"),
+            show="headings",
+            yscrollcommand=vsb.set,
+            xscrollcommand=hsb.set,
+            selectmode="browse",
+            height=10,
+        )
+
+        # Configurar columnas
+        self.format_tree.heading("ext", text="Extensión", anchor=tk.W)
+        self.format_tree.heading("folder", text="Carpeta Destino", anchor=tk.W)
+        self.format_tree.column("ext", width=120, stretch=tk.NO)
+        self.format_tree.column("folder", width=250, stretch=tk.YES)
+
+        # Configurar scrollbars
+        vsb.config(command=self.format_tree.yview)
+        hsb.config(command=self.format_tree.xview)
+
+        # Layout
+        self.format_tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
+
+        # Configurar el grid para expandirse
+        tree_frame.grid_rowconfigure(0, weight=1)
+        tree_frame.grid_columnconfigure(0, weight=1)
+
+        # Controles de formatos
+        ctrl_frame = ttk.Frame(main_frame)
+        ctrl_frame.pack(fill=tk.X, pady=5)
+
+        control_buttons = [
+            ("Agregar", self.add_format),
+            # ("Editar", self.edit_format),
+            ("Eliminar", self.remove_format),
+        ]
+
+        for text, command in control_buttons:
+            btn = ttk.Button(
+                ctrl_frame, text=text, command=command, style="Small.TButton"
+            )
+            btn.pack(side=tk.LEFT, padx=5, expand=True)
+
+        # Cargar formatos actuales
+        self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
+
+    def _save_new_format(self, dialog, ext, folder):
+        """Guarda el nuevo formato validado"""
+        if not ext.startswith("."):
+            ext = f".{ext}"
+
+        ext = ext.lower().strip()
+        folder = folder.strip()
+
+        if not ext or not folder:
+            messagebox.showwarning("Campos vacíos", "Ambos campos son requeridos")
+            return
+
+        # Verificar si la extensión ya existe
+        for child in self.format_tree.get_children():
+            existing_ext = self.format_tree.item(child)["values"][0]
+            if existing_ext == ext:
+                messagebox.showwarning(
+                    "Extensión existente", f"La extensión {ext} ya está configurada"
+                )
+                return
+
+        self.format_tree.insert("", tk.END, values=(ext, folder))
+        dialog.destroy()
 
     def change_theme(self, event=None):
         """Cambia el tema visual de toda la aplicación"""
@@ -667,39 +1202,6 @@ class FileOrganizerGUI(tk.Tk):
         with open("profiles.json", "w") as f:
             json.dump(self.profiles, f)
 
-    def create_new_profile(self):
-        """Placeholder para futura implementación"""
-        messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")
-
-    def save_profile(self):
-        profile_name = self.profile_combo.get()
-        if not profile_name:
-            messagebox.showerror("Error", "Ingrese un nombre para el perfil")
-            return
-
-        self.profiles[profile_name] = {
-            "directory": self.dir_entry.get(),
-            "formatos": self.get_current_formats(),
-            # "schedule": self.schedule_combo.get(),
-        }
-
-        self.save_to_file()
-        self.load_profiles()
-        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' guardado")
-
-    def delete_profile(self):
-        profile_name = self.profile_combo.get()
-        if profile_name == "default":
-            messagebox.showerror(
-                "Error", "No se puede eliminar el perfil predeterminado"
-            )
-            return
-
-        del self.profiles[profile_name]
-        self.save_to_file()
-        self.load_profiles()
-        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' eliminado")
-
     def add_format(self):
         def save_new_format():
             ext = ext_entry.get().strip()
@@ -720,11 +1222,6 @@ class FileOrganizerGUI(tk.Tk):
         folder_entry.pack(padx=10, pady=2)
 
         ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
-
-    def remove_format(self):
-        selected = self.format_tree.selection()
-        if selected:
-            self.format_tree.delete(selected[0])
 
     def load_profiles(self):
         """
