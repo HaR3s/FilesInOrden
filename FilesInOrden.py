@@ -18,10 +18,6 @@ from concurrent.futures import Future
 from tkinter import *
 import tkinter as tk
 from tkinter import (
-    Tk,
-    StringVar,
-    BooleanVar,
-    IntVar,
     filedialog,
     messagebox,
     scrolledtext,
@@ -879,69 +875,99 @@ class FileOrganizerGUI(tk.Tk):
 
     def update_font_settings(self, event=None):
         """
-        Actualiza la configuración de fuentes en toda la aplicación.
-        Afecta a todos los widgets para mantener consistencia visual.
+        Actualiza la configuración de fuentes en toda la aplicación de manera segura y consistente.
+        Maneja widgets estándar y ttk, incluyendo Treeviews con sus encabezados.
 
         Args:
             event: Parámetro opcional para manejar eventos de tkinter
         """
         try:
-            # Obtener configuración seleccionada
+            # 1. Obtener configuración seleccionada
             font_family = self.font_family_combo.get()
             font_size = int(self.font_size_combo.get())
 
-            # Validar valores
-            if not font_family or font_size < 8 or font_size > 16:
-                raise ValueError("Configuración de fuente inválida")
+            # 2. Validación de parámetros
+            if not font_family:
+                raise ValueError("Debe seleccionar una familia de fuentes")
+            if font_size < 8 or font_size > 16:
+                raise ValueError("El tamaño de fuente debe estar entre 8 y 16")
 
-            # 1. Configurar fuente base para todos los widgets ttk
+            # 3. Configuración de estilos principales
             self.style.configure(".", font=(font_family, font_size))
+            self.style.configure("TLabel", font=(font_family, font_size))
+            self.style.configure("TButton", font=(font_family, font_size))
+            self.style.configure("TEntry", font=(font_family, font_size))
+            self.style.configure("TCombobox", font=(font_family, font_size))
 
-            # 2. Configuración específica para widgets importantes
+            # 4. Configuración especial para Treeviews
+            rowheight = max(25, font_size + 10)  # Ajuste dinámico del alto de fila
 
-            # Área de log
-            self.log_area.configure(font=(font_family, font_size))
-
-            # Treeviews (ajustar rowheight proporcional al tamaño de fuente)
-            rowheight = max(25, font_size + 10)
+            # Estilo para items normales
             self.style.configure(
                 "Treeview", font=(font_family, font_size), rowheight=rowheight
             )
 
-            # Encabezados de Treeview
+            # Estilo para encabezados (usando el sistema de estilos)
             self.style.configure(
-                "Treeview.Heading", font=(font_family, font_size, "bold")
+                "Treeview.Heading",
+                font=(font_family, font_size, "bold"),
+                padding=(5, 2, 5, 2),
+            )  # Padding: arriba, derecha, abajo, izquierda
+
+            # 5. Actualizar widgets no-ttk (área de log)
+            self.log_area.configure(font=(font_family, font_size))
+
+            # 6. Actualizar Treeviews existentes
+            for treeview in [
+                getattr(self, name, None) for name in ["preview_tree", "format_tree"]
+            ]:
+                if treeview:
+                    # Fuerza la actualización de los encabezados
+                    for col in treeview["columns"]:
+                        current_text = treeview.heading(col, "text")
+                        treeview.heading(
+                            col, text=current_text
+                        )  # Esto refresca el estilo
+
+                    # Ajustar ancho de columnas basado en la nueva fuente
+                    treeview.update_idletasks()
+                    for col in treeview["columns"]:
+                        treeview.column(col, width=treeview.column(col, "width"))
+
+            # 7. Actualizar otros widgets especiales
+            if hasattr(self, "profile_combo"):
+                self.profile_combo.configure(font=(font_family, font_size))
+
+            # 8. Registrar el cambio
+            self.logger.info(
+                f"Configuración de fuente actualizada: {font_family} {font_size}pt"
             )
-
-            # Botones
-            self.style.configure("TButton", font=(font_family, font_size))
-
-            # Comboboxes
-            self.style.configure("TCombobox", font=(font_family, font_size), padding=5)
-
-            # 3. Ajustar diseño para widgets especiales
-            if hasattr(self, "preview_tree"):
-                self.preview_tree.configure(style="Treeview")
-                for col in self.preview_tree["columns"]:
-                    self.preview_tree.heading(
-                        col, font=(font_family, font_size, "bold")
-                    )
-
-            # 4. Registrar cambio
-            self.logger.info(f"Fuente actualizada: {font_family} {font_size}pt")
-            self.log(f"Configuración de fuente actualizada")
+            messagebox.showinfo(
+                "Éxito",
+                f"Fuente cambiada a {font_family} {font_size}pt\n"
+                "La configuración se ha aplicado a toda la aplicación.",
+                parent=self,
+            )
 
         except ValueError as ve:
-            self.logger.warning(f"Configuración de fuente no válida: {ve}")
+            self.logger.warning(f"Error en configuración de fuente: {str(ve)}")
             messagebox.showwarning(
-                "Fuente Inválida", "Por favor seleccione un tamaño entre 8 y 16"
+                "Configuración inválida",
+                f"Error en configuración de fuente:\n{str(ve)}",
+                parent=self,
             )
         except Exception as e:
-            self.logger.error(f"Error actualizando fuentes: {e}", exc_info=True)
-            messagebox.showerror(
-                "Error de Fuente",
-                f"No se pudo aplicar la configuración de fuente:\n{str(e)}",
+            self.logger.error(
+                f"Error crítico al actualizar fuentes: {str(e)}", exc_info=True
             )
+            messagebox.showerror(
+                "Error crítico",
+                f"No se pudo aplicar la configuración de fuente:\n{str(e)}",
+                parent=self,
+            )
+        finally:
+            # Enfocar nuevamente la ventana principal
+            self.focus_set()
 
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
