@@ -5,4 +5,6 @@ bin/
 lib/
 CACHEDIR.TAG
 pyvenv.cfg
-testGUI1.py
+error.txt
+organizer.log
+profiles.json
