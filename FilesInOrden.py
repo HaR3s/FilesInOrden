@@ -382,7 +382,7 @@ class FileOrganizerGUI(tk.Tk):
             top_frame, values=list(self.profiles.keys()), state="readonly"
         )
         self.profile_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        # self.profile_combo.set(self.current_profile)
+        self.profile_combo.set(self.current_profile)
         self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_changed)
 
         # Botones de acción
@@ -1059,7 +1059,7 @@ class FileOrganizerGUI(tk.Tk):
             btn.pack(side=tk.LEFT, padx=5, expand=True)
 
         # Cargar formatos actuales
-        self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
+        # self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
 
     def _save_new_format(self, dialog, ext, folder):
         """Guarda el nuevo formato validado"""
