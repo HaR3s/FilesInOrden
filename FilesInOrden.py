@@ -382,7 +382,7 @@ class FileOrganizerGUI(tk.Tk):
             top_frame, values=list(self.profiles.keys()), state="readonly"
         )
         self.profile_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        # self.profile_combo.set(self.current_profile)
+        self.profile_combo.set(self.current_profile)
         self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_changed)
 
         # Botones de acción
