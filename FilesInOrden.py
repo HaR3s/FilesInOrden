@@ -393,25 +393,42 @@ class FileOrganizerGUI(tk.Tk):
         dialog.transient(self)
         dialog.grab_set()
 
-        # UI del diálogo
-        ttk.Label(dialog, text="Nombre del perfil:").pack(padx=10, pady=5)
-        name_entry = ttk.Entry(dialog)
-        name_entry.pack(padx=10, pady=5)
+        # Frame principal para mejor organización
+        main_frame = ttk.Frame(dialog, padding="10")
+        main_frame.pack(fill=tk.BOTH, expand=True)
 
-        ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
-        dir_entry = ttk.Entry(dialog)
-        dir_entry.pack(padx=10, pady=5)
-
-        ttk.Button(
-            dialog, text="Examinar", command=lambda: self.select_directory(dir_entry)
-        ).pack(pady=5)
-
-        # Botón para guardar (añadido para completar la funcionalidad)
-        ttk.Button(
-            dialog,
-            text="Guardar",
-            command=lambda: self.save_profile(name_entry, dir_entry).pack(pady=10),
+        # Nombre del perfil
+        ttk.Label(main_frame, text="Nombre del perfil:").grid(
+            row=0, column=0, sticky=tk.W, pady=5
         )
+        self.profile_name_entry = ttk.Entry(main_frame, width=40)
+        self.profile_name_entry.grid(row=0, column=1, columnspan=2, padx=5, pady=5)
+
+        # Carpeta base (solo selección por diálogo)
+        ttk.Label(main_frame, text="Carpeta base:").grid(
+            row=1, column=0, sticky=tk.W, pady=5
+        )
+        self.folder_path_label = ttk.Label(
+            main_frame, text="No seleccionada", foreground="gray"
+        )
+        self.folder_path_label.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
+
+        ttk.Button(
+            main_frame,
+            text="Seleccionar Carpeta",
+            command=lambda: self.validate_directory(dialog),
+        ).grid(row=1, column=2, padx=5, pady=5)
+
+        # Botones de acción
+        button_frame = ttk.Frame(main_frame)
+        button_frame.grid(row=2, column=0, columnspan=3, pady=10)
+
+        ttk.Button(button_frame, text="Cancelar", command=dialog.destroy).pack(
+            side=tk.RIGHT, padx=5
+        )
+
+        # Enfocar el campo de nombre al abrir
+        self.profile_name_entry.focus_set()
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
