@@ -361,6 +361,31 @@ class FileOrganizerGUI(tk.Tk):
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
 
+    # def create_new_profile(self):
+    #     """Crea un nuevo perfil con diálogo interactivo"""
+    #     dialog = tk.Toplevel(self)
+    #     dialog.title("Nuevo Perfil")
+    #     dialog.transient(self)
+    #     dialog.grab_set()
+    #
+    #     # UI del diálogo
+    #     ttk.Label(dialog, text="Nombre del perfil:").pack(padx=10, pady=5)
+    #     name_entry = ttk.Entry(dialog)
+    #     name_entry.pack(padx=10, pady=5)
+    #
+    #     # ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
+    #
+    #     dir_entry = ttk.Entry(dialog)
+    #     dir_entry.pack(padx=10, pady=5)
+    #     path = ttk.Button(
+    #         dialog, text="Carpeta base", command=self.select_directory
+    #     ).pack(pady=5)
+    #     dir_entry = ttk.Entry(path)
+    #     dir_entry.pack(padx=10, pady=5)
+    #     ttk.Button(
+    #         dialog, text="Examinar", command=lambda: self.validate_directory(dir_entry)
+    #     ).pack(pady=5)
+
     def create_new_profile(self):
         """Crea un nuevo perfil con diálogo interactivo"""
         dialog = tk.Toplevel(self)
@@ -373,18 +398,20 @@ class FileOrganizerGUI(tk.Tk):
         name_entry = ttk.Entry(dialog)
         name_entry.pack(padx=10, pady=5)
 
-        # ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
-
+        ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
         dir_entry = ttk.Entry(dialog)
         dir_entry.pack(padx=10, pady=5)
-        path = ttk.Button(
-            dialog, text="Carpeta base", command=self.select_directory
-        ).pack(pady=5)
-        dir_entry = ttk.Entry(path)
-        dir_entry.pack(padx=10, pady=5)
+
         ttk.Button(
-            dialog, text="Examinar", command=lambda: self.validate_directory(dir_entry)
+            dialog, text="Examinar", command=lambda: self.select_directory(dir_entry)
         ).pack(pady=5)
+
+        # Botón para guardar (añadido para completar la funcionalidad)
+        ttk.Button(
+            dialog,
+            text="Guardar",
+            command=lambda: self.save_profile(name_entry, dir_entry).pack(pady=10),
+        )
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
