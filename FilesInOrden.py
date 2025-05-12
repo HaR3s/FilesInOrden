@@ -404,19 +404,19 @@ class FileOrganizerGUI(tk.Tk):
         self.profile_name_entry = ttk.Entry(main_frame, width=40)
         self.profile_name_entry.grid(row=0, column=1, columnspan=2, padx=5, pady=5)
 
-        # Carpeta base (solo selección por diálogo)
-        ttk.Label(main_frame, text="Carpeta base:").grid(
-            row=1, column=0, sticky=tk.W, pady=5
-        )
-        self.folder_path_label = ttk.Label(
-            main_frame, text="No seleccionada", foreground="gray"
-        )
-        self.folder_path_label.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
+        # # Carpeta base (solo selección por diálogo)
+        # ttk.Label(main_frame, text="Carpeta base:").grid(
+        #     row=1, column=0, sticky=tk.W, pady=5
+        # )
+        # self.folder_path_label = ttk.Label(
+        #     main_frame, text="No seleccionada", foreground="gray"
+        # )
+        # self.folder_path_label.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 
         ttk.Button(
             main_frame,
             text="Seleccionar Carpeta",
-            command=lambda: self.validate_directory(dialog),
+            command=lambda: self.select_directory(),
         ).grid(row=1, column=2, padx=5, pady=5)
 
         # Botones de acción
@@ -426,6 +426,10 @@ class FileOrganizerGUI(tk.Tk):
         ttk.Button(button_frame, text="Cancelar", command=dialog.destroy).pack(
             side=tk.RIGHT, padx=5
         )
+
+        ttk.Button(
+            button_frame, text="Guardar", command=lambda: self.save_profile()
+        ).pack(side=tk.RIGHT, padx=5)
 
         # Enfocar el campo de nombre al abrir
         self.profile_name_entry.focus_set()
