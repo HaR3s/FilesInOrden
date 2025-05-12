@@ -1915,6 +1915,8 @@ class FileOrganizerGUI(tk.Tk):
 
                 except Empty:
                     continue
+                except Exception as e:
+                    self.logger.error(f"Error en orosses animations {e}")
 
         # Hilo para procesar animaciones
         threading.Thread(
@@ -1930,7 +1932,7 @@ class FileOrganizerGUI(tk.Tk):
                 self._animate_slide(widget, **config)
 
         except Exception as e:
-            self.logger.error(f"Error en animación: {e}")
+            self.logger.error(f"Error en ejecutar animación: {e}")
 
     def _animate_fade(self, widget, duration=300, steps=10, **kwargs):
         """Efecto de desvanecimiento"""
@@ -1945,7 +1947,8 @@ class FileOrganizerGUI(tk.Tk):
                 widget.attributes("-alpha", alpha)
                 widget.update()
                 time.sleep(delay / 1000)
-            except:
+            except Exception as e:
+                self.logger.error(f"Error: animation fade {e}")
                 break
 
     def _animate_slide(self, widget, **config):
@@ -2111,7 +2114,7 @@ class FileOrganizerGUI(tk.Tk):
     def run_scheduled_tasks(self):
         while self.running:
             schedule.run_pending()
-            time.sleep(0.5)  # INFO: Defoult 1
+            time.sleep(1)
 
     def enable_scheduling(self):
         interval = self.schedule_combo.get()
