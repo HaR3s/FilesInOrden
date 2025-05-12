@@ -404,15 +404,6 @@ class FileOrganizerGUI(tk.Tk):
         self.profile_name_entry = ttk.Entry(main_frame, width=40)
         self.profile_name_entry.grid(row=0, column=1, columnspan=2, padx=5, pady=5)
 
-        # # Carpeta base (solo selección por diálogo)
-        # ttk.Label(main_frame, text="Carpeta base:").grid(
-        #     row=1, column=0, sticky=tk.W, pady=5
-        # )
-        # self.folder_path_label = ttk.Label(
-        #     main_frame, text="No seleccionada", foreground="gray"
-        # )
-        # self.folder_path_label.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-
         ttk.Button(
             main_frame,
             text="Seleccionar Carpeta",
@@ -435,7 +426,7 @@ class FileOrganizerGUI(tk.Tk):
         self.profile_name_entry.focus_set()
 
     def save_profile(self):
-        profile_name = self.profile_combo.get()
+        profile_name = self.profile_name_entry.get()
 
         # Validación de nombres
         if not profile_name:
@@ -446,16 +437,10 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.error("Nombre invalido 'default' está reservado")
             return
         if profile_name in self.profiles:
-            messagebox.showwarning(f"Nombre existente", "{profile_name} ya está en uso")
+            messagebox.showwarning(f"Nombre existente '{profile_name}' ya está en uso")
             self.log(f"Nombre existente {profile_name} ya está en uso")
             self.logger.error(f"Nombre existente {profile_name} ya está en uso")
             return
-
-        # if not profile_name:
-        #     messagebox.showerror("Error", "Ingrese un nombre para el perfil")
-        #     self.log("Error", "Ingrese un nombre para el perfil")
-        #     self.logger.info("Error", "Ingrese un nombre para el perfil")
-        #     return
 
         self.profiles[profile_name] = {
             "directory": self.dir_entry.get(),
