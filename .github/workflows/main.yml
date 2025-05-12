@@ -3,7 +3,7 @@ name: Build Windows Executable
 on:
   workflow_dispatch:
   push:
-    branches: [mejoras, master]
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -32,5 +32,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: FileOrganizer-Windows
+        name: FileInOrden-Windows
         path: dist/FilesInOrden.exe

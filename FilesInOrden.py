@@ -35,11 +35,38 @@ from cachetools import TTLCache
 from coloredlogs import ColoredFormatter
 
 
-# TODO: Crear la clase para tratar errores
 class IntegrityError(Exception):
-    """Excepción para errores de integridad de archivos"""
+    """Excepción para errores de integridad de archivos con contexto adicional"""
 
-    pass
+    def __init__(
+        self,
+        message: str,
+        filepath: str = None,
+        expected_hash: str = None,
+        actual_hash: str = None,
+    ):
+        """
+        Args:
+            message: Descripción del error
+            filepath: Ruta del archivo problemático
+            expected_hash: Hash esperado (opcional)
+            actual_hash: Hash obtenido (opcional)
+        """
+        super().__init__(message)
+        self.filepath = filepath
+        self.expected_hash = expected_hash
+        self.actual_hash = actual_hash
+        self.timestamp = datetime.now().isoformat()
+
+    def __str__(self):
+        base_msg = super().__str__()
+        details = []
+        if self.filepath:
+            details.append(f"Archivo: {self.filepath}")
+        if self.expected_hash and self.actual_hash:
+            details.append(f"Hash esperado: {self.expected_hash[:8]}...")
+            details.append(f"Hash obtenido: {self.actual_hash[:8]}...")
+        return f"{base_msg} ({'; '.join(details)})" if details else base_msg
 
 
 class ThreadManager:
@@ -335,18 +362,46 @@ class FileOrganizerGUI(tk.Tk):
         self.configure(bg="#f0f0f0")
 
     def create_new_profile(self):
-        """Placeholder para futura implementación"""
-        messagebox.showinfo("Info", "Función de nuevo perfil no implementada aún")
-        self.log("Función de nuevo perfil no implementada aún")
-        self.logger.info("Función de nuevo perfil no implementada aún")
+        """Crea un nuevo perfil con diálogo interactivo"""
+        dialog = tk.Toplevel(self)
+        dialog.title("Nuevo Perfil")
+        dialog.transient(self)
+        dialog.grab_set()
+
+        # UI del diálogo
+        ttk.Label(dialog, text="Nombre del perfil:").pack(padx=10, pady=5)
+        name_entry = ttk.Entry(dialog)
+        name_entry.pack(padx=10, pady=5)
+
+        ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
+        dir_entry = ttk.Entry(dialog)
+        dir_entry.pack(padx=10, pady=5)
+        ttk.Button(
+            dialog, text="Examinar", command=lambda: self.validate_directory(dir_entry)
+        ).pack(pady=5)
 
     def save_profile(self):
         profile_name = self.profile_combo.get()
+
+        # Validación de nombres
         if not profile_name:
-            messagebox.showerror("Error", "Ingrese un nombre para el perfil")
-            self.log("Error", "Ingrese un nombre para el perfil")
-            self.logger.info("Error", "Ingrese un nombre para el perfil")
             return
+        if profile_name.lower() == "default":
+            messagebox.showwarning("Nombre inválido", "'default' está reservado")
+            self.log("Nombre inválido 'default' está reservado")
+            self.logger.error("Nombre invalido 'default' está reservado")
+            return
+        if profile_name in self.profiles:
+            messagebox.showwarning(f"Nombre existente", "{profile_name} ya está en uso")
+            self.log(f"Nombre existente {profile_name} ya está en uso")
+            self.logger.error(f"Nombre existente {profile_name} ya está en uso")
+            return
+
+        # if not profile_name:
+        #     messagebox.showerror("Error", "Ingrese un nombre para el perfil")
+        #     self.log("Error", "Ingrese un nombre para el perfil")
+        #     self.logger.info("Error", "Ingrese un nombre para el perfil")
+        #     return
 
         self.profiles[profile_name] = {
             "directory": self.dir_entry.get(),
@@ -1836,13 +1891,122 @@ class FileOrganizerGUI(tk.Tk):
                 return icon_type
         return "file"
 
-    # TODO: Completar la funcion
     def setup_animations(self):
-        pass
+        """Configura animaciones fluidas para transiciones de UI"""
+        self.animation_queue = Queue()
+        self.animation_running = False
 
-    # TODO: Completar la funcion
+        # Estilos de animación predefinidos
+        self.animation_presets = {
+            "fade": {"duration": 300, "steps": 10},
+            "slide": {"duration": 200, "steps": 15},
+            "highlight": {"duration": 150, "steps": 5},
+        }
+
+        def _process_animations():
+            while self.running:
+                try:
+                    widget, anim_type, kwargs = self.animation_queue.get(timeout=0.1)
+                    preset = self.animation_presets.get(anim_type, {})
+
+                    # Fusionar configuración
+                    config = {**preset, **kwargs}
+                    self._execute_animation(widget, config)
+
+                except Empty:
+                    continue
+
+        # Hilo para procesar animaciones
+        threading.Thread(
+            target=_process_animations, name="AnimationThread", daemon=True
+        ).start()
+
+    def _execute_animation(self, widget, config):
+        """Ejecuta una animación individual"""
+        try:
+            if config.get("type") == "fade":
+                self._animate_fade(widget, **config)
+            elif config.get("type") == "slide":
+                self._animate_slide(widget, **config)
+
+        except Exception as e:
+            self.logger.error(f"Error en animación: {e}")
+
+    def _animate_fade(self, widget, duration=300, steps=10, **kwargs):
+        """Efecto de desvanecimiento"""
+        delta = 1.0 / steps
+        delay = duration // steps
+
+        for i in range(steps + 1):
+            if not widget.winfo_exists():
+                break
+            alpha = 1.0 - (i * delta)
+            try:
+                widget.attributes("-alpha", alpha)
+                widget.update()
+                time.sleep(delay / 1000)
+            except:
+                break
+
+    def _animate_slide(self, widget, **config):
+        messagebox.showinfo("Lo siento ahun no implementado")
+
     def setup_statusbar(self):
-        pass
+        """Configura una barra de estado avanzada con múltiples secciones"""
+        self.status_bar = ttk.Frame(self, relief=tk.SUNKEN, padding=(5, 2))
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Secciones de la barra
+        sections = {
+            "status": {"text": "Listo", "width": 30, "anchor": tk.W},
+            "progress": {"text": "", "width": 15, "anchor": tk.CENTER},
+            "stats": {"text": "Archivos: 0", "width": 20, "anchor": tk.E},
+            "memory": {"text": "RAM: 0MB", "width": 15, "anchor": tk.E},
+            "time": {"text": "", "width": 10, "anchor": tk.E},
+        }
+
+        # Crear labels para cada sección
+        self.status_labels = {}
+        for name, config in sections.items():
+            frame = ttk.Frame(self.status_bar)
+            frame.pack(side=tk.LEFT, padx=2)
+
+            ttk.Label(frame, text=f"{name.title()}:").pack(side=tk.LEFT)
+            label = ttk.Label(
+                frame,
+                text=config["text"],
+                width=config["width"],
+                anchor=config["anchor"],
+            )
+            label.pack(side=tk.LEFT)
+            self.status_labels[name] = label
+
+        # Actualización periódica
+        self.update_statusbar()
+
+    def update_statusbar(self):
+        """Actualiza dinámicamente la barra de estado"""
+        # Memoria
+        mem = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+        self.status_labels["memory"].config(text=f"{mem:.1f}MB")
+
+        # Tiempo
+        self.status_labels["time"].config(text=datetime.now().strftime("%H:%M:%S"))
+
+        # Programar próxima actualización
+        self.after(1000, self.update_statusbar)
+
+    def set_status(self, message: str, section="status", temporary=False):
+        """Establece un mensaje en la barra de estado"""
+        self.status_labels[section].config(text=message)
+
+        if temporary:
+            self.after(
+                5000,
+                lambda: self.status_labels[section].config(
+                    text=self.status_defaults.get(section, "")
+                ),
+            )
 
     def enhance_ui(self):
         """Mejoras visuales profesionales"""
