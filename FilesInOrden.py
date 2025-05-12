@@ -373,8 +373,14 @@ class FileOrganizerGUI(tk.Tk):
         name_entry = ttk.Entry(dialog)
         name_entry.pack(padx=10, pady=5)
 
-        ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
+        # ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
+
         dir_entry = ttk.Entry(dialog)
+        dir_entry.pack(padx=10, pady=5)
+        path = Button(dialog, text="Carpeta base", command=self.select_directory).pack(
+            pady=5
+        )
+        dir_entry = ttk.Entry(path)
         dir_entry.pack(padx=10, pady=5)
         ttk.Button(
             dialog, text="Examinar", command=lambda: self.validate_directory(dir_entry)
