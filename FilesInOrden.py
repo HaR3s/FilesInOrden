@@ -377,9 +377,9 @@ class FileOrganizerGUI(tk.Tk):
 
         dir_entry = ttk.Entry(dialog)
         dir_entry.pack(padx=10, pady=5)
-        path = Button(dialog, text="Carpeta base", command=self.select_directory).pack(
-            pady=5
-        )
+        path = ttk.Button(
+            dialog, text="Carpeta base", command=self.select_directory
+        ).pack(pady=5)
         dir_entry = ttk.Entry(path)
         dir_entry.pack(padx=10, pady=5)
         ttk.Button(
