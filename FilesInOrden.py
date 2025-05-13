@@ -1169,6 +1169,7 @@ class FileOrganizerGUI(tk.Tk):
             folder = folder_entry.get().strip()
             if ext and folder:
                 self.format_tree.insert("", END, values=(ext, folder))
+                self.default_formats.setdefault(ext, folder)
                 self.save_to_file()
                 top.destroy()
 
