@@ -737,10 +737,9 @@ class FileOrganizerGUI(tk.Tk):
     def remove_format(self):
         selected = self.format_tree.selection()
         if selected:
-            self.log(selected[0].title())
+            values = self.format_tree.item(selected[0])
+            self.log(values["values"][0])
             self.format_tree.delete(selected[0])
-            # self.profiles["default"]["formatos"].pop(selected[0])
-            # self.log(self.profiles["default"]["formatos"])
 
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
