@@ -357,6 +357,46 @@ class FileOrganizerGUI(tk.Tk):
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
 
+    def load_profiles(self):
+        """
+        Carga los perfiles desde el archivo JSON con manejo robusto de errores.
+        Si el archivo no existe o está corrupto, crea un perfil predeterminado.
+        """
+        profile_path = os.path.abspath("profiles.json")  # Usar ruta absoluta
+        self.logger.info(f"Cargando perfiles desde: {profile_path}")
+
+        try:
+            with open(profile_path, "r", encoding="utf-8") as f:
+                self.profiles = json.load(f)
+
+            # Validar estructura básica
+            if not isinstance(self.profiles, dict):
+                raise json.JSONDecodeError("Formato inválido", doc=profile_path, pos=0)
+
+            self.logger.info(f"Perfiles cargados: {len(self.profiles)}")
+
+        except (FileNotFoundError, json.JSONDecodeError, AttributeError) as e:
+            self.logger.warning(
+                f"Error cargando perfiles ({type(e).__name__}), creando predeterminado"
+            )
+
+            self.profiles = {
+                "default": {
+                    "name": "default",
+                    "directory": "",
+                    "formatos": self.default_formats.copy(),  # Copia para evitar mutaciones
+                    "created_at": datetime.now().isoformat(),  # Metadata adicional
+                }
+            }
+            self.save_to_file()  # Guardar inmediatamente
+
+    def load_profile_settings(self):
+        profile = self.profiles[self.current_profile]
+        self.dir_entry.delete(0, END)
+        self.dir_entry.insert(0, profile["directory"])
+        self.schedule_combo.set(profile["schedule"])
+        self.update_format_tree(profile["formatos"])
+
     def create_widgets(self):
         """
         Crea todos los widgets de la interfaz gráfica, organizados en pestañas y secciones.
