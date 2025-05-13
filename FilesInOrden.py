@@ -1122,27 +1122,29 @@ class FileOrganizerGUI(tk.Tk):
         self.theme_combo.set("Profesional")
         self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
 
+        # NOTE: Elimino la seccion de fuentes
+        #
         # Sección de fuentes
-        font_frame = ttk.LabelFrame(main_frame, text="Fuentes", padding=10)
-        font_frame.pack(fill=tk.X, pady=5)
-
-        ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky="e", padx=5)
-        self.font_size_combo = ttk.Combobox(
-            font_frame, values=["8", "9", "10", "11", "12", "14", "16"], width=5
-        )
-        self.font_size_combo.grid(row=0, column=1, sticky="w", padx=5, pady=2)
-        self.font_size_combo.set("10")
-        self.font_size_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
-
-        ttk.Label(font_frame, text="Familia:").grid(row=1, column=0, sticky="e", padx=5)
-        self.font_family_combo = ttk.Combobox(
-            font_frame,
-            values=["Segoe UI", "Arial", "Helvetica", "Courier New", "Times New Roman"],
-            width=15,
-        )
-        self.font_family_combo.grid(row=1, column=1, sticky="w", padx=5, pady=2)
-        self.font_family_combo.set("Segoe UI")
-        self.font_family_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
+        # font_frame = ttk.LabelFrame(main_frame, text="Fuentes", padding=10)
+        # font_frame.pack(fill=tk.X, pady=5)
+        #
+        # ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky="e", padx=5)
+        # self.font_size_combo = ttk.Combobox(
+        #     font_frame, values=["8", "9", "10", "11", "12", "14", "16"], width=5
+        # )
+        # self.font_size_combo.grid(row=0, column=1, sticky="w", padx=5, pady=2)
+        # self.font_size_combo.set("10")
+        # self.font_size_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
+        #
+        # ttk.Label(font_frame, text="Familia:").grid(row=1, column=0, sticky="e", padx=5)
+        # self.font_family_combo = ttk.Combobox(
+        #     font_frame,
+        #     values=["Segoe UI", "Arial", "Helvetica", "Courier New", "Times New Roman"],
+        #     width=15,
+        # )
+        # self.font_family_combo.grid(row=1, column=1, sticky="w", padx=5, pady=2)
+        # self.font_family_combo.set("Segoe UI")
+        # self.font_family_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
 
         # Sección de opciones visuales
         options_frame = ttk.LabelFrame(main_frame, text="Opciones Visuales", padding=10)
@@ -1183,7 +1185,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Configurar el grid para que se expanda correctamente
         theme_frame.columnconfigure(1, weight=1)
-        font_frame.columnconfigure(1, weight=1)
+        # font_frame.columnconfigure(1, weight=1)
 
     def build_format_settings(self, parent):
         """
