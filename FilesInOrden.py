@@ -402,7 +402,7 @@ class FileOrganizerGUI(tk.Tk):
         self.schedule_combo.set(profile["schedule"])
         self.update_format_tree(profile["formatos"])
 
-    def bservador(self):
+    def observador(self):
         messagebox.showinfo("Info", "Funcion automatica\nahun no esta terminada")
 
     def create_widgets(self):
