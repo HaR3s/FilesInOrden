@@ -313,7 +313,6 @@ class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
         # Inicializar atributos PRIMERO
-        self.profiles = {}
         self.current_profile = "default"
         self.default_formats = {
             ".jpg": "Fotos",
@@ -866,7 +865,7 @@ class FileOrganizerGUI(tk.Tk):
             btn.pack(side=tk.LEFT, padx=5, expand=True)
 
         # Cargar formatos actuales
-        self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
+        self.update_format_tree(self.load_profile.get(self.current_profile), {}))
 
     def _save_new_format(self, dialog, ext, folder):
         """Guarda el nuevo formato validado"""
