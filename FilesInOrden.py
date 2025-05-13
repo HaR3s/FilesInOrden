@@ -1157,7 +1157,9 @@ class FileOrganizerGUI(tk.Tk):
         self.after(1000, self.update_status_bar)
 
     def save_to_file(self):
-        with open("profiles.json", "w") as f:
+        profile_path = os.path.abspath("profiles.json")  # Usar ruta absoluta
+        self.logger.info(f"Guardando perfil en: {profile_path}")
+        with open(profile_path, "w") as f:
             json.dump(self.profiles, f)
 
     def edit_format(self):
@@ -1171,6 +1173,7 @@ class FileOrganizerGUI(tk.Tk):
                 self.format_tree.insert("", END, values=(ext, folder))
                 self.default_formats.setdefault(ext, folder)
                 self.save_to_file()
+                self.load_profiles()
                 top.destroy()
 
         top = Toplevel(self)
