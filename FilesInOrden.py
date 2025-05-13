@@ -1327,6 +1327,7 @@ class FileOrganizerGUI(tk.Tk):
                 "PDFs": ("ico/PDFs.png", "red"),
                 "Documents": ("ico/documents.png", "darkblue"),
                 "Audio": ("ico/audio.png", "cyan"),
+                "Videos": ("ico/video"),
                 # ... otros íconos
             }
 
@@ -1389,7 +1390,7 @@ class FileOrganizerGUI(tk.Tk):
     def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
         """Carga un icono con manejo de errores"""
         try:
-            return tk.PhotoImage(file=f"ico/{filename}")
+            return tk.PhotoImage(file=f"{filename}")
         except Exception as e:
             self.logger.warning(f"No se pudo cargar icono {filename}: {e}")
             return None
