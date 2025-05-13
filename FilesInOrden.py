@@ -591,9 +591,7 @@ class FileOrganizerGUI(tk.Tk):
         preview_frame = ttk.LabelFrame(
             parent, text="Previsualización de Cambios", padding=10
         )
-        preview_frame.pack(
-            fill=tk.BOTH, expand=True, padx=5, pady=10
-        )  # NOTE: Defoult pady=5
+        preview_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         # Treeview con scrollbars
         tree_container = ttk.Frame(preview_frame)
@@ -617,11 +615,11 @@ class FileOrganizerGUI(tk.Tk):
         # Configurar columnas
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
-        self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
+        # self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
 
         self.preview_tree.column("original", width=300, stretch=tk.YES)
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
-        self.preview_tree.column("estado", width=100, stretch=tk.NO)
+        # self.preview_tree.column("estado", width=100, stretch=tk.NO)
 
         # Configurar scrollbars
         vsb.config(command=self.preview_tree.yview)
@@ -782,6 +780,7 @@ class FileOrganizerGUI(tk.Tk):
 
         theme_frame.columnconfigure(1, weight=1)
 
+    # NOTE: Añadir funcionlidad para clic derecho
     def build_format_settings(self, parent):
         """
         Construye el panel de configuración de formatos con:
@@ -1146,7 +1145,6 @@ class FileOrganizerGUI(tk.Tk):
             folder = folder_entry.get().strip()
             if ext and folder:
                 self.format_tree.insert("", END, values=(ext, folder))
-                # self.default_formats.setdefault(ext, folder)
                 self.profiles["default"]["formatos"].setdefault(ext, folder)
                 top.destroy()
 
