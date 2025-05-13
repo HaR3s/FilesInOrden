@@ -313,8 +313,6 @@ class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
         # Inicializar atributos PRIMERO
-        self.current_profile = "default"
-        self.load_profile = {}
         self.default_formats = {
             ".jpg": "Fotos",
             ".png": "Fotos",
@@ -329,6 +327,9 @@ class FileOrganizerGUI(tk.Tk):
             ".txt": "Documentos_txt",
             "": "Otros",
         }
+        self.profiles = {}
+        self.current_profile = "default"
+        self.load_profiles()
 
         # Inicializar el resto de componentes
         self.task_queue = Queue(maxsize=100)
@@ -392,6 +393,9 @@ class FileOrganizerGUI(tk.Tk):
             self.save_to_file()  # Guardar inmediatamente
 
     def load_profile_settings(self):
+        if self.current_profile not in self.profiles:
+            self.current_profile = "default"
+
         profile = self.profiles[self.current_profile]
         self.dir_entry.delete(0, END)
         self.dir_entry.insert(0, profile["directory"])
@@ -1768,7 +1772,6 @@ class FileOrganizerGUI(tk.Tk):
 
     def enable_scheduling(self):
         interval = self.schedule_combo.get()
-        schedule.clear()
         if interval == "5 minutos":
             schedule.every(5).minutes.do(self.start_organization)
         elif interval == "1 hora":
