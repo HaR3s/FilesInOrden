@@ -329,8 +329,8 @@ class FileOrganizerGUI(tk.Tk):
             ".txt": "Documentos_txt",
             "": "Otros",
         }
-        self.profiles = {}
         self.current_profile = "default"
+        self.profiles = {}
         self.load_profiles()
 
         # Inicializar el resto de componentes
@@ -394,7 +394,7 @@ class FileOrganizerGUI(tk.Tk):
 
     def load_profile_settings(self):
         if self.current_profile not in self.profiles:
-            self.load_profiles()
+            self.current_profile = "default"
 
         profile = self.profiles[self.current_profile]
         self.dir_entry.delete(0, END)
