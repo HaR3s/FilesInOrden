@@ -1090,7 +1090,7 @@ class FileOrganizerGUI(tk.Tk):
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
         self.change_theme()
-        self.update_font_settings()
+        # self.update_font_settings()
         self.toggle_icons()
         self.toggle_compact_view()
         self.toggle_preview()
