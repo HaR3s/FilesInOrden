@@ -1115,7 +1115,7 @@ class FileOrganizerGUI(tk.Tk):
         ttk.Label(theme_frame, text="Estilo:").grid(row=0, column=0, sticky="e", padx=5)
         self.theme_combo = ttk.Combobox(
             theme_frame,
-            values=["Claro", "Oscuro", "Profesional", "Sistema"],
+            values=["Claro", "Oscuro", "Profesional"],
             state="readonly",
         )
         self.theme_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
