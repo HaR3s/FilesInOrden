@@ -402,6 +402,9 @@ class FileOrganizerGUI(tk.Tk):
         self.schedule_combo.set(profile["schedule"])
         self.update_format_tree(profile["formatos"])
 
+    def bservador(self):
+        messagebox.showinfo("Info", "Funcion automatica\nahun no esta terminada")
+
     def create_widgets(self):
         """
         Crea todos los widgets de la interfaz gráfica, organizados en pestañas y secciones.
@@ -455,9 +458,9 @@ class FileOrganizerGUI(tk.Tk):
 
         buttons = [
             ("Previsualizar", self.preview_changes, 0, 0),
-            ("Organizar Ahora", self.start_organization, 0, 1),
+            ("Organizar", self.start_organization, 0, 1),
             ("Deshacer", self.undo_last, 0, 2),
-            ("Estadísticas", self.show_stats, 0, 3),
+            ("Observer", self.observador, 0, 3),
         ]
 
         for text, command, row, col in buttons:
@@ -1486,7 +1489,7 @@ class FileOrganizerGUI(tk.Tk):
                 except Empty:
                     continue
                 except Exception as e:
-                    self.logger.error(f"Error en orosses animations {e}")
+                    self.logger.error(f"Error en prosess animations {e}")
 
         # Hilo para procesar animaciones
         threading.Thread(
@@ -1522,7 +1525,7 @@ class FileOrganizerGUI(tk.Tk):
                 break
 
     def _animate_slide(self, widget, **config):
-        messagebox.showinfo("Lo siento ahun no implementado")
+        messagebox.showinfo("Info", "Lo siento ahun no implementado")
 
     def setup_statusbar(self):
         """Configura una barra de estado avanzada con múltiples secciones"""
