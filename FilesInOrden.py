@@ -349,9 +349,6 @@ class FileOrganizerGUI(tk.Tk):
         except Exception as e:
             self.logger.error(f"No se pudo cargar el icono: {e}")
 
-        # Cargar perfiles después de que los atributos estén inicializados
-        self.load_profiles()
-
         # Ahora crear los widgets
         self.create_widgets()
         self.setup_performance_optimizations()
@@ -360,176 +357,6 @@ class FileOrganizerGUI(tk.Tk):
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
-
-    # def create_new_profile(self):
-    #     """Crea un nuevo perfil con diálogo interactivo"""
-    #     dialog = tk.Toplevel(self)
-    #     dialog.title("Nuevo Perfil")
-    #     dialog.transient(self)
-    #     dialog.grab_set()
-    #
-    #     # UI del diálogo
-    #     ttk.Label(dialog, text="Nombre del perfil:").pack(padx=10, pady=5)
-    #     name_entry = ttk.Entry(dialog)
-    #     name_entry.pack(padx=10, pady=5)
-    #
-    #     # ttk.Label(dialog, text="Carpeta base:").pack(padx=10, pady=5)
-    #
-    #     dir_entry = ttk.Entry(dialog)
-    #     dir_entry.pack(padx=10, pady=5)
-    #     path = ttk.Button(
-    #         dialog, text="Carpeta base", command=self.select_directory
-    #     ).pack(pady=5)
-    #     dir_entry = ttk.Entry(path)
-    #     dir_entry.pack(padx=10, pady=5)
-    #     ttk.Button(
-    #         dialog, text="Examinar", command=lambda: self.validate_directory(dir_entry)
-    #     ).pack(pady=5)
-
-    def create_new_profile(self):
-        """Crea un nuevo perfil con diálogo interactivo"""
-        dialog = tk.Toplevel(self)
-        dialog.title("Nuevo Perfil")
-        dialog.transient(self)
-        dialog.grab_set()
-
-        # Frame principal para mejor organización
-        main_frame = ttk.Frame(dialog, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
-
-        # Nombre del perfil
-        ttk.Label(main_frame, text="Nombre del perfil:").grid(
-            row=0, column=0, sticky=tk.W, pady=5
-        )
-        self.profile_name_entry = ttk.Entry(main_frame, width=40)
-        self.profile_name_entry.grid(row=0, column=1, columnspan=2, padx=5, pady=5)
-
-        ttk.Button(
-            main_frame,
-            text="Seleccionar Carpeta",
-            command=lambda: self.select_directory(),
-        ).grid(row=1, column=2, padx=5, pady=5)
-
-        # Botones de acción
-        button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=2, column=0, columnspan=3, pady=10)
-
-        ttk.Button(button_frame, text="Cancelar", command=dialog.destroy).pack(
-            side=tk.RIGHT, padx=5
-        )
-
-        ttk.Button(
-            button_frame, text="Guardar", command=lambda: self.save_profile()
-        ).pack(side=tk.RIGHT, padx=5)
-
-        # Enfocar el campo de nombre al abrir
-        self.profile_name_entry.focus_set()
-
-    def save_profile(self):
-        profile_name = self.profile_name_entry.get()
-
-        # Validación de nombres
-        if not profile_name:
-            return
-        if profile_name.lower() == "default":
-            messagebox.showwarning("Nombre inválido", "'default' está reservado")
-            self.log("Nombre inválido 'default' está reservado")
-            self.logger.error("Nombre invalido 'default' está reservado")
-            return
-        if profile_name in self.profiles:
-            messagebox.showwarning(f"Nombre existente '{profile_name}' ya está en uso")
-            self.log(f"Nombre existente {profile_name} ya está en uso")
-            self.logger.error(f"Nombre existente {profile_name} ya está en uso")
-            return
-
-        self.profiles[profile_name] = {
-            "directory": self.dir_entry.get(),
-            "formatos": self.get_current_formats(),
-            "schedule": self.schedule_combo.get(),
-        }
-
-        self.save_to_file()
-        self.load_profiles()
-        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' guardado")
-        self.log(f"Perfil {profile_name} guardado")
-        self.logger.info("Éxito", f"Perfil '{profile_name}' guardado")
-
-    def delete_profile(self):
-        profile_name = self.profile_combo.get()
-        if profile_name == "default":
-            messagebox.showerror(
-                "Error", "No se puede eliminar el perfil predeterminado"
-            )
-            self.log("Error", "No se puede eliminar el perfil predeterminado")
-            self.logger.info("Error", "No se puede eliminar el perfil predeterminado")
-
-            return
-
-        del self.profiles[profile_name]
-        self.save_to_file()
-        self.load_profiles()
-        messagebox.showinfo("Éxito", f"Perfil '{profile_name}' eliminado")
-        self.log(f"Perfil '{profile_name}' eliminado")
-        self.logger.info("Éxito", f"Perfil '{profile_name}' eliminado")
-
-    def build_profile_settings(self, parent):
-        """
-        Construye el panel de configuración de perfiles con:
-        - Selección de perfil existente
-        - Creación de nuevos perfiles
-        - Eliminación de perfiles
-        - Importación/exportación de perfiles
-        """
-        # Frame principal
-        frame = ttk.LabelFrame(parent, text="Gestión de Perfiles", padding=10)
-        frame.pack(fill=tk.BOTH, expand=True, pady=5)
-
-        # Contenedor para controles superiores
-        top_frame = ttk.Frame(frame)
-        top_frame.pack(fill=tk.X, pady=5)
-
-        # Combo box para selección de perfiles
-        ttk.Label(top_frame, text="Perfil actual:").pack(side=tk.LEFT, padx=5)
-        self.profile_combo = ttk.Combobox(
-            top_frame, values=list(self.profiles.keys()), state="readonly"
-        )
-        self.profile_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        self.profile_combo.set(self.current_profile)
-        self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_changed)
-
-        # Botones de acción
-        btn_frame = ttk.Frame(frame)
-        btn_frame.pack(fill=tk.X, pady=5)
-
-        profile_buttons = [
-            ("Guardar", self.save_profile),
-            ("Eliminar", self.delete_profile),
-            ("Nuevo", self.create_new_profile),
-        ]
-
-        for text, command in profile_buttons:
-            btn = ttk.Button(
-                btn_frame, text=text, command=command, style="Small.TButton"
-            )
-            btn.pack(side=tk.LEFT, padx=5, expand=True)
-
-        # Información del perfil
-        info_frame = ttk.LabelFrame(frame, text="Información del Perfil", padding=10)
-        info_frame.pack(fill=tk.BOTH, expand=True, pady=5)
-
-        # Configurar estilo para botones pequeños
-        self.style.configure(
-            "Small.TButton", font=("Segoe UI", 8), padding=4
-        )  # valor por defecto 2
-
-    def _on_profile_changed(self, event):
-        """Manejador para cambio de perfil seleccionado"""
-        selected = self.profile_combo.get()
-        if selected and selected in self.profiles:
-            self.current_profile = selected
-            self.load_profile_settings()
-            self.log(f"Perfil cambiado a: {selected}")
-            self.logger.info(f"Perfil cambiado a: {selected}")
 
     def create_widgets(self):
         """
@@ -617,12 +444,6 @@ class FileOrganizerGUI(tk.Tk):
         # Subpestañas dentro de Configuración
         config_notebook = ttk.Notebook(config_tab)
         config_notebook.pack(fill=tk.BOTH, expand=True)
-
-        # NOTE: Elimino la pestaña de prfiles
-        # Subpestaña de Perfiles
-        # profile_tab = ttk.Frame(config_notebook, padding=10)
-        # self.build_profile_settings(profile_tab)
-        # config_notebook.add(profile_tab, text="Perfiles")
 
         # Subpestaña de Formatos
         format_tab = ttk.Frame(config_notebook, padding=10)
@@ -857,43 +678,6 @@ class FileOrganizerGUI(tk.Tk):
 
     def build_config_tab(self, parent):
         """Versión compacta similar al ejemplo"""
-        # Configuración de perfiles
-        profile_frame = ttk.LabelFrame(parent, text="Perfiles")
-        profile_frame.pack(padx=10, pady=5, fill=tk.X)
-
-        self.profile_combo = ttk.Combobox(profile_frame)
-        self.profile_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        ttk.Button(profile_frame, text="Guardar", command=self.save_profile).pack(
-            side=tk.LEFT
-        )
-        ttk.Button(profile_frame, text="Eliminar", command=self.delete_profile).pack(
-            side=tk.LEFT
-        )
-
-        # Configuración de formatos
-        format_frame = ttk.LabelFrame(parent, text="Formatos de Archivo")
-        format_frame.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
-
-        self.search_entry = ttk.Entry(format_frame)
-        self.search_entry.pack(fill=tk.X, padx=5, pady=2)
-        self.search_entry.bind("<KeyRelease>", self.filter_formats)
-
-        self.format_tree = ttk.Treeview(
-            format_frame, columns=("ext", "folder"), show="headings"
-        )
-        self.format_tree.heading("ext", text="Extensión")
-        self.format_tree.heading("folder", text="Carpeta")
-        self.format_tree.pack(fill=tk.BOTH, expand=True)
-
-        control_frame = ttk.Frame(format_frame)
-        control_frame.pack(pady=5)
-        ttk.Button(control_frame, text="Agregar", command=self.add_format).pack(
-            side=tk.LEFT
-        )
-        ttk.Button(control_frame, text="Eliminar", command=self.remove_format).pack(
-            side=tk.LEFT
-        )
-
         # Configuración de programación
         schedule_frame = ttk.LabelFrame(parent, text="Programación")
         schedule_frame.pack(padx=10, pady=5, fill=tk.X)
@@ -971,129 +755,10 @@ class FileOrganizerGUI(tk.Tk):
         if selected:
             self.format_tree.delete(selected[0])
 
-    def toggle_icons(self):
-        """Activa/desactiva la visualización de iconos"""
-        show_icons = self.show_icons_var.get()
-        # Implementar lógica para mostrar/ocultar iconos
-        self.logger.info(f"Iconos {'activados' if show_icons else 'desactivados'}")
-
-    def toggle_compact_view(self):
-        """Activa/desactiva la vista compacta"""
-        compact = self.compact_view_var.get()
-        # Implementar lógica para cambiar el espaciado y tamaño de widgets
-        self.logger.info(f"Vista {'compacta' if compact else 'normal'} activada")
-
-    def toggle_preview(self):
-        """Muestra/oculta el panel de previsualización"""
-        show_preview = self.show_preview_var.get()
-        if show_preview:
-            self.preview_tree.pack(fill=tk.BOTH, expand=True)
-        else:
-            self.preview_tree.pack_forget()
-
-    def update_font_settings(self, event=None):
-        """
-        Actualiza la configuración de fuentes en toda la aplicación de manera segura y consistente.
-        Maneja widgets estándar y ttk, incluyendo Treeviews con sus encabezados.
-
-        Args:
-            event: Parámetro opcional para manejar eventos de tkinter
-        """
-        try:
-            # 1. Obtener configuración seleccionada
-            font_family = self.font_family_combo.get()
-            font_size = int(self.font_size_combo.get())
-
-            # 2. Validación de parámetros
-            if not font_family:
-                raise ValueError("Debe seleccionar una familia de fuentes")
-            if font_size < 8 or font_size > 16:
-                raise ValueError("El tamaño de fuente debe estar entre 8 y 16")
-
-            # 3. Configuración de estilos principales
-            self.style.configure(".", font=(font_family, font_size))
-            self.style.configure("TLabel", font=(font_family, font_size))
-            self.style.configure("TButton", font=(font_family, font_size))
-            self.style.configure("TEntry", font=(font_family, font_size))
-            self.style.configure("TCombobox", font=(font_family, font_size))
-
-            # 4. Configuración especial para Treeviews
-            rowheight = max(25, font_size + 10)  # Ajuste dinámico del alto de fila
-
-            # Estilo para items normales
-            self.style.configure(
-                "Treeview", font=(font_family, font_size), rowheight=rowheight
-            )
-
-            # Estilo para encabezados (usando el sistema de estilos)
-            self.style.configure(
-                "Treeview.Heading",
-                font=(font_family, font_size, "bold"),
-                padding=(5, 2, 5, 2),
-            )  # Padding: arriba, derecha, abajo, izquierda
-
-            # 5. Actualizar widgets no-ttk (área de log)
-            self.log_area.configure(font=(font_family, font_size))
-
-            # 6. Actualizar Treeviews existentes
-            for treeview in [
-                getattr(self, name, None) for name in ["preview_tree", "format_tree"]
-            ]:
-                if treeview:
-                    # Fuerza la actualización de los encabezados
-                    for col in treeview["columns"]:
-                        current_text = treeview.heading(col, "text")
-                        treeview.heading(
-                            col, text=current_text
-                        )  # Esto refresca el estilo
-
-                    # Ajustar ancho de columnas basado en la nueva fuente
-                    treeview.update_idletasks()
-                    for col in treeview["columns"]:
-                        treeview.column(col, width=treeview.column(col, "width"))
-
-            # 7. Actualizar otros widgets especiales
-            if hasattr(self, "profile_combo"):
-                self.profile_combo.configure(font=(font_family, font_size))
-
-            # 8. Registrar el cambio
-            self.logger.info(
-                f"Configuración de fuente actualizada: {font_family} {font_size}pt"
-            )
-            messagebox.showinfo(
-                "Éxito",
-                f"Fuente cambiada a {font_family} {font_size}pt\n"
-                "La configuración se ha aplicado a toda la aplicación.",
-                parent=self,
-            )
-
-        except ValueError as ve:
-            self.logger.warning(f"Error en configuración de fuente: {str(ve)}")
-            messagebox.showwarning(
-                "Configuración inválida",
-                f"Error en configuración de fuente:\n{str(ve)}",
-                parent=self,
-            )
-        except Exception as e:
-            self.logger.error(
-                f"Error crítico al actualizar fuentes: {str(e)}", exc_info=True
-            )
-            messagebox.showerror(
-                "Error crítico",
-                f"No se pudo aplicar la configuración de fuente:\n{str(e)}",
-                parent=self,
-            )
-        finally:
-            # Enfocar nuevamente la ventana principal
-            self.focus_set()
-
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
         self.change_theme()
         # self.update_font_settings()
-        self.toggle_icons()
-        self.toggle_compact_view()
-        self.toggle_preview()
         messagebox.showinfo("Éxito", "Configuración de apariencia aplicada")
 
     def build_appearance_settings(self, parent):
@@ -1122,70 +787,10 @@ class FileOrganizerGUI(tk.Tk):
         self.theme_combo.set("Profesional")
         self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
 
-        # NOTE: Elimino la seccion de fuentes
-        #
-        # Sección de fuentes
-        # font_frame = ttk.LabelFrame(main_frame, text="Fuentes", padding=10)
-        # font_frame.pack(fill=tk.X, pady=5)
-        #
-        # ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky="e", padx=5)
-        # self.font_size_combo = ttk.Combobox(
-        #     font_frame, values=["8", "9", "10", "11", "12", "14", "16"], width=5
-        # )
-        # self.font_size_combo.grid(row=0, column=1, sticky="w", padx=5, pady=2)
-        # self.font_size_combo.set("10")
-        # self.font_size_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
-        #
-        # ttk.Label(font_frame, text="Familia:").grid(row=1, column=0, sticky="e", padx=5)
-        # self.font_family_combo = ttk.Combobox(
-        #     font_frame,
-        #     values=["Segoe UI", "Arial", "Helvetica", "Courier New", "Times New Roman"],
-        #     width=15,
-        # )
-        # self.font_family_combo.grid(row=1, column=1, sticky="w", padx=5, pady=2)
-        # self.font_family_combo.set("Segoe UI")
-        # self.font_family_combo.bind("<<ComboboxSelected>>", self.update_font_settings)
-
-        # Sección de opciones visuales
         options_frame = ttk.LabelFrame(main_frame, text="Opciones Visuales", padding=10)
         options_frame.pack(fill=tk.X, pady=5)
 
-        # self.show_icons_var = tk.BooleanVar(value=True)
-        # ttk.Checkbutton(
-        #     options_frame,
-        #     text="Mostrar iconos en los archivos",
-        #     variable=self.show_icons_var,
-        #     command=self.toggle_icons,
-        # ).pack(anchor=tk.W, pady=2)
-        #
-        # self.compact_view_var = tk.BooleanVar(value=False)
-        # ttk.Checkbutton(
-        #     options_frame,
-        #     text="Vista compacta",
-        #     variable=self.compact_view_var,
-        #     command=self.toggle_compact_view,
-        # ).pack(anchor=tk.W, pady=2)
-        #
-        # self.show_preview_var = tk.BooleanVar(value=True)
-        # ttk.Checkbutton(
-        #     options_frame,
-        #     text="Mostrar previsualización",
-        #     variable=self.show_preview_var,
-        #     command=self.toggle_preview,
-        # ).pack(anchor=tk.W, pady=2)
-        #
-        # # Botón para aplicar cambios
-        # apply_btn = ttk.Button(
-        #     main_frame,
-        #     text="Aplicar Cambios",
-        #     command=self.apply_appearance_settings,
-        #     style="Accent.TButton",
-        # )
-        # apply_btn.pack(pady=10)
-
-        # Configurar el grid para que se expanda correctamente
         theme_frame.columnconfigure(1, weight=1)
-        # font_frame.columnconfigure(1, weight=1)
 
     def build_format_settings(self, parent):
         """
@@ -1591,46 +1196,6 @@ class FileOrganizerGUI(tk.Tk):
         folder_entry.pack(padx=10, pady=2)
 
         ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
-
-    def load_profiles(self):
-        """
-        Carga los perfiles desde el archivo JSON con manejo robusto de errores.
-        Si el archivo no existe o está corrupto, crea un perfil predeterminado.
-        """
-        profile_path = os.path.abspath("profiles.json")  # Usar ruta absoluta
-        self.logger.info(f"Cargando perfiles desde: {profile_path}")
-
-        try:
-            with open(profile_path, "r", encoding="utf-8") as f:
-                self.profiles = json.load(f)
-
-            # Validar estructura básica
-            if not isinstance(self.profiles, dict):
-                raise json.JSONDecodeError("Formato inválido", doc=profile_path, pos=0)
-
-            self.logger.info(f"Perfiles cargados: {len(self.profiles)}")
-
-        except (FileNotFoundError, json.JSONDecodeError, AttributeError) as e:
-            self.logger.warning(
-                f"Error cargando perfiles ({type(e).__name__}), creando predeterminado"
-            )
-
-            self.profiles = {
-                "default": {
-                    "name": "default",
-                    "directory": "",
-                    "formatos": self.default_formats.copy(),  # Copia para evitar mutaciones
-                    "created_at": datetime.now().isoformat(),  # Metadata adicional
-                }
-            }
-            self.save_to_file()  # Guardar inmediatamente
-
-    def load_profile_settings(self):
-        profile = self.profiles[self.current_profile]
-        self.dir_entry.delete(0, END)
-        self.dir_entry.insert(0, profile["directory"])
-        self.schedule_combo.set(profile["schedule"])
-        self.update_format_tree(profile["formatos"])
 
     def undo_last(self):
         if self.undo_stack:
