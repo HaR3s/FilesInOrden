@@ -1331,7 +1331,7 @@ class FileOrganizerGUI(tk.Tk):
                 # ... otros íconos
             }
 
-            for icon_name, (filename, fallback_color) in icon_mapping.items():
+            for icon_name, (filename, fallback_color) in icon_mapping.values():
                 try:
                     icon_path = os.path.join("icons", filename)
                     if os.path.exists(icon_path):
