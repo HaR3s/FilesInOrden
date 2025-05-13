@@ -1166,19 +1166,16 @@ class FileOrganizerGUI(tk.Tk):
         pass
 
     def add_format(self):
+        self.log(f"Perfiles: {self.profiles} current_profile {self.current_profile}")
+        self.log(f"default format {self.default_formats}")
+
         def save_new_format():
             ext = ext_entry.get().strip()
             folder = folder_entry.get().strip()
             if ext and folder:
-                self.log(
-                    f"Perfiles: {self.profiles} current_profile {self.current_profile}"
-                )
-                self.log(f"default format {self.default_formats}")
                 self.format_tree.insert("", END, values=(ext, folder))
                 self.default_formats.setdefault(ext, folder)
-                self.log(f"default format {self.default_formats}")
                 self.profiles.setdefault(self.current_profile, self.default_formats)
-                self.log(f"default format {self.default_formats}")
                 top.destroy()
 
         top = Toplevel(self)
@@ -1193,6 +1190,9 @@ class FileOrganizerGUI(tk.Tk):
         folder_entry.pack(padx=10, pady=2)
 
         ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
+
+        self.log(f"Perfiles: {self.profiles} current_profile {self.current_profile}")
+        self.log(f"default format {self.default_formats}")
 
     def undo_last(self):
         if self.undo_stack:
