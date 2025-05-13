@@ -618,10 +618,11 @@ class FileOrganizerGUI(tk.Tk):
         config_notebook = ttk.Notebook(config_tab)
         config_notebook.pack(fill=tk.BOTH, expand=True)
 
+        # NOTE: Elimino la pestaña de prfiles
         # Subpestaña de Perfiles
-        profile_tab = ttk.Frame(config_notebook, padding=10)
-        self.build_profile_settings(profile_tab)
-        config_notebook.add(profile_tab, text="Perfiles")
+        # profile_tab = ttk.Frame(config_notebook, padding=10)
+        # self.build_profile_settings(profile_tab)
+        # config_notebook.add(profile_tab, text="Perfiles")
 
         # Subpestaña de Formatos
         format_tab = ttk.Frame(config_notebook, padding=10)
