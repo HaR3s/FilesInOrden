@@ -394,7 +394,7 @@ class FileOrganizerGUI(tk.Tk):
 
     def load_profile_settings(self):
         if self.current_profile not in self.profiles:
-            self.current_profile = "default"
+            self.load_profiles()
 
         profile = self.profiles[self.current_profile]
         self.dir_entry.delete(0, END)
