@@ -445,7 +445,7 @@ class FileOrganizerGUI(tk.Tk):
         self.profiles[profile_name] = {
             "directory": self.dir_entry.get(),
             "formatos": self.get_current_formats(),
-            # "schedule": self.schedule_combo.get(),
+            "schedule": self.schedule_combo.get(),
         }
 
         self.save_to_file()
