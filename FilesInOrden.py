@@ -734,66 +734,6 @@ class FileOrganizerGUI(tk.Tk):
             side=tk.LEFT
         )
 
-    def import_formats(self):
-        """Importa formatos desde un archivo JSON"""
-        filepath = filedialog.askopenfilename(
-            title="Importar formatos",
-            filetypes=[("Archivos JSON", "*.json"), ("Todos los archivos", "*.*")],
-            defaultextension=".json",
-        )
-
-        if not filepath:  # Usuario canceló
-            return
-
-        try:
-            with open(filepath, "r", encoding="utf-8") as f:
-                formats = json.load(f)
-
-                # Validar estructura del archivo
-                if not isinstance(formats, dict):
-                    raise ValueError(
-                        "El archivo debe contener un diccionario de formatos"
-                    )
-
-                # Actualizar el perfil actual
-                self.profiles[self.current_profile]["formatos"] = formats
-                self.update_format_tree(formats)
-
-                self.logger.info(f"Formatos importados desde {filepath}")
-                messagebox.showinfo("Éxito", "Formatos importados correctamente")
-
-        except json.JSONDecodeError:
-            messagebox.showerror("Error", "El archivo no es un JSON válido")
-            self.logger.error("Error al decodificar JSON de formatos")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo importar: {str(e)}")
-            self.logger.error(f"Error importando formatos: {e}", exc_info=True)
-
-    def export_formats(self):
-        """Exporta los formatos actuales a un archivo JSON"""
-        filepath = filedialog.asksaveasfilename(
-            title="Exportar formatos",
-            filetypes=[("Archivos JSON", "*.json"), ("Todos los archivos", "*.*")],
-            defaultextension=".json",
-            initialfile=f"formatos_{self.current_profile}.json",
-        )
-
-        if not filepath:  # Usuario canceló
-            return
-
-        try:
-            formats = self.get_current_formats()
-
-            with open(filepath, "w", encoding="utf-8") as f:
-                json.dump(formats, f, indent=4, ensure_ascii=False)
-
-            self.logger.info(f"Formatos exportados a {filepath}")
-            messagebox.showinfo("Éxito", "Formatos exportados correctamente")
-
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo exportar: {str(e)}")
-            self.logger.error(f"Error exportando formatos: {e}", exc_info=True)
-
     def remove_format(self):
         selected = self.format_tree.selection()
         if selected:
@@ -861,7 +801,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Configurar scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical")
-        hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
+        # hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
 
         # Crear el Treeview
         self.format_tree = ttk.Treeview(
@@ -869,7 +809,7 @@ class FileOrganizerGUI(tk.Tk):
             columns=("ext", "folder"),
             show="headings",
             yscrollcommand=vsb.set,
-            xscrollcommand=hsb.set,
+            # xscrollcommand=hsb.set,
             selectmode="browse",
             height=10,
         )
@@ -882,12 +822,12 @@ class FileOrganizerGUI(tk.Tk):
 
         # Configurar scrollbars
         vsb.config(command=self.format_tree.yview)
-        hsb.config(command=self.format_tree.xview)
+        # hsb.config(command=self.format_tree.xview)
 
         # Layout
         self.format_tree.grid(row=0, column=0, sticky="nsew")
         vsb.grid(row=0, column=1, sticky="ns")
-        hsb.grid(row=1, column=0, sticky="ew")
+        # hsb.grid(row=1, column=0, sticky="ew")
 
         # Configurar el grid para expandirse
         tree_frame.grid_rowconfigure(0, weight=1)
@@ -1229,6 +1169,7 @@ class FileOrganizerGUI(tk.Tk):
             folder = folder_entry.get().strip()
             if ext and folder:
                 self.format_tree.insert("", END, values=(ext, folder))
+                self.save_to_file()
                 top.destroy()
 
         top = Toplevel(self)
