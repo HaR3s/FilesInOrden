@@ -1171,7 +1171,8 @@ class FileOrganizerGUI(tk.Tk):
             folder = folder_entry.get().strip()
             if ext and folder:
                 self.format_tree.insert("", END, values=(ext, folder))
-                self.default_formats.setdefault(ext, folder)
+                # self.default_formats.setdefault(ext, folder)
+                self.profiles["default"]["formatos"].setdefault(ext, folder)
                 top.destroy()
 
         top = Toplevel(self)
@@ -1186,7 +1187,7 @@ class FileOrganizerGUI(tk.Tk):
         folder_entry.pack(padx=10, pady=2)
 
         ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
-        self.profiles.setdefault(self.current_profile, self.default_formats)
+
         self.log(f"Perfiles: {self.profiles} current_profile {self.current_profile}")
         self.log(f"default format {self.default_formats}")
 
