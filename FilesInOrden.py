@@ -906,7 +906,7 @@ class FileOrganizerGUI(tk.Tk):
             btn.pack(side=tk.LEFT, padx=5, expand=True)
 
         # Cargar formatos actuales
-        self.update_format_tree(self.load_profile.get(self.current_profile), {}))
+        self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
 
     def _save_new_format(self, dialog, ext, folder):
         """Guarda el nuevo formato validado"""
