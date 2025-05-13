@@ -1321,7 +1321,7 @@ class FileOrganizerGUI(tk.Tk):
 
         def _load_icons():
             icon_mapping = {
-                "file": ("document.png", "blue"),
+                "file": (" document.png", "blue"),
                 "folder": ("folder.png", "green"),
                 "image": ("image.png", "yellow"),
                 "PDFs": ("PDFs.png", "red"),
@@ -1331,16 +1331,16 @@ class FileOrganizerGUI(tk.Tk):
                 # ... otros íconos
             }
 
-            for icon_name, (filename, fallback_color) in icon_mapping.values():
+            for icon_name, filename in icon_mapping.items():
                 try:
                     icon_path = os.path.join("icons", filename)
                     if os.path.exists(icon_path):
                         self.icon_cache[icon_name] = tk.PhotoImage(file=icon_path)
                     else:
                         self.logger.warning(f"Ícono no encontrado: {icon_path}")
-                        self.icon_cache[icon_name] = self.create_default_icon(
-                            fallback_color
-                        )
+                        # self.icon_cache[icon_name] = self.create_default_icon(
+                        # fallback_color
+                        # )
                 except Exception as e:
                     self.logger.error(f"Error cargando ícono {icon_name}: {str(e)}")
                     self.icon_cache[icon_name] = self.icon_cache["error"]
