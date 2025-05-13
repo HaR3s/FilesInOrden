@@ -312,6 +312,8 @@ class TextRedirector(object):
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.setup_logging()
+        self.logger.info("Inicializando aplicación")
         # Inicializar atributos PRIMERO
         self.default_formats = {
             ".jpg": "Fotos",
@@ -333,8 +335,6 @@ class FileOrganizerGUI(tk.Tk):
 
         # Inicializar el resto de componentes
         self.task_queue = Queue(maxsize=100)
-        self.setup_logging()
-        self.logger.info("Inicializando aplicación")
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
             "file_operations": TTLCache(maxsize=500, ttl=60),
