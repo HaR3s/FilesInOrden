@@ -312,6 +312,7 @@ class TextRedirector(object):
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.load_profile = {}
         # Inicializar atributos PRIMERO
         self.current_profile = "default"
         self.default_formats = {
