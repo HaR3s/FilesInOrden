@@ -1150,38 +1150,38 @@ class FileOrganizerGUI(tk.Tk):
         options_frame = ttk.LabelFrame(main_frame, text="Opciones Visuales", padding=10)
         options_frame.pack(fill=tk.X, pady=5)
 
-        self.show_icons_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
-            options_frame,
-            text="Mostrar iconos en los archivos",
-            variable=self.show_icons_var,
-            command=self.toggle_icons,
-        ).pack(anchor=tk.W, pady=2)
-
-        self.compact_view_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(
-            options_frame,
-            text="Vista compacta",
-            variable=self.compact_view_var,
-            command=self.toggle_compact_view,
-        ).pack(anchor=tk.W, pady=2)
-
-        self.show_preview_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
-            options_frame,
-            text="Mostrar previsualización",
-            variable=self.show_preview_var,
-            command=self.toggle_preview,
-        ).pack(anchor=tk.W, pady=2)
-
-        # Botón para aplicar cambios
-        apply_btn = ttk.Button(
-            main_frame,
-            text="Aplicar Cambios",
-            command=self.apply_appearance_settings,
-            style="Accent.TButton",
-        )
-        apply_btn.pack(pady=10)
+        # self.show_icons_var = tk.BooleanVar(value=True)
+        # ttk.Checkbutton(
+        #     options_frame,
+        #     text="Mostrar iconos en los archivos",
+        #     variable=self.show_icons_var,
+        #     command=self.toggle_icons,
+        # ).pack(anchor=tk.W, pady=2)
+        #
+        # self.compact_view_var = tk.BooleanVar(value=False)
+        # ttk.Checkbutton(
+        #     options_frame,
+        #     text="Vista compacta",
+        #     variable=self.compact_view_var,
+        #     command=self.toggle_compact_view,
+        # ).pack(anchor=tk.W, pady=2)
+        #
+        # self.show_preview_var = tk.BooleanVar(value=True)
+        # ttk.Checkbutton(
+        #     options_frame,
+        #     text="Mostrar previsualización",
+        #     variable=self.show_preview_var,
+        #     command=self.toggle_preview,
+        # ).pack(anchor=tk.W, pady=2)
+        #
+        # # Botón para aplicar cambios
+        # apply_btn = ttk.Button(
+        #     main_frame,
+        #     text="Aplicar Cambios",
+        #     command=self.apply_appearance_settings,
+        #     style="Accent.TButton",
+        # )
+        # apply_btn.pack(pady=10)
 
         # Configurar el grid para que se expanda correctamente
         theme_frame.columnconfigure(1, weight=1)
