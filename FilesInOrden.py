@@ -738,6 +738,9 @@ class FileOrganizerGUI(tk.Tk):
         selected = self.format_tree.selection()
         if selected:
             self.format_tree.delete(selected[0])
+            self.profiles["default"]["formatos"].pop(selected[0])
+            self.log(selected)
+            self.log(self.profiles["default"]["formatos"])
 
     def apply_appearance_settings(self):
         """Aplica todos los cambios de apariencia"""
@@ -1046,37 +1049,6 @@ class FileOrganizerGUI(tk.Tk):
         except Exception as e:
             self.logger.error(f"Error actualizando widgets: {e}", exc_info=True)
 
-    # def build_appearance_settings(self, parent):
-    #     """Construye el panel de configuración de apariencia"""
-    #     frame = ttk.LabelFrame(parent, text="Personalización", padding=10)
-    #     frame.pack(fill=tk.BOTH, expand=True, pady=5)
-    #
-    #     # Selector de tema
-    #     ttk.Label(frame, text="Tema visual:").pack(anchor=tk.W)
-    #     self.theme_combo = ttk.Combobox(
-    #         frame, values=["Claro", "Oscuro", "Profesional", "Sistema"]
-    #     )
-    #     self.theme_combo.pack(fill=tk.X, pady=5)
-    #     self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
-    #
-    #     # Configuración de fuente
-    #     font_frame = ttk.LabelFrame(frame, text="Fuente", padding=10)
-    #     font_frame.pack(fill=tk.X, pady=5)
-    #
-    #     ttk.Label(font_frame, text="Tamaño:").grid(row=0, column=0, sticky=tk.W)
-    #     self.font_size = ttk.Combobox(
-    #         font_frame, values=["8", "9", "10", "11", "12"], width=5
-    #     )
-    #     self.font_size.grid(row=0, column=1, sticky=tk.W, padx=5)
-    #     self.font_size.set("9")
-    #
-    #     # Configuración de iconos
-    #     ttk.Checkbutton(
-    #         frame,
-    #         text="Mostrar iconos en los archivos",
-    #         variable=tk.BooleanVar(value=True),
-    #     ).pack(anchor=tk.W, pady=5)
-    #
     def setup_theme_system(self):
         """Sistema completo de temas"""
         self.themes = {
@@ -1187,9 +1159,6 @@ class FileOrganizerGUI(tk.Tk):
         folder_entry.pack(padx=10, pady=2)
 
         ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
-
-        self.log(f"Perfiles: {self.profiles} current_profile {self.current_profile}")
-        self.log(f"default format {self.default_formats}")
 
     def undo_last(self):
         if self.undo_stack:
