@@ -895,7 +895,7 @@ class FileOrganizerGUI(tk.Tk):
 
         control_buttons = [
             ("Agregar", self.add_format),
-            # ("Editar", self.edit_format),
+            ("Editar", self.edit_format),
             ("Eliminar", self.remove_format),
         ]
 
@@ -1215,6 +1215,9 @@ class FileOrganizerGUI(tk.Tk):
     def save_to_file(self):
         with open("profiles.json", "w") as f:
             json.dump(self.profiles, f)
+
+    def edit_format(self):
+        pass
 
     def add_format(self):
         def save_new_format():
