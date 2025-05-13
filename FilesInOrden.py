@@ -1172,8 +1172,7 @@ class FileOrganizerGUI(tk.Tk):
             if ext and folder:
                 self.format_tree.insert("", END, values=(ext, folder))
                 self.default_formats.setdefault(ext, folder)
-                self.save_to_file()
-                self.load_profiles()
+                self.profiles.setdefault(self.current_profile, self.default_formats)
                 top.destroy()
 
         top = Toplevel(self)
