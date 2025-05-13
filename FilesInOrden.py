@@ -738,8 +738,8 @@ class FileOrganizerGUI(tk.Tk):
         selected = self.format_tree.selection()
         if selected:
             self.format_tree.delete(selected[0])
-            self.profiles["default"]["formatos"].pop(selected[0])
             self.log(selected)
+            self.profiles["default"]["formatos"].pop(selected[0])
             self.log(self.profiles["default"]["formatos"])
 
     def apply_appearance_settings(self):
