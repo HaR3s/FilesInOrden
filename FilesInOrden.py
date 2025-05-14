@@ -613,18 +613,15 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         # Configurar columnas
+        self.preview_tree.heading("icon", text="", anchor=tk.W)
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
         self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
 
+        self.preview_tree.column("icon", width=30, stretch=tk.NO)
         self.preview_tree.column("original", width=300, stretch=tk.YES)
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
         self.preview_tree.column("estado", width=100, stretch=tk.NO)
-
-        # Añadir columna para íconos
-        self.preview_tree["columns"] = ("icon", "original", "destino", "estado")
-        self.preview_tree.heading("icon", text="", anchor=tk.W)
-        self.preview_tree.column("icon", width=30, stretch=tk.NO)
 
         # Configurar scrollbars
         vsb.config(command=self.preview_tree.yview)
