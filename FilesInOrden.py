@@ -1321,13 +1321,13 @@ class FileOrganizerGUI(tk.Tk):
 
         def _load_icons():
             icon_mapping = {
-                "file": "ico/document.png",
-                "folder": "ico/folder.png",
-                "image": "ico/image.png",
-                "PDFs": "ico/PDFs.png",
-                "Documents": "ico/documents.png",
-                "Audio": "ico/audio.png",
-                "Videos": "ico/video.png",
+                "file": "document.png",
+                "folder": "folder.png",
+                "image": "image.png",
+                "PDFs": "PDFs.png",
+                "Documents": "documents.png",
+                "Audio": "audio.png",
+                "Videos": "video.png",
                 # ... otros íconos
             }
 
