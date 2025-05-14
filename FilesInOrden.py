@@ -604,7 +604,7 @@ class FileOrganizerGUI(tk.Tk):
         # Crear el Treeview
         self.preview_tree = ttk.Treeview(
             tree_container,
-            columns=("icons", "original", "destino", "estado"),
+            columns=("icon", "original", "destino", "estado"),
             show="headings",
             yscrollcommand=vsb.set,
             xscrollcommand=hsb.set,
