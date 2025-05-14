@@ -621,6 +621,11 @@ class FileOrganizerGUI(tk.Tk):
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
         self.preview_tree.column("estado", width=100, stretch=tk.NO)
 
+        # Añadir columna para íconos
+        self.preview_tree["columns"] = ("icon", "original", "destino", "estado")
+        self.preview_tree.heading("icon", text="", anchor=tk.W)
+        self.preview_tree.column("icon", width=30, stretch=tk.NO)
+
         # Configurar scrollbars
         vsb.config(command=self.preview_tree.yview)
         hsb.config(command=self.preview_tree.xview)
@@ -1697,23 +1702,72 @@ class FileOrganizerGUI(tk.Tk):
         elif interval == "Diario":
             schedule.every().day.do(self.start_organization)
 
+    # def preview_changes(self):
+    #     self.preview_tree.delete(*self.preview_tree.get_children())
+    #     directory = self.dir_entry.get()
+    #     if not os.path.exists(directory):
+    #         self.logger.error(f"Path prevew changes: {directory} ")
+    #         self.log(f"Path prevew changes: {directory} ")
+    #         return
+    #
+    #     for filename in os.listdir(directory):
+    #         src_path = os.path.join(directory, filename)
+    #         if os.path.isfile(src_path):
+    #             ext = os.path.splitext(filename)[1].lower()
+    #             folder = self.profiles[self.current_profile]["formatos"].get(
+    #                 ext, "Otros"
+    #             )
+    #             dest_path = os.path.join(directory, folder, filename)
+    #             self.preview_tree.insert("", "end", values=(src_path, dest_path))
     def preview_changes(self):
+        """
+        Muestra una previsualización de los cambios con íconos.
+        """
         self.preview_tree.delete(*self.preview_tree.get_children())
         directory = self.dir_entry.get()
-        if not os.path.exists(directory):
-            self.logger.error(f"Path prevew changes: {directory} ")
-            self.log(f"Path prevew changes: {directory} ")
+
+        if not directory or not os.path.isdir(directory):
+            self.log("Directorio no válido o no seleccionado", "ERROR")
             return
 
-        for filename in os.listdir(directory):
-            src_path = os.path.join(directory, filename)
-            if os.path.isfile(src_path):
-                ext = os.path.splitext(filename)[1].lower()
-                folder = self.profiles[self.current_profile]["formatos"].get(
-                    ext, "Otros"
-                )
-                dest_path = os.path.join(directory, folder, filename)
-                self.preview_tree.insert("", "end", values=(src_path, dest_path))
+        try:
+            for filename in os.listdir(directory):
+                src_path = os.path.join(directory, filename)
+
+                if os.path.isfile(src_path):
+                    ext = os.path.splitext(filename)[1].lower()
+                    folder = self.profiles[self.current_profile]["formatos"].get(
+                        ext, "Otros"
+                    )
+                    dest_path = os.path.join(directory, folder, filename)
+
+                    # Obtener el ícono adecuado
+                    icon = self.get_icon_for_extension(ext)
+
+                    # Insertar en el Treeview con ícono
+                    self.preview_tree.insert(
+                        "",
+                        "end",
+                        values=(icon, src_path, dest_path, "Pendiente"),
+                        tags=(ext,),  # Opcional: guardar la extensión como tag
+                    )
+
+                elif os.path.isdir(src_path):
+                    # Para directorios, usar el ícono de folder
+                    self.preview_tree.insert(
+                        "",
+                        "end",
+                        values=(
+                            self.icon_cache.get("folder", ""),
+                            src_path,
+                            src_path,
+                            "Directorio",
+                        ),
+                        tags=("folder",),
+                    )
+
+        except Exception as e:
+            self.log(f"Error al generar previsualización: {str(e)}", "ERROR")
 
     def start_organization(self):
         directory = self.dir_entry.get()
