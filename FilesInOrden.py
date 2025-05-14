@@ -1219,8 +1219,9 @@ class FileOrganizerGUI(tk.Tk):
         preview_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
 
         self.preview_tree = ttk.Treeview(
-            preview_frame, columns=("original", "destino"), show="headings"
+            preview_frame, columns=("icon", "original", "destino"), show="headings"
         )
+        self.preview_tree.heading("icon", text="", anchor=tk.W)
         self.preview_tree.heading("original", text="Ubicación Original")
         self.preview_tree.heading("destino", text="Nueva Ubicación")
         self.preview_tree.pack(fill=BOTH, expand=True, side=LEFT)
