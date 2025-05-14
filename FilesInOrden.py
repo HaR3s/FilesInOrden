@@ -1327,7 +1327,7 @@ class FileOrganizerGUI(tk.Tk):
                 "PDFs": ("PDFs.png", "red"),
                 "Documents": ("documents.png", "darkblue"),
                 "Audio": ("audio.png", "cyan"),
-                "Videos": ("video.png"),
+                "Videos": ("video.png", "orange"),
                 # ... otros íconos
             }
 
