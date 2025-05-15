@@ -335,7 +335,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Inicializar el resto de componentes
         self.icon_cache = {}
-        self.load_icons()
+        self.load_icons_async()
         self.task_queue = Queue(maxsize=100)
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
