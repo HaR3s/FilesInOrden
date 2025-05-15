@@ -550,7 +550,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Subpestañas dentro de Configuración
         config_notebook = ttk.Notebook(config_tab)
-        config_notebook.grid(fill=tk.BOTH, expand=True)
+        config_notebook.grid(row=0, column=0, sticky="nsew")
 
         # Subpestaña de Formatos
         format_tab = ttk.Frame(config_notebook, padding=10)
@@ -658,14 +658,16 @@ class FileOrganizerGUI(tk.Tk):
         preview_frame = ttk.LabelFrame(
             parent, text="Previsualización de Cambios", padding=10
         )
-        preview_frame.grid(row=0, column=0, sticky="nsew")
+        preview_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
         preview_frame.grid_rowconfigure(0, weight=1)
         preview_frame.grid_columnconfigure(0, weight=1)
 
         # Treeview con scrollbars
         tree_container = ttk.Frame(preview_frame)
-        tree_container.grid(fill=tk.BOTH, expand=True)
+        tree_container.grid(row=0, column=5, sticky="nsew")
 
         # Configurar scrollbars
         vsb = ttk.Scrollbar(tree_container, orient="vertical")
