@@ -312,6 +312,8 @@ class TextRedirector(object):
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
+
+        # self.setup_responsive_behavior()
         self.setup_logging()
         self.logger.info("Inicializando aplicación")
         # Inicializar atributos PRIMERO
@@ -356,7 +358,47 @@ class FileOrganizerGUI(tk.Tk):
         self.init_threads()
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
+        self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
+        # Habilitar el redimensionamiento
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # Contenedor principal que ocupará toda la ventana
+        self.main_container = ttk.Frame(self)
+        self.main_container.grid(row=0, column=0, sticky="nsew")
+        self.main_container.grid_rowconfigure(0, weight=1)
+        self.main_container.grid_columnconfigure(0, weight=1)
+
+    def setup_responsive_behavior(self):
+        # Bind para redimensionamiento
+        self.bind("<Configure>", self.on_window_resize)
+
+        # Lista de widgets que necesitan ajuste especial
+        self.responsive_widgets = [
+            (self.preview_tree, {"column": ["original", "destino"]}),
+            (self.format_tree, {"column": ["ext", "folder"]}),
+        ]
+
+    def on_window_resize(self, event):
+        # Ajustar proporciones de columnas
+        win_width = self.winfo_width()
+
+        for widget, config in self.responsive_widgets:
+            if widget.winfo_exists():
+                for col in config.get("column", []):
+                    widget.column(col, width=int(win_width * 0.4))  # 40% del ancho
+
+    def check_screen_size(self):
+        # Ocultar/mostrar elementos según tamaño
+        screen_width = self.winfo_width()
+
+        if screen_width < 1000:
+            # Modo compacto
+            self.notebook.tab(1, state="normal" if screen_width > 800 else "hidden")
+        else:
+            # Modo normal
+            self.notebook.tab(1, state="normal")
 
     def load_profiles(self):
         """
@@ -413,6 +455,25 @@ class FileOrganizerGUI(tk.Tk):
         - Área de registro
         - Barra de estado
         """
+        # Notebook principal (ahora dentro del contenedor)
+        self.notebook = ttk.Notebook(self.main_container)
+        self.notebook.grid(row=0, column=0, sticky="nsew")
+
+        # Configurar expansión
+        self.main_container.grid_rowconfigure(0, weight=1)
+        self.main_container.grid_columnconfigure(0, weight=1)
+
+        # Pestañas
+        ops_tab = ttk.Frame(self.notebook)
+        config_tab = ttk.Frame(self.notebook)
+
+        # Configurar expansión en cada pestaña
+        ops_tab.grid_rowconfigure(0, weight=1)
+        ops_tab.grid_columnconfigure(0, weight=1)
+
+        config_tab.grid_rowconfigure(0, weight=1)
+        config_tab.grid_columnconfigure(0, weight=1)
+
         # Configuración de estilo avanzado
         self.style = ttk.Style()
         self.style.theme_use("clam")
@@ -509,7 +570,7 @@ class FileOrganizerGUI(tk.Tk):
         # ----------------------------
         # Barra de Estado
         # ----------------------------
-        self.setup_status_bar(progress_frame)
+        self.setup_status_bar(main_frame)
 
         # Configuración de estilo para botón destacado
         self.style.configure(
@@ -586,11 +647,21 @@ class FileOrganizerGUI(tk.Tk):
         Args:
             parent: Widget padre donde se ubicará el treeview
         """
+
+        #    Configuración del Treeview
+
+        # Configurar columnas para que se expandan
+        self.preview_tree.column("original", width=300, stretch=tk.YES)
+        self.preview_tree.column("destino", width=300, stretch=tk.YES)
+
         # Frame contenedor
         preview_frame = ttk.LabelFrame(
             parent, text="Previsualización de Cambios", padding=10
         )
         preview_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+        preview_frame.grid_rowconfigure(0, weight=1)
+        preview_frame.grid_columnconfigure(0, weight=1)
 
         # Treeview con scrollbars
         tree_container = ttk.Frame(preview_frame)
@@ -721,18 +792,12 @@ class FileOrganizerGUI(tk.Tk):
         self.progress.pack(padx=10, pady=5, fill=tk.X)
 
     def build_config_tab(self, parent):
-        """Versión compacta similar al ejemplo"""
-        # Configuración de programación
-        schedule_frame = ttk.LabelFrame(parent, text="Programación")
-        schedule_frame.pack(padx=10, pady=5, fill=tk.X)
+        # Configurar peso de filas/columnas
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
 
-        self.schedule_combo = ttk.Combobox(
-            schedule_frame, values=["Ninguna", "5 minutos", "1 hora", "Diario"]
-        )
-        self.schedule_combo.pack(side=tk.LEFT, padx=5)
-        ttk.Button(schedule_frame, text="Activar", command=self.enable_scheduling).pack(
-            side=tk.LEFT
-        )
+        config_notebook = ttk.Notebook(parent)
+        config_notebook.grid(row=0, column=0, sticky="nsew")
 
     def remove_format(self):
         selected = self.format_tree.selection()
