@@ -510,6 +510,7 @@ class FileOrganizerGUI(tk.Tk):
         # Barra de Estado
         # ----------------------------
         status_bar = ttk.Frame(main_frame)
+        status_bar.pack(fill=tk.BOTH, expand=True)
         self.setup_status_bar(status_bar)
 
         # Configuración de estilo para botón destacado
