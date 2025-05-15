@@ -334,8 +334,8 @@ class FileOrganizerGUI(tk.Tk):
         self.load_profiles()
 
         # Inicializar el resto de componentes
-        self.icon_cache = {}
-        self.load_icons()
+        self.icons = {}
+        self.icon_references = []
         self.task_queue = Queue(maxsize=100)
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
@@ -356,7 +356,8 @@ class FileOrganizerGUI(tk.Tk):
         self.create_widgets()
         self.setup_performance_optimizations()
         self.init_threads()
-        self.load_icons_async()
+        self.load_icons()
+        # self.load_icons_async()
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
@@ -1341,11 +1342,12 @@ class FileOrganizerGUI(tk.Tk):
                     icon_path = os.path.join("icons", filename)
                     if os.path.exists(icon_path):
                         self.icon_cache[icon_name] = tk.PhotoImage(file=icon_path)
+                        self.icon_references.append(tk.PhotoImage(file=icon_path))
                     else:
                         self.logger.warning(f"Ícono no encontrado: {icon_path}")
-                        # self.icon_cache[icon_name] = self.create_default_icon(
-                        # fallback_color
-                        # )
+                        self.icon_cache[icon_name] = self.create_default_icon(
+                            fallback_color
+                        )
                 except Exception as e:
                     self.logger.error(f"Error cargando ícono {icon_name}: {str(e)}")
                     self.icon_cache[icon_name] = self.icon_cache["error"]
