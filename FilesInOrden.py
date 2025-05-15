@@ -616,12 +616,12 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         # Configurar columnas
-        self.preview_tree.heading("icon", text="")
+        self.preview_tree.heading("icon", text="", anchor="center")
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
         self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
 
-        self.preview_tree.column("icon", width=25, stretch=False)
+        self.preview_tree.column("icon", width=30, stretch=False, anchor="center")
         self.preview_tree.column("original", width=300, stretch=tk.YES)
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
         self.preview_tree.column("estado", width=100, stretch=tk.NO)
@@ -1324,6 +1324,7 @@ class FileOrganizerGUI(tk.Tk):
             "error": self.create_default_icon("red"),
             "folder": self.create_default_icon("blue"),
         }
+        self.logger.info(f"Iconos cargados async: {list(self.icons.keys())}")
 
     def _load_icons(self):
         try:
@@ -1418,6 +1419,8 @@ class FileOrganizerGUI(tk.Tk):
                 error_icon = self.create_default_icon("red")
                 self.icons[icon_type] = error_icon
                 self.icon_references.append(error_icon)
+            finally:
+                self.logger.info(f"Iconos cargados: {list(self.icons.keys())}")
 
     def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
         try:
@@ -1788,6 +1791,8 @@ class FileOrganizerGUI(tk.Tk):
 
                     # Obtener ícono adecuado
                     icon = self.get_icon_for_extension(ext)
+                    self.logger.info(f"Asignando icono para {ext}: {icon}")
+                    self.log(f"Asignando icono para {ext}: {icon}")  # Debug
 
                     # Insertar en el treeview
                     self.preview_tree.insert(
