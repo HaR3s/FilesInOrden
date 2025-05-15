@@ -504,7 +504,7 @@ class FileOrganizerGUI(tk.Tk):
         # ----------------------------
         # Área de Registro (parte inferior)
         # ----------------------------
-        self.create_log_area(main_frame)  # Usa la función que definimos antes
+        # self.create_log_area(main_frame)  # Usa la función que definimos antes
 
         # ----------------------------
         # Barra de Estado
@@ -545,40 +545,40 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area.configure(state="disabled")
         self.log_area.see(tk.END)
 
-    def create_log_area(self, parent):
-        """
-        Crea un área de registro con scroll para mostrar mensajes de la aplicación.
-
-        Args:
-            parent: Widget padre donde se ubicará el área de registro
-        """
-        # Frame contenedor
-        log_frame = ttk.LabelFrame(parent, text="Registro de Actividades", padding=10)
-        log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-
-        # Área de texto con scroll
-        self.log_area = scrolledtext.ScrolledText(
-            log_frame,
-            wrap=tk.WORD,
-            width=80,
-            height=15,
-            font=("Consolas", 9),  # Fuente monoespaciada para mejor visualización
-        )
-        self.log_area.pack(fill=tk.BOTH, expand=True)
-
-        # Configuración inicial
-        self.log_area.configure(state="disabled")  # Solo lectura
-
-        # Configuración de tags para diferentes niveles de log
-        self.log_area.tag_config("INFO", foreground="black")
-        self.log_area.tag_config("WARNING", foreground="orange")
-        self.log_area.tag_config("ERROR", foreground="red")
-        self.log_area.tag_config("CRITICAL", foreground="red", background="yellow")
-
-        # Redirigir stdout y stderr al log
-        sys.stdout = TextRedirector(self.log_area, "stdout")
-        sys.stderr = TextRedirector(self.log_area, "stderr")
-
+    # def create_log_area(self, parent):
+    #     """
+    #     Crea un área de registro con scroll para mostrar mensajes de la aplicación.
+    #
+    #     Args:
+    #         parent: Widget padre donde se ubicará el área de registro
+    #     """
+    #     # Frame contenedor
+    #     log_frame = ttk.LabelFrame(parent, text="Registro de Actividades", padding=10)
+    #     log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+    #
+    #     # Área de texto con scroll
+    #     self.log_area = scrolledtext.ScrolledText(
+    #         log_frame,
+    #         wrap=tk.WORD,
+    #         width=80,
+    #         height=15,
+    #         font=("Consolas", 9),  # Fuente monoespaciada para mejor visualización
+    #     )
+    #     self.log_area.pack(fill=tk.BOTH, expand=True)
+    #
+    #     # Configuración inicial
+    #     self.log_area.configure(state="disabled")  # Solo lectura
+    #
+    #     # Configuración de tags para diferentes niveles de log
+    #     self.log_area.tag_config("INFO", foreground="black")
+    #     self.log_area.tag_config("WARNING", foreground="orange")
+    #     self.log_area.tag_config("ERROR", foreground="red")
+    #     self.log_area.tag_config("CRITICAL", foreground="red", background="yellow")
+    #
+    #     # Redirigir stdout y stderr al log
+    #     sys.stdout = TextRedirector(self.log_area, "stdout")
+    #     sys.stderr = TextRedirector(self.log_area, "stderr")
+    #
     def create_preview_tree(self, parent):
         """
         Crea un Treeview para previsualizar los cambios de organización.
