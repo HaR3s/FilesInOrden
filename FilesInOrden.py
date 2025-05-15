@@ -335,7 +335,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Inicializar el resto de componentes
         self.icon_cache = {}
-        self.load_icons_async()
+        self.load_icons()
         self.task_queue = Queue(maxsize=100)
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
@@ -615,12 +615,12 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         # Configurar columnas
-        self.preview_tree.heading("icon", text="", anchor=tk.W)
+        self.preview_tree.heading("icon", text="")
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
         self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
 
-        self.preview_tree.column("icon", width=30, stretch=tk.NO)
+        self.preview_tree.column("icon", width=25, stretch=False)
         self.preview_tree.column("original", width=300, stretch=tk.YES)
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
         self.preview_tree.column("estado", width=100, stretch=tk.NO)
@@ -1393,12 +1393,16 @@ class FileOrganizerGUI(tk.Tk):
             self.icons["file"] = self.create_default_icon("gray")
 
     def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
-        """Carga un icono con manejo de errores"""
         try:
-            return tk.PhotoImage(file=f"icons/{filename}")
+            icon_path = os.path.join("icons", filename)
+            if os.path.exists(icon_path):
+                img = Image.open(icon_path)
+                img = img.resize((16, 16), Image.Resampling.LANCZOS)  # Fuerza 16x16
+                return ImageTk.PhotoImage(img)
+            return self.create_default_icon("gray", size=(16, 16))
         except Exception as e:
-            self.logger.warning(f"No se pudo cargar icono {filename}: {e}")
-            return None
+            self.logger.error(f"Error cargando ícono {filename}: {e}")
+            return self.create_default_icon("red", size=(16, 16))
 
     def create_default_icon(
         self, color: str, size: tuple[int, int] = (16, 16)
