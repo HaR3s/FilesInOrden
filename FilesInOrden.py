@@ -356,7 +356,7 @@ class FileOrganizerGUI(tk.Tk):
         self.create_widgets()
         self.setup_performance_optimizations()
         self.init_threads()
-        self.load_icons()
+        # self.load_icons()
         self.load_icons_async()
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
@@ -616,15 +616,15 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         # Configurar columnas
+        self.preview_tree.column("icon", width=32, stretch=False, anchor="center")
+        self.preview_tree.column("original", width=300, stretch=tk.YES)
+        self.preview_tree.column("destino", width=300, stretch=tk.YES)
+        self.preview_tree.column("estado", width=100, stretch=tk.NO)
+
         self.preview_tree.heading("icon", text="", anchor="center")
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
         self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
-
-        self.preview_tree.column("icon", width=30, stretch=False, anchor="center")
-        self.preview_tree.column("original", width=300, stretch=tk.YES)
-        self.preview_tree.column("destino", width=300, stretch=tk.YES)
-        self.preview_tree.column("estado", width=100, stretch=tk.NO)
 
         # Configurar scrollbars
         vsb.config(command=self.preview_tree.yview)
