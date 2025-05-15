@@ -1380,7 +1380,7 @@ class FileOrganizerGUI(tk.Tk):
             "file": self.create_default_icon("gray"),
             "folder": self.create_default_icon("blue"),
             "document": self.load_icon_safely("document.png"),
-            "image": self.s("image.png"),
+            "image": self.load_icon_safely("image.png"),
             "video": self.load_icon_safely("video.png"),
             "audio": self.load_icon_safely("audio.png"),
             "archive": self.load_icon_safely("archive.png"),
