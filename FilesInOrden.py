@@ -603,7 +603,7 @@ class FileOrganizerGUI(tk.Tk):
         # Crear el Treeview
         self.preview_tree = ttk.Treeview(
             tree_container,
-            columns=("icon", "original", "destino", "estado"),
+            columns=("original", "destino", "estado"),
             show="headings",
             yscrollcommand=vsb.set,
             xscrollcommand=hsb.set,
@@ -612,12 +612,10 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         # Configurar columnas
-        self.preview_tree.column("icon", width=32, stretch=False, anchor="center")
         self.preview_tree.column("original", width=300, stretch=tk.YES)
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
         self.preview_tree.column("estado", width=100, stretch=tk.NO)
 
-        self.preview_tree.heading("icon", text="", anchor="center")
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
         self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
@@ -1218,9 +1216,8 @@ class FileOrganizerGUI(tk.Tk):
         preview_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
 
         self.preview_tree = ttk.Treeview(
-            preview_frame, columns=("icon", "original", "destino"), show="headings"
+            preview_frame, columns=("original", "destino"), show="headings"
         )
-        self.preview_tree.heading("icon", text="", anchor=tk.W)
         self.preview_tree.heading("original", text="Ubicación Original")
         self.preview_tree.heading("destino", text="Nueva Ubicación")
         self.preview_tree.pack(fill=BOTH, expand=True, side=LEFT)
@@ -1308,56 +1305,6 @@ class FileOrganizerGUI(tk.Tk):
         self.format_tree.bind("<<TreeviewOpen>>", self.on_treeview_update)
         self.preview_tree.bind("<<TreeviewOpen>>", self.on_treeview_update)
 
-        # Precarga de iconos (versión mejorada)
-        self.icon_cache = {}
-        self.load_icons_async()
-
-    def load_icons_async(self):
-        """Carga los íconos en segundo plano"""
-        # Crear íconos por defecto primero
-        self.icon_cache = {
-            "default": self.create_default_icon("gray"),
-            "error": self.create_default_icon("red"),
-            "folder": self.create_default_icon("blue"),
-        }
-        self.logger.info(f"Iconos cargados async: {list(self.icons.keys())}")
-
-    def _load_icons(self):
-        try:
-            # Mapeo de nombres de íconos a archivos
-            icon_mapping = {
-                "file": "document.png",
-                "document": "document.png",
-                "image": "image.png",
-                "PDFs": "pdf.png",
-                "video": "video.png",
-                "audio": "audio.png",
-                "archive": "archive.png",
-            }
-
-            for icon_name, filename in icon_mapping.items():
-                try:
-                    icon_path = os.path.join("icons", filename)
-                    if os.path.exists(icon_path):
-                        img = Image.open(icon_path)
-                        img = img.resize((16, 16), Image.Resampling.LANCZOS)
-                        photo_img = ImageTk.PhotoImage(img)
-                        self.icon_cache[icon_name] = photo_img
-                        # Mantener referencia
-                        if not hasattr(self, "icon_references"):
-                            self.icon_references = []
-                        self.icon_references.append(photo_img)
-                    else:
-                        self.logger.warning(f"Ícono no encontrado: {icon_path}")
-                except Exception as e:
-                    self.logger.error(f"Error cargando ícono {icon_name}: {str(e)}")
-
-        except Exception as e:
-            self.logger.error(f"Error en load_icons_async: {str(e)}")
-
-    # Ejecutar en hilo
-    threading.Thread(target=_load_icons, name="IconLoader", daemon=True).start()
-
     def on_treeview_update(self, event):
         """Maneja actualizaciones eficientes del Treeview"""
         with self.tree_update_lock:
@@ -1373,153 +1320,6 @@ class FileOrganizerGUI(tk.Tk):
 
             # Actualización optimizada
             widget.see(event.widget.focus())
-
-    def load_icons(self) -> None:
-        """Carga todos los iconos necesarios con manejo seguro de tipos"""
-        self.icons = {}  # Diccionario para almacenar los íconos
-        self.icon_references = []  # Lista para mantener referencias a las imágenes
-
-        # Mapeo de tipos de íconos a sus archivos correspondientes
-        icon_mapping = {
-            "file": "document.png",
-            "folder": "folder.png",
-            "document": "document.png",
-            "image": "image.png",
-            "video": "video.png",
-            "audio": "audio.png",
-            "archive": "archive.png",
-            "error": "error.png",  # Ícono para errores (puede no existir)
-        }
-
-        for icon_type, filename in icon_mapping.items():
-            try:
-                icon_path = os.path.join("icons", filename)
-
-                # Verificar si el archivo de ícono existe
-                if os.path.exists(icon_path):
-                    img = Image.open(icon_path)
-                    img = img.resize((16, 16), Image.Resampling.LANCZOS)
-                    photo_img = ImageTk.PhotoImage(img)
-                    self.icons[icon_type] = photo_img
-                    self.icon_references.append(photo_img)  # Mantener referencia
-                else:
-                    # Crear ícono por defecto si no se encuentra el archivo
-                    default_color = "gray" if icon_type != "error" else "red"
-                    default_icon = self.create_default_icon(default_color)
-                    self.icons[icon_type] = default_icon
-                    self.icon_references.append(default_icon)
-
-            except Exception as e:
-                self.logger.error(f"Error cargando ícono {icon_type}: {e}")
-                # Usar ícono de error como fallback
-                error_icon = self.create_default_icon("red")
-                self.icons[icon_type] = error_icon
-                self.icon_references.append(error_icon)
-            finally:
-                self.logger.info(f"Iconos cargados: {list(self.icons.keys())}")
-
-    def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
-        try:
-            icon_path = os.path.join("icons", filename)
-            if os.path.exists(icon_path):
-                img = Image.open(icon_path)
-                img = img.resize((16, 16), Image.Resampling.LANCZOS)  # Fuerza 16x16
-                return ImageTk.PhotoImage(img)
-            return self.create_default_icon("gray", size=(16, 16))
-        except Exception as e:
-            self.logger.error(f"Error cargando ícono {filename}: {e}")
-            return self.create_default_icon("red", size=(16, 16))
-
-    def create_default_icon(
-        self, color: str, size: tuple[int, int] = (16, 16)
-    ) -> tk.PhotoImage:
-        """Crea un ícono por defecto con un color sólido
-
-        Args:
-            color: Color del ícono (nombre o código HEX)
-            size: Tamaño del ícono (ancho, alto)
-
-        Returns:
-            Objeto PhotoImage con el ícono creado
-
-        Raises:
-            ValueError: Si el tamaño no es válido
-        """
-        # Validar parámetros
-        if (
-            not isinstance(size, tuple)
-            or len(size) != 2
-            or any(not isinstance(d, int) or d <= 0 for d in size)
-        ):
-            raise ValueError("El tamaño debe ser una tupla de 2 enteros positivos")
-
-        try:
-            # Intentar crear con Pillow (mejor calidad)
-            img = Image.new("RGB", size, color)
-            return ImageTk.PhotoImage(img)
-
-        except Exception as e:
-            self.logger.warning(f"No se pudo crear ícono con Pillow: {e}")
-            # Fallback a tkinter básico
-            try:
-                icon = tk.PhotoImage(width=size[0], height=size[1])
-                icon.put(color, to=(0, 0, size[0] - 1, size[1] - 1))
-                return icon
-            except Exception as e:
-                self.logger.error(f"Error creando ícono por defecto: {e}")
-                # Último fallback - ícono mínimo
-                return tk.PhotoImage(width=1, height=1)
-
-    def get_icon_for_extension(self, extension: str) -> tk.PhotoImage:
-        """Obtiene el ícono adecuado para una extensión de archivo
-
-        Args:
-            extension: Extensión del archivo (ej: '.jpg')
-
-        Returns:
-            Objeto PhotoImage con el ícono correspondiente
-
-        Notas:
-            - Siempre devuelve un ícono válido (nunca None)
-            - Usa el ícono 'file' como fallback
-        """
-        # Verificar si los íconos están cargados
-        if not hasattr(self, "icons") or not self.icons:
-            self.load_icons()
-
-        # Determinar el tipo de ícono basado en la extensión
-        icon_type = self._get_icon_type(extension)
-
-        # Devolver el ícono correspondiente o el ícono por defecto
-        return self.icons.get(icon_type, self.icons["file"])
-
-    def _get_icon_type(self, extension: str) -> str:
-        """Determina el tipo de icono para una extensión de archivo
-
-        Args:
-            extension: Extensión del archivo (ej: '.pdf')
-
-        Returns:
-            str: Tipo de ícono (ej: 'document')
-        """
-        extension = extension.lower()
-
-        # Mapeo de extensiones a tipos de íconos
-        icon_mapping = {
-            "document": [".pdf", ".doc", ".docx", ".txt", ".rtf", ".odt"],
-            "image": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"],
-            "video": [".mp4", ".avi", ".mov", ".mkv", ".flv", ".wmv"],
-            "audio": [".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma"],
-            "archive": [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"],
-        }
-
-        # Buscar la extensión en el mapeo
-        for icon_type, extensions in icon_mapping.items():
-            if extension in extensions:
-                return icon_type
-
-        # Si no se encuentra, devolver tipo 'file' por defecto
-        return "file"
 
     def setup_animations(self):
         """Configura animaciones fluidas para transiciones de UI"""
@@ -1769,10 +1569,6 @@ class FileOrganizerGUI(tk.Tk):
             return
 
         try:
-            # Asegurarse de que los íconos están cargados
-            if not hasattr(self, "icons") or not self.icons:
-                self.load_icons()
-
             # Procesar cada archivo en el directorio
             for filename in os.listdir(directory):
                 src_path = os.path.join(directory, filename)
@@ -1785,26 +1581,20 @@ class FileOrganizerGUI(tk.Tk):
                     )
                     dest_path = os.path.join(directory, folder, filename)
 
-                    # Obtener ícono adecuado
-                    icon = self.get_icon_for_extension(ext)
-                    self.logger.info(f"Asignando icono para {ext}: {icon}")
-                    self.log(f"Asignando icono para {ext}: {icon}")  # Debug
-
                     # Insertar en el treeview
                     self.preview_tree.insert(
                         "",
                         "end",
-                        values=(icon, src_path, dest_path, "Pendiente"),
+                        values=(src_path, dest_path, "Pendiente"),
                         tags=(ext,),
                     )
 
                 elif os.path.isdir(src_path):
                     # Procesar directorio (no lo movemos, solo mostramos)
-                    icon = self.icons.get("folder", self.icons["file"])
                     self.preview_tree.insert(
                         "",
                         "end",
-                        values=(icon, src_path, src_path, "Directorio"),
+                        values=(src_path, src_path, "Directorio"),
                         tags=("folder",),
                     )
 
