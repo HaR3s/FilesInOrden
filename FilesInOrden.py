@@ -483,7 +483,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Frame principal con scroll
         main_frame = ttk.Frame(self, padding=10)
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        main_frame.grid(fill=tk.BOTH, expand=True)
 
         # Sistema de pestañas
         self.notebook = ttk.Notebook(main_frame)
