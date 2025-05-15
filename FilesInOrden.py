@@ -487,7 +487,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Sistema de pestañas
         self.notebook = ttk.Notebook(main_frame)
-        self.notebook.grid(row=0, columns=0, sticky="nsew")
+        self.notebook.grid(row=0, column=0, sticky="nsew")
 
         # ----------------------------
         # Pestaña de Operaciones
@@ -497,21 +497,21 @@ class FileOrganizerGUI(tk.Tk):
 
         # Panel de directorio
         dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
-        dir_frame.grid(row=0, columns=0, sticky="nsew")
+        dir_frame.grid(row=0, column=0, sticky="nsew")
 
         ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
         self.dir_entry = ttk.Entry(dir_frame)
-        self.dir_entry.grid(row=0, columns=0, sticky="nsew")
+        self.dir_entry.grid(row=0, column=0, sticky="nsew")
 
         browse_btn = ttk.Button(
             dir_frame, text="Examinar", command=self.select_directory
         )
-        browse_btn.grid(row=0, columns=0, sticky="nsew")
+        browse_btn.grid(row=0, column=0, sticky="nsew")
         ToolTip(browse_btn, "Seleccione el directorio que desea organizar")
 
         # Panel de acciones
         action_frame = ttk.LabelFrame(ops_tab, text="Acciones", padding=10)
-        action_frame.grid(row=0, columns=0, sticky="nsew")
+        action_frame.grid(row=0, column=0, sticky="nsew")
 
         btn_grid = ttk.Frame(action_frame)
         btn_grid.grid()
@@ -658,7 +658,7 @@ class FileOrganizerGUI(tk.Tk):
         preview_frame = ttk.LabelFrame(
             parent, text="Previsualización de Cambios", padding=10
         )
-        preview_frame.grid(row=0, columns=0, sticky="nsew")
+        preview_frame.grid(row=0, column=0, sticky="nsew")
 
         preview_frame.grid_rowconfigure(0, weight=1)
         preview_frame.grid_columnconfigure(0, weight=1)
@@ -827,11 +827,11 @@ class FileOrganizerGUI(tk.Tk):
         """
         # Frame principal
         main_frame = ttk.Frame(parent)
-        main_frame.grid(row=0, columns="nsew")
+        main_frame.grid(row=0, column=0)
 
         # Sección de tema visual
         theme_frame = ttk.LabelFrame(main_frame, text="Tema Visual", padding=10)
-        theme_frame.grid(row=0, columns=0, sticky="nsew")
+        theme_frame.grid(row=0, column=0, sticky="nsew")
 
         ttk.Label(theme_frame, text="Estilo:").grid(row=0, column=0, sticky="e", padx=5)
         self.theme_combo = ttk.Combobox(
@@ -844,7 +844,7 @@ class FileOrganizerGUI(tk.Tk):
         self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
 
         options_frame = ttk.LabelFrame(main_frame, text="Opciones Visuales", padding=10)
-        options_frame.grid(row=0, columns=0, sticky="nsew")
+        options_frame.grid(row=0, column=0, sticky="nsew")
 
         theme_frame.columnconfigure(1, weight=1)
 
@@ -857,11 +857,11 @@ class FileOrganizerGUI(tk.Tk):
         - Importación/exportación de configuraciones
         """
         main_frame = ttk.Frame(parent)
-        main_frame.grid(row=0, columns=0, sticky="nsew")
+        main_frame.grid(row=0, column=0, sticky="nsew")
 
         # Barra de búsqueda
         search_frame = ttk.Frame(main_frame)
-        search_frame.pack(row=0, columns=0, sticky="nsew")
+        search_frame.pack(row=0, column=0, sticky="nsew")
 
         ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
         self.search_entry = ttk.Entry(search_frame)
@@ -870,7 +870,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Treeview de formatos
         tree_frame = ttk.Frame(main_frame)
-        tree_frame.geid(row=0, columns=0, sticky="nsew")
+        tree_frame.grid(row=0, column=0, sticky="nsew")
 
         # Configurar scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical")
@@ -908,7 +908,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Controles de formatos
         ctrl_frame = ttk.Frame(main_frame)
-        ctrl_frame.grid(row=0, columns=0, sticky="nsew")
+        ctrl_frame.grid(row=0, column=0, sticky="nsew")
 
         control_buttons = [
             ("Agregar", self.add_format),
@@ -920,7 +920,7 @@ class FileOrganizerGUI(tk.Tk):
             btn = ttk.Button(
                 ctrl_frame, text=text, command=command, style="Small.TButton"
             )
-            btn.grid(row=0, columns=0, sticky="nsew")
+            btn.grid(row=0, column=0, sticky="nsew")
 
         # Cargar formatos actuales
         self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
@@ -1165,13 +1165,13 @@ class FileOrganizerGUI(tk.Tk):
     def setup_status_bar(self, parent):
         """Barra de estado avanzada"""
         self.status_bar = ttk.Frame(parent)
-        self.status_bar.grid(row=0, columns=0, sticky="nsew")
+        self.status_bar.grid(row=0, column=0, sticky="nsew")
 
         # Componentes de la barra
         self.status_label = ttk.Label(
             self.status_bar, text="Listo", anchor=tk.W, style="Status.TLabel"
         )
-        self.status_label.grid(row=0, columns=0, sticky="nsew")
+        self.status_label.grid(row=0, column=0, sticky="nsew")
 
         self.memory_usage = ttk.Label(self.status_bar, text="RAM: 0MB", anchor=tk.E)
         self.memory_usage.grid(row=0)
