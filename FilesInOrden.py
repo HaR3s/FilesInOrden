@@ -1395,7 +1395,7 @@ class FileOrganizerGUI(tk.Tk):
     def load_icon_safely(self, filename: str) -> Optional[tk.PhotoImage]:
         """Carga un icono con manejo de errores"""
         try:
-            return tk.PhotoImage(file=f"{filename}")
+            return tk.PhotoImage(file=f"icons/{filename}")
         except Exception as e:
             self.logger.warning(f"No se pudo cargar icono {filename}: {e}")
             return None
