@@ -487,7 +487,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Sistema de pestañas
         self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+        self.notebook.grid(fill=tk.BOTH, expand=True, pady=(0, 10))
 
         # ----------------------------
         # Pestaña de Operaciones
@@ -497,24 +497,24 @@ class FileOrganizerGUI(tk.Tk):
 
         # Panel de directorio
         dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
-        dir_frame.pack(fill=tk.X, pady=(0, 10))
+        dir_frame.grid(fill=tk.X, pady=(0, 10))
 
         ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
         self.dir_entry = ttk.Entry(dir_frame)
-        self.dir_entry.pack(fill=tk.X, pady=5)
+        self.dir_entry.grid(fill=tk.X, pady=5)
 
         browse_btn = ttk.Button(
             dir_frame, text="Examinar", command=self.select_directory
         )
-        browse_btn.pack(pady=5)
+        browse_btn.grid(pady=5)
         ToolTip(browse_btn, "Seleccione el directorio que desea organizar")
 
         # Panel de acciones
         action_frame = ttk.LabelFrame(ops_tab, text="Acciones", padding=10)
-        action_frame.pack(fill=tk.X, pady=(0, 10))
+        action_frame.grid(fill=tk.X, pady=(0, 10))
 
         btn_grid = ttk.Frame(action_frame)
-        btn_grid.pack()
+        btn_grid.grid()
 
         buttons = [
             ("Previsualizar", self.preview_changes, 0, 0),
@@ -535,12 +535,12 @@ class FileOrganizerGUI(tk.Tk):
 
         # Panel de progreso
         progress_frame = ttk.LabelFrame(ops_tab, text="Progreso", padding=10)
-        progress_frame.pack(fill=tk.X)
+        progress_frame.grid(fill=tk.X)
 
         self.progress = ttk.Progressbar(
             progress_frame, orient=tk.HORIZONTAL, mode="determinate", length=300
         )
-        self.progress.pack(fill=tk.X, pady=5)
+        self.progress.grid(fill=tk.X, pady=5)
 
         # ----------------------------
         # Pestaña de Configuración
@@ -550,7 +550,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Subpestañas dentro de Configuración
         config_notebook = ttk.Notebook(config_tab)
-        config_notebook.pack(fill=tk.BOTH, expand=True)
+        config_notebook.grid(fill=tk.BOTH, expand=True)
 
         # Subpestaña de Formatos
         format_tab = ttk.Frame(config_notebook, padding=10)
