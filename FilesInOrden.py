@@ -334,8 +334,6 @@ class FileOrganizerGUI(tk.Tk):
         self.load_profiles()
 
         # Inicializar el resto de componentes
-        self.icons = {}
-        self.icon_references = []
         self.task_queue = Queue(maxsize=100)
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
@@ -356,8 +354,6 @@ class FileOrganizerGUI(tk.Tk):
         self.create_widgets()
         self.setup_performance_optimizations()
         self.init_threads()
-        self.load_icons()
-        # self.load_icons_async()
         self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
         self.configure(bg="#f0f0f0")
