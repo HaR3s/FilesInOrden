@@ -40,7 +40,7 @@ def mostrar_iconos():
         try:
             img = Image.open(icon_path)
             img = img.resize(
-                (32, 32), Image.Resampling.LANCZOS
+                (16, 16), Image.Resampling.LANCZOS
             )  # Redimensionar para mejor visualización
             photo_img = ImageTk.PhotoImage(img)
 
