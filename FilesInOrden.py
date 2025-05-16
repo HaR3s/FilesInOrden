@@ -627,6 +627,7 @@ class FileOrganizerGUI(tk.Tk):
     #     sys.stdout = TextRedirector(self.log_area, "stdout")
     #     sys.stderr = TextRedirector(self.log_area, "stderr")
     #
+
     def create_preview_tree(self, parent):
         """
         Crea un Treeview para previsualizar los cambios de organización.
@@ -634,13 +635,6 @@ class FileOrganizerGUI(tk.Tk):
         Args:
             parent: Widget padre donde se ubicará el treeview
         """
-
-        #    Configuración del Treeview
-
-        # Configurar columnas para que se expandan
-        self.preview_tree.column("original", width=300, stretch=tk.YES)
-        self.preview_tree.column("destino", width=300, stretch=tk.YES)
-
         # Frame contenedor
         preview_frame = ttk.LabelFrame(
             parent, text="Previsualización de Cambios", padding=10
@@ -654,7 +648,9 @@ class FileOrganizerGUI(tk.Tk):
 
         # Treeview con scrollbars
         tree_container = ttk.Frame(preview_frame)
-        tree_container.grid(row=0, column=5, sticky="nsew")
+        tree_container.grid(
+            row=0, column=0, sticky="nsew"
+        )  # Corregí column=5 a column=0
 
         # Configurar scrollbars
         vsb = ttk.Scrollbar(tree_container, orient="vertical")
@@ -671,7 +667,7 @@ class FileOrganizerGUI(tk.Tk):
             height=10,
         )
 
-        # Configurar columnas
+        # Configurar columnas (esto debe ir DESPUÉS de crear el Treeview)
         self.preview_tree.column("original", width=300, stretch=tk.YES)
         self.preview_tree.column("destino", width=300, stretch=tk.YES)
         self.preview_tree.column("estado", width=100, stretch=tk.NO)
