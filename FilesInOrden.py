@@ -499,7 +499,9 @@ class FileOrganizerGUI(tk.Tk):
         dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
         dir_frame.grid(row=0, column=0, sticky="nsew")
 
-        ttk.Label(dir_frame, text="Directorio a organizar:").pack(anchor=tk.W)
+        ttk.Label(dir_frame, text="Directorio a organizar:").grid(
+            row=0, column=0, sticky="w"
+        )
         self.dir_entry = ttk.Entry(dir_frame)
         self.dir_entry.grid(row=0, column=0, sticky="nsew")
 
@@ -765,8 +767,8 @@ class FileOrganizerGUI(tk.Tk):
         self.dir_entry = ttk.Entry(dir_frame)
         self.dir_entry.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        ttk.Button(dir_frame, text="Examinar", command=self.select_directory).pack(
-            side=tk.LEFT
+        ttk.Button(dir_frame, text="Examinar", command=self.select_directory).grid(
+            row=0, column=0, sticky="nsew"
         )
 
         # Panel de acciones
@@ -791,7 +793,7 @@ class FileOrganizerGUI(tk.Tk):
         self.progress = ttk.Progressbar(
             parent, orient=tk.HORIZONTAL, mode="determinate"
         )
-        self.progress.pack(padx=10, pady=5, fill=tk.X)
+        self.progress.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
 
         parent.grid_rowconfigure(2, weight=1)
         # La fila 2 puede ser la que contiene el treeview
@@ -860,14 +862,25 @@ class FileOrganizerGUI(tk.Tk):
         """
         main_frame = ttk.Frame(parent)
         main_frame.grid(row=0, column=0, sticky="nsew")
+        main_frame.grid_rowconfigure(0, weight=0)
+        main_frame.grid_rowconfigure(0, weight=1)
+        # La barra de búsqueda no necesita expandirse verticalmente
+        main_frame.grid_columnconfigure(0, weight=1)
+        # Expansión horizontal completa
 
         # Barra de búsqueda
         search_frame = ttk.Frame(main_frame)
-        search_frame.pack(row=0, column=0, sticky="nsew")
+        search_frame.grid(row=0, column=0, sticky="ew", pady=5)
+        search_frame.grid_rowconfigure(0, weight=0)
+        # La barra de búsqueda no necesita expandirse verticalmente
+        search_frame.grid_columnconfigure(0, weight=1)
+        # Expansión horizontal completa
 
-        ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
+        ttk.Label(search_frame, text="Buscar:").grid(
+            row=0, weight=0, sticky="w", padx=(0, 5)
+        )
         self.search_entry = ttk.Entry(search_frame)
-        self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        self.search_entry.grid(row=0, column=1, sticky="ew", padx=(0, 5))
         self.search_entry.bind("<KeyRelease>", self.filter_formats)
 
         # Treeview de formatos
