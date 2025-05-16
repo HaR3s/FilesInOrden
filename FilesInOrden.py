@@ -311,49 +311,61 @@ class TextRedirector(object):
 
 class FileOrganizerGUI(tk.Tk):
     def __init__(self):
+        """Inicializa la aplicación principal del organizador de archivos."""
         super().__init__()
 
-        # Configuración básica de la ventana
-        self.title("Organizador de Archivos")
+        # 1. Configuración básica de la ventana
+        self.title("Organizador Avanzado de Archivos")
         self.geometry("900x700")
-        # self.minsize(800, 600)
+        self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
-        # Configuración inicial
+        # 2. Configuración de logging
         self.setup_logging()
         self.logger.info("Inicializando aplicación")
 
-        # Inicializar todos los atributos primero
-        self.default_formats = {...}  # Tus formatos aquí
+        # 3. Atributos principales
+        self.default_formats = {
+            ".jpg": "Fotos",
+            ".png": "Fotos",
+            ".ico": "Iconos",
+            ".mp4": "Videos",
+            ".avi": "Videos",
+            ".mpg": "Videos",
+            ".mp3": "Musica",
+            ".pdf": "PDFs",
+            ".docx": "Documentos_work",
+            ".doc": "Documentos_work",
+            ".txt": "Documentos_txt",
+            "": "Otros",
+        }
         self.current_profile = "default"
         self.profiles = {}
-        self.task_queue = Queue(maxsize=100)
         self.running = True
         self.undo_stack = deque(maxlen=5)
-
-        # Inicializar atributos de widgets como None
-        self.main_container = None
-        self.preview_tree = None  # ¡Importante! Inicializar como None
-
-        # Configuración restante
+        self.task_queue = Queue(maxsize=100)
         self.load_profiles()
 
-        # Crear contenedor principal
+        # 4. Configuración de icono
+        try:
+            self.iconphoto(False, ImageTk.PhotoImage(Image.open("ico/favicon.ico")))
+        except Exception as e:
+            self.logger.error(f"No se pudo cargar el icono: {e}")
+
+        # 5. Interfaz gráfica
         self.main_container = ttk.Frame(self)
         self.main_container.grid(row=0, column=0, sticky="nsew")
-
-        # Configurar expansión
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
         self.main_container.grid_rowconfigure(0, weight=1)
         self.main_container.grid_columnconfigure(0, weight=1)
 
-        # Crear widgets
-        self.create_widgets()  # Ahora preview_tree se creará aquí
+        self.create_widgets()  # Método que construye toda la UI
 
-        # Configuraciones finales
+        # 6. Configuraciones finales
         self.setup_performance_optimizations()
         self.init_threads()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def setup_responsive_behavior(self):
         # Bind para redimensionamiento
