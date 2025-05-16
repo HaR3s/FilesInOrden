@@ -1276,29 +1276,95 @@ class FileOrganizerGUI(tk.Tk):
         sys.excepthook = self.handle_uncaught_exception
 
     def build_preview_panel(self, parent):
-        # Área de previsualización
-        preview_frame = ttk.LabelFrame(parent, text="Previsualización de Cambios")
-        preview_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
+        """
+        Construye el panel de previsualización con Treeview y área de registro.
+        Usa grid() para manejar la geometría de manera consistente.
 
+        Args:
+            parent: Widget padre donde se ubicará el panel
+        """
+        # Frame principal que contendrá ambos paneles (previsualización y registro)
+        main_frame = ttk.Frame(parent)
+        main_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+
+        # Configurar expansión del frame principal
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+        main_frame.grid_rowconfigure(1, weight=1)  # La fila 1 será el área de registro
+        main_frame.grid_columnconfigure(0, weight=1)
+
+        # 1. Panel de previsualización (Treeview)
+        preview_frame = ttk.LabelFrame(
+            main_frame, text="Previsualización de Cambios", padding=5
+        )
+        preview_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=(0, 5))
+
+        # Configurar Treeview con scrollbars
         self.preview_tree = ttk.Treeview(
-            preview_frame, columns=("original", "destino"), show="headings"
+            preview_frame,
+            columns=("original", "destino", "estado"),
+            show="headings",
+            height=8,
         )
-        self.preview_tree.heading("original", text="Ubicación Original")
-        self.preview_tree.heading("destino", text="Nueva Ubicación")
-        self.preview_tree.pack(fill=BOTH, expand=True, side=LEFT)
 
-        scrollbar = ttk.Scrollbar(
-            preview_frame, orient=VERTICAL, command=self.preview_tree.yview
+        # Configurar columnas
+        self.preview_tree.column("original", width=300, stretch=True)
+        self.preview_tree.column("destino", width=300, stretch=True)
+        self.preview_tree.column("estado", width=100, stretch=False)
+
+        self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
+        self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
+        self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
+
+        # Scrollbars
+        vsb = ttk.Scrollbar(
+            preview_frame, orient="vertical", command=self.preview_tree.yview
         )
-        scrollbar.pack(side=RIGHT, fill=Y)
-        self.preview_tree.configure(yscrollcommand=scrollbar.set)
+        hsb = ttk.Scrollbar(
+            preview_frame, orient="horizontal", command=self.preview_tree.xview
+        )
+        self.preview_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
 
-        # Área de registro
-        log_frame = ttk.LabelFrame(parent, text="Registro de Actividades")
-        log_frame.pack(padx=10, pady=5, fill=BOTH, expand=True)
+        # Layout del Treeview y scrollbars usando grid
+        self.preview_tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
 
-        self.log_area = scrolledtext.ScrolledText(log_frame, wrap=WORD)
-        self.log_area.pack(fill=BOTH, expand=True)
+        # Configurar expansión
+        preview_frame.grid_rowconfigure(0, weight=1)
+        preview_frame.grid_columnconfigure(0, weight=1)
+
+        # 2. Área de registro
+        log_frame = ttk.LabelFrame(
+            main_frame, text="Registro de Actividades", padding=5
+        )
+        log_frame.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+
+        # Área de texto con scroll
+        self.log_area = scrolledtext.ScrolledText(
+            log_frame, wrap=tk.WORD, font=("Consolas", 9), height=10
+        )
+        self.log_area.grid(row=0, column=0, sticky="nsew")
+
+        # Configurar tags para diferentes niveles de log
+        self.log_area.tag_config("INFO", foreground="black")
+        self.log_area.tag_config("WARNING", foreground="orange")
+        self.log_area.tag_config("ERROR", foreground="red")
+        self.log_area.tag_config("CRITICAL", foreground="red", background="yellow")
+
+        # Configurar estado inicial del área de log
+        self.log_area.configure(state="disabled")
+
+        # Configurar expansión
+        log_frame.grid_rowconfigure(0, weight=1)
+        log_frame.grid_columnconfigure(0, weight=1)
+
+        # Redirigir stdout y stderr al log
+        sys.stdout = TextRedirector(self.log_area, "stdout")
+        sys.stderr = TextRedirector(self.log_area, "stderr")
+
+        # Context menu para el Treeview
+        self._setup_preview_context_menu()
 
     def filter_formats(self, event=None):
         query = self.search_entry.get().lower()
