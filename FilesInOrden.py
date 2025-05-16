@@ -316,8 +316,8 @@ class FileOrganizerGUI(tk.Tk):
 
         # 1. Configuración básica de la ventana
         self.title("Organizador Avanzado de Archivos")
-        self.geometry("900x700")
-        self.minsize(800, 600)
+        self.geometry("600x400")
+        # self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -455,6 +455,8 @@ class FileOrganizerGUI(tk.Tk):
         # Notebook principal (ahora dentro del contenedor)
         self.notebook = ttk.Notebook(self.main_container)
         self.notebook.grid(row=0, column=0, sticky="nsew")
+        self.notebook.grid_rowconfigure(0, weight=1)
+        self.notebook.grid_columnconfigure(0, weight=1)
 
         # Configurar expansión
         self.main_container.grid_rowconfigure(0, weight=1)
