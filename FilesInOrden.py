@@ -613,35 +613,38 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area.configure(state="disabled")
         self.log_area.see(tk.END)
 
-    def create_preview_tree(self, parent):
+    def _create_preview_tree(self, parent):
         """
-        Crea un Treeview para previsualizar los cambios de organización.
+        Crea y configura el Treeview para previsualizar los cambios de organización.
 
         Args:
-            parent: Widget padre donde se ubicará el treeview
+            parent: Widget contenedor donde se ubicará el Treeview.
+
+        Características:
+        - Columnas: Ubicación original, Nueva ubicación, Estado
+        - Scrollbars vertical y horizontal
+        - Menú contextual
+        - Configuración de estilo
         """
         # Frame contenedor
-        preview_frame = ttk.LabelFrame(
-            parent, text="Previsualización de Cambios", padding=10
-        )
-        preview_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        preview_frame = ttk.LabelFrame(parent, text="Previsualización", padding=5)
+        preview_frame.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
 
-        parent.grid_rowconfigure(0, weight=1)
-        parent.grid_columnconfigure(0, weight=1)
+        # Configuración de expansión
         preview_frame.grid_rowconfigure(0, weight=1)
         preview_frame.grid_columnconfigure(0, weight=1)
 
         # Treeview con scrollbars
         tree_container = ttk.Frame(preview_frame)
-        tree_container.grid(
-            row=0, column=0, sticky="nsew"
-        )  # Corregí column=5 a column=0
+        tree_container.grid(row=0, column=0, sticky="nsew")
+        tree_container.grid_rowconfigure(0, weight=1)
+        tree_container.grid_columnconfigure(0, weight=1)
 
-        # Configurar scrollbars
+        # Scrollbars
         vsb = ttk.Scrollbar(tree_container, orient="vertical")
         hsb = ttk.Scrollbar(tree_container, orient="horizontal")
 
-        # Crear el Treeview
+        # Configuración del Treeview
         self.preview_tree = ttk.Treeview(
             tree_container,
             columns=("original", "destino", "estado"),
@@ -649,32 +652,24 @@ class FileOrganizerGUI(tk.Tk):
             yscrollcommand=vsb.set,
             xscrollcommand=hsb.set,
             selectmode="extended",
-            height=10,
         )
 
-        # Configurar columnas (esto debe ir DESPUÉS de crear el Treeview)
-        self.preview_tree.column("original", width=300, stretch=tk.YES)
-        self.preview_tree.column("destino", width=300, stretch=tk.YES)
-        self.preview_tree.column("estado", width=100, stretch=tk.NO)
-
+        # Configurar columnas
         self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
         self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
         self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
 
-        # Configurar scrollbars
-        vsb.config(command=self.preview_tree.yview)
-        hsb.config(command=self.preview_tree.xview)
+        self.preview_tree.column("original", width=300, stretch=True)
+        self.preview_tree.column("destino", width=300, stretch=True)
+        self.preview_tree.column("estado", width=100, stretch=False)
 
         # Layout
         self.preview_tree.grid(row=0, column=0, sticky="nsew")
         vsb.grid(row=0, column=1, sticky="ns")
         hsb.grid(row=1, column=0, sticky="ew")
 
-        # Configurar el grid para expandirse
-        tree_container.grid_rowconfigure(0, weight=1)
-        tree_container.grid_columnconfigure(0, weight=1)
+        # Configurar menú contextual
 
-        # Context menu
         self._setup_preview_context_menu()
 
     def _setup_preview_context_menu(self):
