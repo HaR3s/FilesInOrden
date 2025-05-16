@@ -313,9 +313,20 @@ class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        # self.setup_responsive_behavior()
+        # Configuración inicial básica
+        self.title("Organizador Avanzado de Archivos")
+        self.geometry("900x700")
+        self.minsize(800, 600)
+        self.configure(bg="#f0f0f0")
+
+        # Configuración de redimensionamiento
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # 1. Configuración inicial (logging, atributos)
         self.setup_logging()
         self.logger.info("Inicializando aplicación")
+
         # Inicializar atributos PRIMERO
         self.default_formats = {
             ".jpg": "Fotos",
@@ -335,7 +346,7 @@ class FileOrganizerGUI(tk.Tk):
         self.profiles = {}
         self.load_profiles()
 
-        # Inicializar el resto de componentes
+        # Inicializar componentes internos
         self.task_queue = Queue(maxsize=100)
         self.performance_cache = {
             "directory_scan": TTLCache(maxsize=100, ttl=30),
@@ -344,31 +355,26 @@ class FileOrganizerGUI(tk.Tk):
         self.running = True
         self.theme_mode = "light"
         self.undo_stack = deque(maxlen=5)
-        self.title("Organizador de Archivos")
+
+        # 2. Configurar contenedor principal ANTES de los widgets
+        self.main_container = ttk.Frame(self)
+        self.main_container.grid(row=0, column=0, sticky="nsew")
+        self.main_container.grid_rowconfigure(0, weight=1)
+        self.main_container.grid_columnconfigure(0, weight=1)
+
         try:
-            img = Image.open("ico/favicon.ico")  # Puede ser PNG, JPG, etc.
+            img = Image.open("ico/favicon.ico")
             icon = ImageTk.PhotoImage(img)
             self.iconphoto(False, icon)
         except Exception as e:
             self.logger.error(f"No se pudo cargar el icono: {e}")
 
-        # Ahora crear los widgets
+        # 3. Crear widgets (DEBE ser después de configurar main_container)
         self.create_widgets()
-        self.geometry("900x700")
-        self.minsize(800, 600)
-        self.configure(bg="#f0f0f0")
-        # Habilitar el redimensionamiento
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
 
-        # Contenedor principal que ocupará toda la ventana
-        self.main_container = ttk.Frame(self)
-        self.main_container.grid(row=0, column=0, sticky="nsew")
-        self.main_container.grid_rowconfigure(0, weight=1)
-        self.main_container.grid_columnconfigure(0, weight=1)
+        # 4. Configuraciones finales
         self.setup_performance_optimizations()
         self.init_threads()
-        self.title("Organizador Avanzado de Archivos")
 
     def setup_responsive_behavior(self):
         # Bind para redimensionamiento
