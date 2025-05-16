@@ -353,6 +353,7 @@ class FileOrganizerGUI(tk.Tk):
             self.logger.error(f"No se pudo cargar el icono: {e}")
 
         # Ahora crear los widgets
+        self.create_widgets()
         self.geometry("900x700")
         self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
@@ -365,7 +366,6 @@ class FileOrganizerGUI(tk.Tk):
         self.main_container.grid(row=0, column=0, sticky="nsew")
         self.main_container.grid_rowconfigure(0, weight=1)
         self.main_container.grid_columnconfigure(0, weight=1)
-        self.create_widgets()
         self.setup_performance_optimizations()
         self.init_threads()
         self.title("Organizador Avanzado de Archivos")
