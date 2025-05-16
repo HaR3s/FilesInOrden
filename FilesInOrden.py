@@ -522,12 +522,14 @@ class FileOrganizerGUI(tk.Tk):
 
         # Panel de progreso
         progress_frame = ttk.LabelFrame(ops_tab, text="Progreso", padding=10)
-        progress_frame.grid(fill=tk.X)
+        progress_frame.grid(sticky=tk.EW)  # sticky="ew" para expandir horizontalmente
 
         self.progress = ttk.Progressbar(
             progress_frame, orient=tk.HORIZONTAL, mode="determinate", length=300
         )
-        self.progress.grid(fill=tk.X, pady=5)
+        self.progress.grid(
+            sticky=tk.EW, pady=5
+        )  # sticky="ew" para expandir horizontalmente
 
         # ----------------------------
         # Pestaña de Configuración
