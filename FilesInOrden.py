@@ -614,7 +614,7 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area.configure(state="disabled")
         self.log_area.see(tk.END)
 
-    def _create_preview_tree(self, parent):
+    def create_preview_tree(self, parent):
         """
         Crea y configura el Treeview para previsualizar los cambios de organización.
 
@@ -768,7 +768,7 @@ class FileOrganizerGUI(tk.Tk):
             action_frame.grid_columnconfigure(col, weight=1)
 
         # 3. Panel de previsualización
-        self._create_preview_tree(parent)
+        self.create_preview_tree(parent)
 
         # 4. Barra de progreso
         self.progress = ttk.Progressbar(parent, orient="horizontal", mode="determinate")
