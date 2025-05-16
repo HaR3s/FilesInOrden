@@ -817,36 +817,47 @@ class FileOrganizerGUI(tk.Tk):
         # self.update_font_settings()
         messagebox.showinfo("Éxito", "Configuración de apariencia aplicada")
 
-    def build_appearance_settings(self, parent):
+    def _build_appearance_settings(self, parent):
         """
         Construye el panel de configuración de apariencia.
-        Incluye:
-        - Selección de tema
-        - Configuración de fuentes
-        - Opciones de visualización
+
+        Args:
+            parent: Widget contenedor donde se ubicarán los componentes.
+
+        Componentes:
+        1. Selector de tema visual
+        2. Configuración de fuentes
+        3. Opciones de visualización
         """
         # Frame principal
-        main_frame = ttk.Frame(parent)
-        main_frame.grid(row=0, column=0)
+        main_frame = ttk.Frame(parent, padding=10)
+        main_frame.grid(row=0, column=0, sticky="nsew")
+
+        # Configuración de expansión
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
 
         # Sección de tema visual
         theme_frame = ttk.LabelFrame(main_frame, text="Tema Visual", padding=10)
-        theme_frame.grid(row=0, column=0, sticky="nsew")
+        theme_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 
         ttk.Label(theme_frame, text="Estilo:").grid(row=0, column=0, sticky="e", padx=5)
         self.theme_combo = ttk.Combobox(
             theme_frame,
-            values=["Claro", "Oscuro", "Profesional"],
+            values=["Claro", "Oscuro", "Profesional", "Sistema"],
             state="readonly",
         )
         self.theme_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         self.theme_combo.set("Profesional")
         self.theme_combo.bind("<<ComboboxSelected>>", self.change_theme)
 
+        # Sección de opciones visuales
         options_frame = ttk.LabelFrame(main_frame, text="Opciones Visuales", padding=10)
-        options_frame.grid(row=0, column=0, sticky="nsew")
+        options_frame.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
 
-        theme_frame.columnconfigure(1, weight=1)
+        # Configuración de temas
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
 
     # NOTE: Añadir funcionlidad para clic derecho
 
