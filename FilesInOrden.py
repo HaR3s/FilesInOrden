@@ -850,9 +850,7 @@ class FileOrganizerGUI(tk.Tk):
         search_frame.grid_columnconfigure(0, weight=1)
         # Expansión horizontal completa
 
-        ttk.Label(search_frame, text="Buscar:").grid(
-            row=0, weight=0, sticky="w", padx=(0, 5)
-        )
+        ttk.Label(search_frame, text="Buscar:").grid(row=0, sticky="w", padx=(0, 5))
         self.search_entry = ttk.Entry(search_frame)
         self.search_entry.grid(row=0, column=1, sticky="ew", padx=(0, 5))
         self.search_entry.bind("<KeyRelease>", self.filter_formats)
