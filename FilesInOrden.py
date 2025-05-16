@@ -313,66 +313,45 @@ class FileOrganizerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        # Configuración inicial básica
-        self.title("Organizador Avanzado de Archivos")
+        # Configuración básica de la ventana
+        self.title("Organizador de Archivos")
         self.geometry("900x700")
         self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
 
-        # Configuración de redimensionamiento
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-
-        # 1. Configuración inicial (logging, atributos)
+        # Configuración inicial
         self.setup_logging()
         self.logger.info("Inicializando aplicación")
 
-        # Inicializar atributos PRIMERO
-        self.default_formats = {
-            ".jpg": "Fotos",
-            ".png": "Fotos",
-            ".ico": "Iconos",
-            ".mp4": "Videos",
-            ".avi": "Videos",
-            ".mpg": "Videos",
-            ".mp3": "Musica",
-            ".pdf": "PDFs",
-            ".docx": "Documentos_work",
-            ".doc": "Documentos_work",
-            ".txt": "Documentos_txt",
-            "": "Otros",
-        }
+        # Inicializar todos los atributos primero
+        self.default_formats = {...}  # Tus formatos aquí
         self.current_profile = "default"
         self.profiles = {}
-        self.load_profiles()
-
-        # Inicializar componentes internos
         self.task_queue = Queue(maxsize=100)
-        self.performance_cache = {
-            "directory_scan": TTLCache(maxsize=100, ttl=30),
-            "file_operations": TTLCache(maxsize=500, ttl=60),
-        }
         self.running = True
-        self.theme_mode = "light"
         self.undo_stack = deque(maxlen=5)
 
-        # 2. Configurar contenedor principal ANTES de los widgets
+        # Inicializar atributos de widgets como None
+        self.main_container = None
+        self.preview_tree = None  # ¡Importante! Inicializar como None
+
+        # Configuración restante
+        self.load_profiles()
+
+        # Crear contenedor principal
         self.main_container = ttk.Frame(self)
         self.main_container.grid(row=0, column=0, sticky="nsew")
+
+        # Configurar expansión
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
         self.main_container.grid_rowconfigure(0, weight=1)
         self.main_container.grid_columnconfigure(0, weight=1)
 
-        try:
-            img = Image.open("ico/favicon.ico")
-            icon = ImageTk.PhotoImage(img)
-            self.iconphoto(False, icon)
-        except Exception as e:
-            self.logger.error(f"No se pudo cargar el icono: {e}")
+        # Crear widgets
+        self.create_widgets()  # Ahora preview_tree se creará aquí
 
-        # 3. Crear widgets (DEBE ser después de configurar main_container)
-        self.create_widgets()
-
-        # 4. Configuraciones finales
+        # Configuraciones finales
         self.setup_performance_optimizations()
         self.init_threads()
 
