@@ -222,7 +222,7 @@ class ToolTip:
             padx=4,
             pady=2,
         )
-        label.pack(ipadx=1, ipady=1)
+        label.grid(ipadx=1, ipady=1)
 
         # Actualizar posición si excede la pantalla
         self._adjust_position(tw)
@@ -593,41 +593,6 @@ class FileOrganizerGUI(tk.Tk):
         self.log_area.configure(state="disabled")
         self.log_area.see(tk.END)
 
-    # def create_log_area(self, parent):
-    #     """
-    #     Crea un área de registro con scroll para mostrar mensajes de la aplicación.
-    #
-    #     Args:
-    #         parent: Widget padre donde se ubicará el área de registro
-    #     """
-    #     # Frame contenedor
-    #     log_frame = ttk.LabelFrame(parent, text="Registro de Actividades", padding=10)
-    #     log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-    #
-    #     # Área de texto con scroll
-    #     self.log_area = scrolledtext.ScrolledText(
-    #         log_frame,
-    #         wrap=tk.WORD,
-    #         width=80,
-    #         height=15,
-    #         font=("Consolas", 9),  # Fuente monoespaciada para mejor visualización
-    #     )
-    #     self.log_area.pack(fill=tk.BOTH, expand=True)
-    #
-    #     # Configuración inicial
-    #     self.log_area.configure(state="disabled")  # Solo lectura
-    #
-    #     # Configuración de tags para diferentes niveles de log
-    #     self.log_area.tag_config("INFO", foreground="black")
-    #     self.log_area.tag_config("WARNING", foreground="orange")
-    #     self.log_area.tag_config("ERROR", foreground="red")
-    #     self.log_area.tag_config("CRITICAL", foreground="red", background="yellow")
-    #
-    #     # Redirigir stdout y stderr al log
-    #     sys.stdout = TextRedirector(self.log_area, "stdout")
-    #     sys.stderr = TextRedirector(self.log_area, "stderr")
-    #
-
     def create_preview_tree(self, parent):
         """
         Crea un Treeview para previsualizar los cambios de organización.
@@ -753,22 +718,44 @@ class FileOrganizerGUI(tk.Tk):
         )
 
         # Panel de acciones
-        action_frame = ttk.LabelFrame(parent, text="Acciones")
-        action_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        action_frame = ttk.LabelFrame(
+            parent,
+            text="Acciones",
+            padding=5,  # Añadir padding interno para mejor espaciado
+        )
+        action_frame.grid(
+            row=0,
+            column=0,
+            sticky="nsew",  # Expandir en todas direcciones
+            padx=5,
+            pady=5,
+            ipadx=5,  # Padding interno horizontal
+            ipady=5,  # Padding interno vertical
+        )
 
+        # Configurar expansión del frame padre
+        parent.grid_rowconfigure(0, weight=0)  # Sin expansión vertical (altura fija)
+        parent.grid_columnconfigure(0, weight=1)  # Expansión horizontal completa
+
+        # Contenedor grid para los botones
         btn_grid = ttk.Frame(action_frame)
-        btn_grid.pack()
+        btn_grid.grid(
+            row=0,
+            column=0,
+            sticky="nsew",  # Expandir dentro del frame
+            padx=2,  # Pequeño margen interno
+            pady=2,
+        )
 
-        buttons = [
-            ("Previsualizar", self.preview_changes, 0, 0),
-            ("Organizar Ahora", self.start_organization, 0, 1),
-            ("Deshacer", self.undo_last, 1, 0),
-            ("Estadísticas", self.show_stats, 1, 1),
-        ]
+        # Configurar expansión del grid de botones
+        action_frame.grid_rowconfigure(0, weight=1)
+        action_frame.grid_columnconfigure(0, weight=1)
 
-        for text, command, row, col in buttons:
-            btn = ttk.Button(btn_grid, text=text, command=command)
-            btn.grid(row=row, column=col, padx=5, pady=5, sticky=tk.NSEW)
+        # Configurar columnas del btn_grid (ajustar según número de botones)
+        for col in range(4):  # Ejemplo para 4 columnas
+            btn_grid.grid_columnconfigure(
+                col, weight=1, uniform="btns"
+            )  # Mismo ancho para todos
 
         # Barra de progreso
         self.progress = ttk.Progressbar(
@@ -1203,27 +1190,101 @@ class FileOrganizerGUI(tk.Tk):
     def edit_format(self):
         pass
 
+    def center_window(self, window):
+        """Centra una ventana secundaria respecto a la ventana principal"""
+        window.update_idletasks()
+        width = window.winfo_width()
+        height = window.winfo_height()
+
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2)
+
+        window.geometry(f"{width}x{height}+{x}+{y}")
+
     def add_format(self):
+        """
+        Muestra un diálogo para agregar un nuevo formato de archivo y su carpeta destino.
+
+        Crea una ventana emergente con campos para:
+        - Extensión del archivo (ej: .jpg)
+        - Carpeta destino donde se moverán los archivos con esta extensión
+
+        Al guardar, el nuevo formato se añade al Treeview y al perfil actual.
+
+        Ejemplo de uso:
+            self.add_format()  # Muestra el diálogo de agregar formato
+        """
+
         def save_new_format():
+            """
+            Guarda el nuevo formato validando los campos y actualizando las estructuras de datos.
+
+            Acciones:
+            1. Obtiene y limpia los valores de los campos
+            2. Valida que ambos campos contengan datos
+            3. Añade el formato al Treeview
+            4. Actualiza el diccionario de formatos en el perfil actual
+            5. Cierra la ventana de diálogo
+            """
+            # Obtener y limpiar los valores
             ext = ext_entry.get().strip()
             folder = folder_entry.get().strip()
+
+            # Validar que ambos campos tengan contenido
             if ext and folder:
-                self.format_tree.insert("", END, values=(ext, folder))
-                self.profiles["default"]["formatos"].setdefault(ext, folder)
+                # Asegurar que la extensión comience con punto
+                if not ext.startswith("."):
+                    ext = f".{ext}"
+
+                # Añadir al Treeview
+                self.format_tree.insert("", END, values=(ext.lower(), folder))
+
+                # Actualizar el diccionario de formatos
+                self.profiles["default"]["formatos"][ext.lower()] = folder
+
+                # Cerrar la ventana
                 top.destroy()
 
+        # Crear ventana emergente
         top = Toplevel(self)
         top.title("Agregar Formato")
+        top.transient(self)  # Establecer como ventana hija
+        top.grab_set()  # Modal
 
-        ttk.Label(top, text="Extensión (ej. .jpg):").pack(padx=10, pady=2)
-        ext_entry = ttk.Entry(top)
-        ext_entry.pack(padx=10, pady=2)
+        # Configuración del sistema de grid
+        top.grid_columnconfigure(0, weight=1)  # Columna principal expandible
+        for i in range(5):  # Configurar 5 filas
+            top.grid_rowconfigure(i, weight=1 if i == 4 else 0)
 
-        ttk.Label(top, text="Carpeta destino:").pack(padx=10, pady=2)
-        folder_entry = ttk.Entry(top)
-        folder_entry.pack(padx=10, pady=2)
+        # 1. Etiqueta y campo para extensión
+        ttk.Label(top, text="Extensión (ej. .jpg, .png):", font=("Segoe UI", 9)).grid(
+            row=0, column=0, padx=15, pady=(10, 2), sticky="w"
+        )
 
-        ttk.Button(top, text="Guardar", command=save_new_format).pack(pady=10)
+        ext_entry = ttk.Entry(top, font=("Segoe UI", 9))
+        ext_entry.grid(row=1, column=0, padx=15, pady=2, sticky="ew")
+
+        # 2. Etiqueta y campo para carpeta destino
+        ttk.Label(top, text="Carpeta destino:", font=("Segoe UI", 9)).grid(
+            row=2, column=0, padx=15, pady=(10, 2), sticky="w"
+        )
+
+        folder_entry = ttk.Entry(top, font=("Segoe UI", 9))
+        folder_entry.grid(row=3, column=0, padx=15, pady=2, sticky="ew")
+
+        # 3. Botón de guardar
+        btn_guardar = ttk.Button(
+            top, text="Guardar", command=save_new_format, style="Accent.TButton"
+        )
+        btn_guardar.grid(row=4, column=0, padx=15, pady=(10, 15), sticky="ew")
+
+        # Configuración adicional de la ventana
+        top.resizable(False, False)  # No redimensionable
+        top.bind("<Return>", lambda e: save_new_format())  # Enter para guardar
+        ext_entry.focus_set()  # Foco inicial en el primer campo
+
+        # Centrar la ventana respecto a la principal
+        self.center_window(top)
 
     def undo_last(self):
         if self.undo_stack:
@@ -1516,46 +1577,118 @@ class FileOrganizerGUI(tk.Tk):
         messagebox.showinfo("Info", "Lo siento ahun no implementado")
 
     def setup_statusbar(self):
-        """Configura una barra de estado avanzada con múltiples secciones"""
-        self.status_bar = ttk.Frame(self, relief=tk.SUNKEN, padding=(5, 2))
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        """
+        Configura una barra de estado avanzada con múltiples secciones usando grid().
 
-        # Secciones de la barra
-        sections = {
-            "status": {"text": "Listo", "width": 30, "anchor": tk.W},
-            "progress": {"text": "", "width": 15, "anchor": tk.CENTER},
-            "stats": {"text": "Archivos: 0", "width": 20, "anchor": tk.E},
-            "memory": {"text": "RAM: 0MB", "width": 15, "anchor": tk.E},
-            "time": {"text": "", "width": 10, "anchor": tk.E},
-        }
+        La barra de estado contiene:
+        - Estado actual de la aplicación
+        - Progreso de operaciones
+        - Estadísticas de archivos procesados
+        - Uso de memoria RAM
+        - Hora actual
+
+        Estructura:
+            [Estado: texto] [Progreso: indicador] [Estadísticas: conteo] [RAM: uso] [Hora]
+
+        Actualización:
+        - Se actualiza automáticamente cada segundo mediante update_statusbar()
+        """
+        # Crear frame principal para la barra de estado
+        self.status_bar = ttk.Frame(
+            self,
+            relief=tk.SUNKEN,
+            padding=(5, 2, 5, 2),  # Padding uniforme (left, top, right, bottom)
+            style="Statusbar.TFrame",
+        )
+
+        self.status_bar.grid(
+            row=100,  # Fila inferior (número alto para asegurar posición)
+            column=0,
+            sticky="nsew",
+            columnspan=100,  # Para ocupar todo el ancho
+        )
+
+        # Configurar expansión (asegurar que ocupe todo el ancho)
+        self.grid_rowconfigure(100, weight=0)  # Sin expansión vertical
+        self.grid_columnconfigure(0, weight=1)  # Expansión horizontal
+
+        # Definición de secciones (más ordenada)
+        sections = [
+            # (name,        text,       width,  anchor,    stretch)
+            ("status", "Listo", 30, tk.W, True),
+            ("progress", "", 15, tk.CENTER, False),
+            ("stats", "Archivos: 0", 20, tk.E, False),
+            ("memory", "RAM: 0MB", 15, tk.E, False),
+            ("time", "", 10, tk.E, False),
+        ]
+
+        # Configurar grid para las secciones
+        self.status_bar.grid_columnconfigure(len(sections) - 1, weight=1)
 
         # Crear labels para cada sección
         self.status_labels = {}
-        for name, config in sections.items():
-            frame = ttk.Frame(self.status_bar)
-            frame.pack(side=tk.LEFT, padx=2)
+        for col, (name, text, width, anchor, stretch) in enumerate(sections):
+            # Configurar peso de columna
+            if stretch:
+                self.status_bar.grid_columnconfigure(col, weight=1)
 
-            ttk.Label(frame, text=f"{name.title()}:").pack(side=tk.LEFT)
-            label = ttk.Label(
-                frame,
-                text=config["text"],
-                width=config["width"],
-                anchor=config["anchor"],
+            # Frame contenedor
+            frame = ttk.Frame(self.status_bar, padding=(2, 0))
+            frame.grid(row=0, column=col, sticky="nsew", padx=(0, 5))
+
+            # Label del nombre
+            ttk.Label(frame, text=f"{name.title()}:", style="Statusbar.TLabel").grid(
+                row=0, column=0, sticky="w"
             )
-            label.pack(side=tk.LEFT)
+
+            # Label del valor
+            label = ttk.Label(
+                frame, text=text, width=width, anchor=anchor, style="Statusbar.TLabel"
+            )
+            label.grid(row=0, column=1, sticky="ew")
+
             self.status_labels[name] = label
 
-        # Actualización periódica
+        # Configurar estilos (debe estar definido en tu aplicación)
+        self.style.configure("Statusbar.TFrame", background="#f0f0f0", borderwidth=1)
+
+        self.style.configure(
+            "Statusbar.TLabel",
+            background="#f0f0f0",
+            font=("Segoe UI", 8),
+            padding=(0, 0),
+        )
+
+        # Iniciar actualización periódica
         self.update_statusbar()
 
     def update_statusbar(self):
-        """Actualiza dinámicamente la barra de estado"""
-        # Memoria
-        mem = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
-        self.status_labels["memory"].config(text=f"{mem:.1f}MB")
+        """
+        Actualiza dinámicamente los valores de la barra de estado.
 
-        # Tiempo
-        self.status_labels["time"].config(text=datetime.now().strftime("%H:%M:%S"))
+        Se ejecuta automáticamente cada segundo y muestra:
+        - Uso actual de memoria RAM
+        - Hora del sistema
+        - Conteo de hilos activos
+        - Estado de la cola de tareas
+        """
+        try:
+            # Actualizar uso de memoria
+            mem = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+            self.status_labels["memory"].config(text=f"RAM: {mem:.1f}MB")
+
+            # Actualizar hora
+            self.status_labels["time"].config(text=datetime.now().strftime("%H:%M:%S"))
+
+            # Actualizar estadísticas del sistema
+            threads = threading.active_count()
+            tasks = self.task_queue.qsize()
+            self.status_labels["stats"].config(
+                text=f"Hilos: {threads} | Tareas: {tasks}"
+            )
+
+        except Exception as e:
+            self.logger.error(f"Error actualizando barra de estado: {e}")
 
         # Programar próxima actualización
         self.after(1000, self.update_statusbar)
