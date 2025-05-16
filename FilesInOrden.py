@@ -720,7 +720,7 @@ class FileOrganizerGUI(tk.Tk):
             self.dir_entry.delete(0, tk.END)
             self.dir_entry.insert(0, directory)
 
-    def _build_operations_tab(self, parent):
+    def build_operations_tab(self, parent):
         """
         Construye el contenido de la pestaña de Operaciones.
 
