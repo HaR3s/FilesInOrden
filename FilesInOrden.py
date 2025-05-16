@@ -471,8 +471,8 @@ class FileOrganizerGUI(tk.Tk):
         config_tab.grid_rowconfigure(0, weight=1)
         config_tab.grid_columnconfigure(0, weight=1)
 
-        self._build_operations_tab(ops_tab)
-        self._build_config_tab(config_tab)
+        self.build_operations_tab(ops_tab)
+        self.build_config_tab(config_tab)
 
         # Configuración de estilo avanzado
         self.style = ttk.Style()
@@ -774,7 +774,7 @@ class FileOrganizerGUI(tk.Tk):
         self.progress = ttk.Progressbar(parent, orient="horizontal", mode="determinate")
         self.progress.grid(row=3, column=0, sticky="ew", padx=5, pady=5)
 
-    def _build_config_tab(self, parent):
+    def build_config_tab(self, parent):
         """
         Construye el contenido de la pestaña de Configuración.
 
@@ -797,12 +797,12 @@ class FileOrganizerGUI(tk.Tk):
         # Subpestaña de Formatos
         format_tab = ttk.Frame(config_notebook)
         config_notebook.add(format_tab, text="Formatos")
-        self._build_format_settings(format_tab)
+        self.build_format_settings(format_tab)
 
         # Subpestaña de Apariencia
         appearance_tab = ttk.Frame(config_notebook)
         config_notebook.add(appearance_tab, text="Apariencia")
-        self._build_appearance_settings(appearance_tab)
+        self.build_appearance_settings(appearance_tab)
 
     def remove_format(self):
         selected = self.format_tree.selection()
@@ -818,7 +818,7 @@ class FileOrganizerGUI(tk.Tk):
         # self.update_font_settings()
         messagebox.showinfo("Éxito", "Configuración de apariencia aplicada")
 
-    def _build_appearance_settings(self, parent):
+    def build_appearance_settings(self, parent):
         """
         Construye el panel de configuración de apariencia.
 
@@ -862,7 +862,7 @@ class FileOrganizerGUI(tk.Tk):
 
     # NOTE: Añadir funcionlidad para clic derecho
 
-    def _build_format_settings(self, parent):
+    def build_format_settings(self, parent):
         """
         Construye el panel de configuración de formatos de archivo.
 
