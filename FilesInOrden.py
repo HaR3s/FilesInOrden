@@ -316,7 +316,7 @@ class FileOrganizerGUI(tk.Tk):
         # Configuración básica de la ventana
         self.title("Organizador de Archivos")
         self.geometry("900x700")
-        self.minsize(800, 600)
+        # self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
 
         # Configuración inicial
