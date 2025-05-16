@@ -455,8 +455,6 @@ class FileOrganizerGUI(tk.Tk):
         # Notebook principal (ahora dentro del contenedor)
         self.notebook = ttk.Notebook(self.main_container)
         self.notebook.grid(row=0, column=0, sticky="nsew")
-        self.notebook.grid_rowconfigure(0, weight=1)
-        self.notebook.grid_columnconfigure(0, weight=1)
 
         # Configurar expansión
         self.main_container.grid_rowconfigure(0, weight=1)
@@ -472,6 +470,9 @@ class FileOrganizerGUI(tk.Tk):
 
         config_tab.grid_rowconfigure(0, weight=1)
         config_tab.grid_columnconfigure(0, weight=1)
+
+        self._build_operations_tab(ops_tab)
+        self._build_config_tab(config_tab)
 
         # Configuración de estilo avanzado
         self.style = ttk.Style()
