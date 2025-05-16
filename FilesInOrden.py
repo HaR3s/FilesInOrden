@@ -719,76 +719,89 @@ class FileOrganizerGUI(tk.Tk):
             self.dir_entry.delete(0, tk.END)
             self.dir_entry.insert(0, directory)
 
-    def build_operations_tab(self, parent):
-        """Versión compacta similar al ejemplo"""
-        # Configuración de directorio
-        dir_frame = ttk.LabelFrame(parent, text="Directorio")
-        dir_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+    def _build_operations_tab(self, parent):
+        """
+        Construye el contenido de la pestaña de Operaciones.
 
-        self.dir_entry = ttk.Entry(dir_frame)
-        self.dir_entry.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        Args:
+            parent: Widget contenedor (Frame) donde se ubicarán los componentes.
 
-        ttk.Button(dir_frame, text="Examinar", command=self.select_directory).grid(
-            row=0, column=0, sticky="nsew"
-        )
-
-        # Panel de acciones
-        action_frame = ttk.LabelFrame(
-            parent,
-            text="Acciones",
-            padding=5,  # Añadir padding interno para mejor espaciado
-        )
-        action_frame.grid(
-            row=0,
-            column=0,
-            sticky="nsew",  # Expandir en todas direcciones
-            padx=5,
-            pady=5,
-            ipadx=5,  # Padding interno horizontal
-            ipady=5,  # Padding interno vertical
-        )
-
-        # Configurar expansión del frame padre
-        parent.grid_rowconfigure(0, weight=0)  # Sin expansión vertical (altura fija)
-        parent.grid_columnconfigure(0, weight=1)  # Expansión horizontal completa
-
-        # Contenedor grid para los botones
-        btn_grid = ttk.Frame(action_frame)
-        btn_grid.grid(
-            row=0,
-            column=0,
-            sticky="nsew",  # Expandir dentro del frame
-            padx=2,  # Pequeño margen interno
-            pady=2,
-        )
-
-        # Configurar expansión del grid de botones
-        action_frame.grid_rowconfigure(0, weight=1)
-        action_frame.grid_columnconfigure(0, weight=1)
-
-        # Configurar columnas del btn_grid (ajustar según número de botones)
-        for col in range(4):  # Ejemplo para 4 columnas
-            btn_grid.grid_columnconfigure(
-                col, weight=1, uniform="btns"
-            )  # Mismo ancho para todos
-
-        # Barra de progreso
-        self.progress = ttk.Progressbar(
-            parent, orient=tk.HORIZONTAL, mode="determinate"
-        )
-        self.progress.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
-
-        parent.grid_rowconfigure(2, weight=1)
-        # La fila 2 puede ser la que contiene el treeview
+        Componentes:
+        1. Panel de selección de directorio
+        2. Panel de botones de acción
+        3. Panel de previsualización (Treeview)
+        4. Barra de progreso
+        """
+        # Configuración de grid
+        parent.grid_rowconfigure(2, weight=1)  # Fila para el treeview
         parent.grid_columnconfigure(0, weight=1)
 
-    def build_config_tab(self, parent):
-        # Configurar peso de filas/columnas
+        # 1. Panel de directorio
+        dir_frame = ttk.LabelFrame(parent, text="Selección de Directorio", padding=5)
+        dir_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+        dir_frame.grid_columnconfigure(1, weight=1)
+
+        ttk.Label(dir_frame, text="Directorio:").grid(row=0, column=0, padx=5, pady=2)
+        self.dir_entry = ttk.Entry(dir_frame)
+        self.dir_entry.grid(row=0, column=1, sticky="ew", padx=5, pady=2)
+
+        browse_btn = ttk.Button(
+            dir_frame, text="Examinar", command=self.select_directory
+        )
+        browse_btn.grid(row=0, column=2, padx=5, pady=2)
+
+        # 2. Panel de acciones
+        action_frame = ttk.LabelFrame(parent, text="Acciones", padding=5)
+        action_frame.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
+
+        buttons = [
+            ("Previsualizar", self.preview_changes),
+            ("Organizar", self.start_organization),
+            ("Deshacer", self.undo_last),
+            ("Observar", self.observador),
+        ]
+
+        for col, (text, command) in enumerate(buttons):
+            btn = ttk.Button(action_frame, text=text, command=command)
+            btn.grid(row=0, column=col, padx=5, pady=2, sticky="ew")
+            action_frame.grid_columnconfigure(col, weight=1)
+
+        # 3. Panel de previsualización
+        self._create_preview_tree(parent)
+
+        # 4. Barra de progreso
+        self.progress = ttk.Progressbar(parent, orient="horizontal", mode="determinate")
+        self.progress.grid(row=3, column=0, sticky="ew", padx=5, pady=5)
+
+    def _build_config_tab(self, parent):
+        """
+        Construye el contenido de la pestaña de Configuración.
+
+        Args:
+            parent: Widget contenedor donde se ubicarán los componentes.
+
+        Componentes:
+        1. Notebook interno para subpestañas
+        2. Subpestaña de Formatos
+        3. Subpestaña de Apariencia
+        """
+        # Notebook interno
+        config_notebook = ttk.Notebook(parent)
+        config_notebook.grid(row=0, column=0, sticky="nsew")
+
+        # Configuración de expansión
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        config_notebook = ttk.Notebook(parent)
-        config_notebook.grid(row=0, column=0, sticky="nsew")
+        # Subpestaña de Formatos
+        format_tab = ttk.Frame(config_notebook)
+        config_notebook.add(format_tab, text="Formatos")
+        self._build_format_settings(format_tab)
+
+        # Subpestaña de Apariencia
+        appearance_tab = ttk.Frame(config_notebook)
+        config_notebook.add(appearance_tab, text="Apariencia")
+        self._build_appearance_settings(appearance_tab)
 
     def remove_format(self):
         selected = self.format_tree.selection()
@@ -836,90 +849,73 @@ class FileOrganizerGUI(tk.Tk):
         theme_frame.columnconfigure(1, weight=1)
 
     # NOTE: Añadir funcionlidad para clic derecho
-    def build_format_settings(self, parent):
-        """
-        Construye el panel de configuración de formatos con:
-        - Lista editable de extensiones y carpetas destino
-        - Búsqueda/filtrado
-        - Importación/exportación de configuraciones
-        """
-        main_frame = ttk.Frame(parent)
-        main_frame.grid(row=0, column=0, sticky="nsew")
-        main_frame.grid_rowconfigure(0, weight=0)
-        main_frame.grid_rowconfigure(0, weight=1)
-        # La barra de búsqueda no necesita expandirse verticalmente
-        main_frame.grid_columnconfigure(0, weight=1)
-        # Expansión horizontal completa
 
-        # Barra de búsqueda
-        search_frame = ttk.Frame(main_frame)
-        search_frame.grid(row=0, column=0, sticky="ew", pady=5)
-        search_frame.grid_rowconfigure(0, weight=0)
-        # La barra de búsqueda no necesita expandirse verticalmente
-        search_frame.grid_columnconfigure(0, weight=1)
-        # Expansión horizontal completa
+    def _build_format_settings(self, parent):
+        """
+        Construye el panel de configuración de formatos de archivo.
 
-        ttk.Label(search_frame, text="Buscar:").grid(row=0, sticky="w", padx=(0, 5))
+        Args:
+            parent: Widget contenedor donde se ubicarán los componentes.
+
+        Componentes:
+        1. Barra de búsqueda
+        2. Treeview de formatos
+        3. Botones de control (Agregar, Editar, Eliminar)
+        """
+        # Configuración de grid
+        parent.grid_rowconfigure(1, weight=1)  # Fila para el treeview
+        parent.grid_columnconfigure(0, weight=1)
+
+        # 1. Barra de búsqueda
+        search_frame = ttk.Frame(parent)
+        search_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+
+        ttk.Label(search_frame, text="Buscar:").grid(row=0, column=0, padx=5)
         self.search_entry = ttk.Entry(search_frame)
-        self.search_entry.grid(row=0, column=1, sticky="ew", padx=(0, 5))
+        self.search_entry.grid(row=0, column=1, sticky="ew", padx=5)
         self.search_entry.bind("<KeyRelease>", self.filter_formats)
 
-        # Treeview de formatos
-        tree_frame = ttk.Frame(main_frame)
-        tree_frame.grid(row=0, column=0, sticky="nsew")
+        # 2. Treeview de formatos
+        tree_frame = ttk.Frame(parent)
+        tree_frame.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+        tree_frame.grid_rowconfigure(0, weight=1)
+        tree_frame.grid_columnconfigure(0, weight=1)
 
-        # Configurar scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical")
-        # hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
 
-        # Crear el Treeview
         self.format_tree = ttk.Treeview(
             tree_frame,
             columns=("ext", "folder"),
             show="headings",
             yscrollcommand=vsb.set,
-            # xscrollcommand=hsb.set,
-            selectmode="browse",
-            height=10,
         )
+        self.format_tree.heading("ext", text="Extensión")
+        self.format_tree.heading("folder", text="Carpeta Destino")
+        self.format_tree.column("ext", width=120, stretch=False)
+        self.format_tree.column("folder", width=250, stretch=True)
 
-        # Configurar columnas
-        self.format_tree.heading("ext", text="Extensión", anchor=tk.W)
-        self.format_tree.heading("folder", text="Carpeta Destino", anchor=tk.W)
-        self.format_tree.column("ext", width=120, stretch=tk.NO)
-        self.format_tree.column("folder", width=250, stretch=tk.YES)
-
-        # Configurar scrollbars
         vsb.config(command=self.format_tree.yview)
-        # hsb.config(command=self.format_tree.xview)
 
-        # Layout
         self.format_tree.grid(row=0, column=0, sticky="nsew")
         vsb.grid(row=0, column=1, sticky="ns")
-        # hsb.grid(row=1, column=0, sticky="ew")
 
-        # Configurar el grid para expandirse
-        tree_frame.grid_rowconfigure(0, weight=1)
-        tree_frame.grid_columnconfigure(0, weight=1)
+        # 3. Botones de control
+        ctrl_frame = ttk.Frame(parent)
+        ctrl_frame.grid(row=2, column=0, sticky="ew", padx=5, pady=5)
 
-        # Controles de formatos
-        ctrl_frame = ttk.Frame(main_frame)
-        ctrl_frame.grid(row=0, column=0, sticky="nsew")
-
-        control_buttons = [
+        buttons = [
             ("Agregar", self.add_format),
             ("Editar", self.edit_format),
             ("Eliminar", self.remove_format),
         ]
 
-        for text, command in control_buttons:
-            btn = ttk.Button(
-                ctrl_frame, text=text, command=command, style="Small.TButton"
-            )
-            btn.grid(row=0, column=0, sticky="nsew")
+        for col, (text, command) in enumerate(buttons):
+            btn = ttk.Button(ctrl_frame, text=text, command=command)
+            btn.grid(row=0, column=col, padx=5, pady=2, sticky="ew")
+            ctrl_frame.grid_columnconfigure(col, weight=1)
 
-        # Cargar formatos actuales
-        self.update_format_tree(self.profiles[self.current_profile].get("formatos", {}))
+        # Cargar formatos iniciales
+        self.update_format_tree(self.profiles[self.current_profile]["formatos"])
 
     def _save_new_format(self, dialog, ext, folder):
         """Guarda el nuevo formato validado"""
