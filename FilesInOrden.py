@@ -600,7 +600,7 @@ class FileOrganizerGUI(tk.Tk):
         # =============================================
         # BARRA DE ESTADO
         # =============================================
-        self.setup_status_bar()
+        self.setup_status_bar(self.notebook)
 
         # Configuración final
         self.update_idletasks()
