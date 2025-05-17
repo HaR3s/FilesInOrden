@@ -1242,7 +1242,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # Definición de secciones
         sections = [
-            ("status", "Listo", 20, tk.W, True),
+            ("status", "Status", 20, tk.W, True),
             ("progress", "", 15, tk.CENTER, False),
             ("stats", "Archivos: 0", 20, tk.E, False),
             ("memory", "RAM: 0MB", 15, tk.E, False),
@@ -1311,7 +1311,79 @@ class FileOrganizerGUI(tk.Tk):
             json.dump(self.profiles, f)
 
     def edit_format(self):
-        pass
+        """Permite editar un formato existente en el Treeview"""
+        selected = self.format_tree.selection()
+        if not selected:
+            messagebox.showwarning("Advertencia", "Seleccione un formato para editar")
+            return
+
+        # Obtener datos actuales
+        item = selected[0]
+        ext, folder = self.format_tree.item(item, "values")
+
+        # Crear ventana de edición
+        edit_window = tk.Toplevel(self)
+        edit_window.title("Editar Formato")
+        edit_window.transient(self)
+        edit_window.grab_set()
+
+        # Configurar grid
+        edit_window.grid_columnconfigure(1, weight=1)
+
+        # Campos de edición
+        ttk.Label(edit_window, text="Extensión:").grid(
+            row=0, column=0, padx=5, pady=5, sticky="e"
+        )
+        ext_entry = ttk.Entry(edit_window)
+        ext_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        ext_entry.insert(0, ext)
+        ext_entry.config(state="readonly")  # No permitir cambiar la extensión
+
+        ttk.Label(edit_window, text="Carpeta destino:").grid(
+            row=1, column=0, padx=5, pady=5, sticky="e"
+        )
+        folder_entry = ttk.Entry(edit_window)
+        folder_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+        folder_entry.insert(0, folder)
+
+        # Botones
+        btn_frame = ttk.Frame(edit_window)
+        btn_frame.grid(row=2, column=0, columnspan=2, pady=(5, 0))
+
+        ttk.Button(
+            btn_frame,
+            text="Guardar",
+            command=lambda: self._save_edit(item, folder_entry.get(), edit_window),
+        ).pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(btn_frame, text="Cancelar", command=edit_window.destroy).pack(
+            side=tk.LEFT, padx=5
+        )
+
+        # Centrar ventana
+        self.center_window(edit_window)
+
+    def _save_edit(self, item, new_folder, window):
+        """Guarda los cambios de edición"""
+        if not new_folder.strip():
+            messagebox.showwarning(
+                "Advertencia", "La carpeta destino no puede estar vacía"
+            )
+            return
+
+        # Obtener extensión del item
+        ext = self.format_tree.item(item, "values")[0]
+
+        # Actualizar Treeview
+        self.format_tree.item(item, values=(ext, new_folder))
+
+        # Actualizar perfiles
+        self.profiles[self.current_profile]["formatos"][ext] = new_folder
+
+        # Cerrar ventana
+        window.destroy()
+
+        self.log(f"Formato actualizado: {ext} -> {new_folder}")
 
     def center_window(self, window):
         """Centra una ventana secundaria respecto a la ventana principal"""
