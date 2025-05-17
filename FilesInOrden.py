@@ -316,7 +316,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # 1. Configuración básica de la ventana
         self.title("Organizador Avanzado de Archivos")
-        self.geometry("600x400")
+        self.geometry("600x900")
         # self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
         self.grid_rowconfigure(0, weight=1)
@@ -600,7 +600,7 @@ class FileOrganizerGUI(tk.Tk):
         # =============================================
         # BARRA DE ESTADO
         # =============================================
-        self.setup_status_bar(ops_tab)
+        self.setup_status_bar()
 
         # Configuración final
         self.update_idletasks()
@@ -611,7 +611,7 @@ class FileOrganizerGUI(tk.Tk):
         # Lista de widgets que nesecitan ajuste a redimencionar
         self.responsive_widgets = [
             (self.preview_tree, {"columns": ["original", "destino"]}),
-            (self.preview_tree, {"columns": ["exr", "folder"]}),
+            (self.format_tree, {"columns": ["exr", "folder"]}),
         ]
         # Bind para redimensionamiento
         self.bind("<Configure>", self._on_window_resize)
