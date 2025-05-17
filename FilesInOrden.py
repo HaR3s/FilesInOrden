@@ -601,7 +601,7 @@ class FileOrganizerGUI(tk.Tk):
         # BARRA DE ESTADO
         # =============================================
         status = ttk.LabelFrame(self.notebook, padding=10)
-        status.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+        status.grid(sticky="w", padx=5, pady=5)
         self.setup_status_bar(status)
 
         # Configuración final
