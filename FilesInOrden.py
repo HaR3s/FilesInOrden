@@ -602,7 +602,7 @@ class FileOrganizerGUI(tk.Tk):
         # =============================================
         # status = ttk.LabelFrame(self.notebook, padding=10)
         # status.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
-        self.setup_status_bar(self.notebook)
+        self.setup_status_bar()
 
         # Configuración final
         self.update_idletasks()
