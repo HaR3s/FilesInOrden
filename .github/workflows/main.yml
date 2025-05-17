@@ -3,7 +3,7 @@ name: Build Windows Executable
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [master, dellicons]
   pull_request:
     branches: [master]
 

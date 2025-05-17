@@ -613,7 +613,7 @@ class FileOrganizerGUI(tk.Tk):
         # Lista de widgets que nesecitan ajuste a redimencionar
         self.responsive_widgets = [
             (self.preview_tree, {"columns": ["original", "destino"]}),
-            (self.format_tree, {"columns": ["exr", "folder"]}),
+            (self.format_tree, {"columns": ["ext", "folder"]}),
         ]
         # Bind para redimensionamiento
         self.bind("<Configure>", self._on_window_resize)
