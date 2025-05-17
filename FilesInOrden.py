@@ -1216,7 +1216,7 @@ class FileOrganizerGUI(tk.Tk):
     #     # Actualización periódica
     #     self.update_status_bar()
 
-    def setup_statusbar(self):
+    def setup_status_bar(self):
         """Configura una barra de estado avanzada en la parte inferior de la ventana"""
         # Crear frame principal para la barra de estado
         self.status_bar = ttk.Frame(
