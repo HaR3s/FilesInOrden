@@ -445,157 +445,188 @@ class FileOrganizerGUI(tk.Tk):
 
     def create_widgets(self):
         """
-        Crea todos los widgets de la interfaz gráfica, organizados en pestañas y secciones.
-        Incluye:
-        - Barra de menú
-        - Pestañas principales (Operaciones y Configuración)
-        - Área de registro
-        - Barra de estado
+        Construye la interfaz gráfica principal de la aplicación.
+
+        Organiza los componentes en una estructura jerárquica clara:
+        1. Notebook principal (pestañas)
+           - Operaciones: Controles para organizar archivos
+           - Configuración: Ajustes de formatos y apariencia
+        2. Barra de estado: Información del sistema
+
+        La estructura utiliza grid layout para un diseño consistente y responsive.
+        Todos los widgets principales son accesibles como atributos de la clase.
         """
-        # Notebook principal (ahora dentro del contenedor)
-        self.notebook = ttk.Notebook(self.main_container)
-        self.notebook.grid(row=0, column=0, sticky="nsew")
+        # Configuración del layout principal
+        self.grid_rowconfigure(0, weight=1)  # La fila 0 (notebook) se expandirá
+        self.grid_columnconfigure(0, weight=1)  # Columna única
 
-        # Configurar expansión
-        self.main_container.grid_rowconfigure(0, weight=1)
-        self.main_container.grid_columnconfigure(0, weight=1)
+        # =============================================
+        # NOTEBOOK PRINCIPAL (Pestañas)
+        # =============================================
+        self.notebook = ttk.Notebook(self)
+        self.notebook.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        # Pestañas
+        # =============================================
+        # PESTAÑA DE OPERACIONES
+        # =============================================
         ops_tab = ttk.Frame(self.notebook)
+        self.notebook.add(ops_tab, text="Operaciones")
+
+        # Configurar grid para la pestaña de operaciones
+        ops_tab.grid_rowconfigure(
+            2, weight=1
+        )  # La fila 2 (previsualización) se expandirá
+        ops_tab.grid_columnconfigure(0, weight=1)  # Columna única
+
+        # 1. Panel de selección de directorio
+        dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
+        dir_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+        dir_frame.grid_columnconfigure(1, weight=1)  # La columna del Entry se expandirá
+
+        ttk.Label(dir_frame, text="Directorio:").grid(
+            row=0, column=0, padx=5, pady=2, sticky="w"
+        )
+
+        self.dir_entry = ttk.Entry(dir_frame)
+        self.dir_entry.grid(row=0, column=1, sticky="ew", padx=5, pady=2)
+
+        browse_btn = ttk.Button(
+            dir_frame,
+            text="Examinar",
+            command=self.select_directory,
+            style="Accent.TButton",
+        )
+        browse_btn.grid(row=0, column=2, padx=5, pady=2)
+        ToolTip(browse_btn, "Seleccione el directorio que desea organizar")
+
+        # 2. Panel de acciones
+        action_frame = ttk.LabelFrame(ops_tab, text="Acciones", padding=10)
+        action_frame.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
+
+        # Configurar grid para los botones de acción
+        for i in range(4):
+            action_frame.grid_columnconfigure(i, weight=1)
+
+        buttons = [
+            ("Previsualizar", self.preview_changes),
+            ("Organizar", self.start_organization),
+            ("Deshacer", self.undo_last),
+            ("Observar", self.observador),
+        ]
+
+        for col, (text, command) in enumerate(buttons):
+            btn = ttk.Button(
+                action_frame,
+                text=text,
+                command=command,
+                style="Accent.TButton" if text == "Organizar" else "TButton",
+            )
+            btn.grid(row=0, column=col, padx=5, pady=2, sticky="ew")
+            ToolTip(btn, f"Ejecutar acción: {text}")
+
+        # 3. Panel de previsualización
+        preview_frame = ttk.LabelFrame(ops_tab, text="Previsualización", padding=5)
+        preview_frame.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
+        preview_frame.grid_rowconfigure(0, weight=1)
+        preview_frame.grid_columnconfigure(0, weight=1)
+
+        # Treeview con scrollbars
+        tree_container = ttk.Frame(preview_frame)
+        tree_container.grid(row=0, column=0, sticky="nsew")
+        tree_container.grid_rowconfigure(0, weight=1)
+        tree_container.grid_columnconfigure(0, weight=1)
+
+        # Scrollbars
+        vsb = ttk.Scrollbar(tree_container, orient="vertical")
+        hsb = ttk.Scrollbar(tree_container, orient="horizontal")
+
+        # Configuración del Treeview
+        self.preview_tree = ttk.Treeview(
+            tree_container,
+            columns=("original", "destino", "estado"),
+            show="headings",
+            yscrollcommand=vsb.set,
+            xscrollcommand=hsb.set,
+            selectmode="extended",
+        )
+
+        # Configurar columnas
+        self.preview_tree.heading("original", text="Ubicación Original", anchor=tk.W)
+        self.preview_tree.heading("destino", text="Nueva Ubicación", anchor=tk.W)
+        self.preview_tree.heading("estado", text="Estado", anchor=tk.W)
+
+        self.preview_tree.column("original", width=300, stretch=True)
+        self.preview_tree.column("destino", width=300, stretch=True)
+        self.preview_tree.column("estado", width=100, stretch=False)
+
+        # Layout
+        self.preview_tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
+
+        # Configurar menú contextual
+        self._setup_preview_context_menu()
+
+        # 4. Barra de progreso
+        self.progress = ttk.Progressbar(
+            ops_tab, orient="horizontal", mode="determinate", length=300
+        )
+        self.progress.grid(row=3, column=0, sticky="ew", padx=5, pady=5)
+
+        # =============================================
+        # PESTAÑA DE CONFIGURACIÓN
+        # =============================================
         config_tab = ttk.Frame(self.notebook)
+        self.notebook.add(config_tab, text="Configuración")
 
-        # Configurar expansión en cada pestaña
-        ops_tab.grid_rowconfigure(0, weight=1)
-        ops_tab.grid_columnconfigure(0, weight=1)
-
+        # Configurar grid para la pestaña de configuración
         config_tab.grid_rowconfigure(0, weight=1)
         config_tab.grid_columnconfigure(0, weight=1)
 
-        self.build_operations_tab(ops_tab)
-        self.build_config_tab(config_tab)
-
-        # Configuración de estilo avanzado
-        self.style = ttk.Style()
-        self.style.theme_use("clam")
-
-        # Configurar colores según el tema
-        self.setup_theme_system()
-
-        # Frame principal con scroll
-        main_frame = ttk.Frame(self, padding=10)
-        main_frame.grid(row=0, column=0, sticky="nsew")
-
-        # Sistema de pestañas
-        self.notebook = ttk.Notebook(main_frame)
-        self.notebook.grid(row=0, column=0, sticky="nsew")
-
-        # ----------------------------
-        # Pestaña de Operaciones
-        # ----------------------------
-        ops_tab = ttk.Frame(self.notebook, padding=10)
-        self.notebook.add(ops_tab, text="Operaciones")
-
-        # Panel de directorio
-        dir_frame = ttk.LabelFrame(ops_tab, text="Selección de Directorio", padding=10)
-        dir_frame.grid(row=0, column=0, sticky="nsew")
-
-        ttk.Label(dir_frame, text="Directorio a organizar:").grid(
-            row=0, column=0, sticky="w"
-        )
-        self.dir_entry = ttk.Entry(dir_frame)
-        self.dir_entry.grid(row=0, column=0, sticky="nsew")
-
-        browse_btn = ttk.Button(
-            dir_frame, text="Examinar", command=self.select_directory
-        )
-        browse_btn.grid(row=0, column=0, sticky="nsew")
-        ToolTip(browse_btn, "Seleccione el directorio que desea organizar")
-
-        # Panel de acciones
-        action_frame = ttk.LabelFrame(ops_tab, text="Acciones", padding=10)
-        action_frame.grid(row=0, column=0, sticky="nsew")
-
-        btn_grid = ttk.Frame(action_frame)
-        btn_grid.grid()
-
-        buttons = [
-            ("Previsualizar", self.preview_changes, 0, 0),
-            ("Organizar", self.start_organization, 0, 1),
-            ("Deshacer", self.undo_last, 0, 2),
-            ("Observer", self.observador, 0, 3),
-        ]
-
-        for text, command, row, col in buttons:
-            btn = ttk.Button(
-                btn_grid, text=text, command=command, style="Accent.TButton"
-            )
-            btn.grid(row=row, column=col, padx=5, pady=5, sticky=tk.NSEW)
-            ToolTip(btn, f"Ejecutar acción: {text}")
-
-        # Panel de previsualización
-        self.create_preview_tree(ops_tab)
-
-        # Panel de progreso
-        progress_frame = ttk.LabelFrame(ops_tab, text="Progreso", padding=10)
-        progress_frame.grid(sticky=tk.EW)  # Expandir horizontalmente
-
-        # Configurar la columna del frame para que se expanda
-        ops_tab.grid_columnconfigure(0, weight=1)  # Asumiendo que es la columna 0
-
-        self.progress = ttk.Progressbar(
-            progress_frame, orient=tk.HORIZONTAL, mode="determinate", length=300
-        )
-        self.progress.grid(sticky=tk.EW, pady=5)  # Expandir horizontalmente
-
-        # Configurar la columna del progress_frame para que se expanda
-        progress_frame.grid_columnconfigure(0, weight=1)
-
-        # ----------------------------
-        # Pestaña de Configuración
-        # ----------------------------
-        config_tab = ttk.Frame(self.notebook, padding=10)
-        self.notebook.add(config_tab, text="Configuración")
-
-        # Subpestañas dentro de Configuración
+        # Notebook interno para subpestañas
         config_notebook = ttk.Notebook(config_tab)
         config_notebook.grid(row=0, column=0, sticky="nsew")
 
         # Subpestaña de Formatos
         format_tab = ttk.Frame(config_notebook, padding=10)
-        self.build_format_settings(format_tab)
         config_notebook.add(format_tab, text="Formatos")
+        self.build_format_settings(format_tab)
 
         # Subpestaña de Apariencia
         appearance_tab = ttk.Frame(config_notebook, padding=10)
-        self.build_appearance_settings(appearance_tab)
         config_notebook.add(appearance_tab, text="Apariencia")
+        self.build_appearance_settings(appearance_tab)
 
-        # ----------------------------
-        # Área de Registro (parte inferior)
-        # ----------------------------
-        # self.create_log_area(main_frame)  # Usa la función que definimos antes
+        # =============================================
+        # BARRA DE ESTADO
+        # =============================================
+        self.setup_status_bar(ops_tab)
 
-        # ----------------------------
-        # Barra de Estado
-        # ----------------------------
-        self.setup_status_bar(main_frame)
+        # Configuración final
+        self.update_idletasks()
+        self._setup_responsive_design()
 
-        # Configuración de estilo para botón destacado
-        self.style.configure(
-            "Accent.TButton",
-            foreground="white",
-            background="#0078d7",
-            font=("Segoe UI", 9, "bold"),
-        )
+    def _setup_responsive_design(self):
+        """Configura comportamiento responsivo de la ventana prinsipal"""
+        # Lista de widgets que nesecitan ajuste a redimencionar
+        self.responsive_widgets = [
+            (self.preview_tree, {"columns": ["original", "destino"]}),
+            (self.preview_tree, {"columns": ["exr", "folder"]}),
+        ]
+        # Bind para redimensionamiento
+        self.bind("<Configure>", self._on_window_resize)
 
-        self.style.map(
-            "Accent.TButton",
-            background=[("active", "#005fa3"), ("disabled", "#cccccc")],
-        )
+    def _on_window_resize(self, event):
+        """Ajusta elementos de la interfaz al redimensionar la ventana"""
+        if not hasattr(self, "responsive_widgets"):
+            return
 
-        # Asegurar que los grids se expandan correctamente
-        btn_grid.columnconfigure(0, weight=1)
-        btn_grid.columnconfigure(1, weight=1)
+        win_width = self.winfo_width()
+
+        for widget, config in self.responsive_widgets:
+            if widget.winfo_exists():
+                for col in config.get("columns", []):
+                    widget.column(col, width=int(win_width * 0.4))  # 40% del ancho
 
     def log(self, message, level="INFO"):
         """
