@@ -316,7 +316,7 @@ class FileOrganizerGUI(tk.Tk):
 
         # 1. Configuración básica de la ventana
         self.title("Organizador Avanzado de Archivos")
-        self.geometry("600x900")
+        self.geometry("600x800")
         # self.minsize(800, 600)
         self.configure(bg="#f0f0f0")
         self.grid_rowconfigure(0, weight=1)
@@ -600,7 +600,9 @@ class FileOrganizerGUI(tk.Tk):
         # =============================================
         # BARRA DE ESTADO
         # =============================================
-        self.setup_status_bar(self.notebook)
+        status = ttk.LabelFrame(self.notebook, padding=10)
+        status.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+        self.setup_status_bar(status)
 
         # Configuración final
         self.update_idletasks()
