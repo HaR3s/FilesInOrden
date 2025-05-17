@@ -1199,22 +1199,91 @@ class FileOrganizerGUI(tk.Tk):
 
         self.style.theme_use("professional")
 
-    def setup_status_bar(self, parent):
-        """Barra de estado avanzada"""
-        self.status_bar = ttk.Frame(parent)
-        self.status_bar.grid(row=0, column=0, sticky="w")
+    # def setup_status_bar(self, parent):
+    #     """Barra de estado avanzada"""
+    #     self.status_bar = ttk.Frame(parent)
+    #     self.status_bar.grid(row=0, column=0, sticky="nsew")
+    #
+    #     # Componentes de la barra
+    #     self.status_label = ttk.Label(
+    #         self.status_bar, text="Listo", anchor=tk.W, style="Status.TLabel"
+    #     )
+    #     self.status_label.grid(row=0, column=0, sticky="nsew")
+    #
+    #     self.memory_usage = ttk.Label(self.status_bar, text="RAM: 0MB", anchor=tk.E)
+    #     self.memory_usage.grid(row=0)
+    #
+    #     # Actualización periódica
+    #     self.update_status_bar()
 
-        # Componentes de la barra
-        self.status_label = ttk.Label(
-            self.status_bar, text="Listo", anchor=tk.W, style="Status.TLabel"
+    def setup_statusbar(self):
+        """Configura una barra de estado avanzada en la parte inferior de la ventana"""
+        # Crear frame principal para la barra de estado
+        self.status_bar = ttk.Frame(
+            self, relief=tk.SUNKEN, padding=(5, 2, 5, 2), style="Statusbar.TFrame"
         )
-        self.status_label.grid(row=0, column=0, sticky="nsew")
 
-        self.memory_usage = ttk.Label(self.status_bar, text="RAM: 0MB", anchor=tk.E)
-        self.memory_usage.grid(row=0)
+        # Posicionar en la última fila y expandir horizontalmente
+        self.status_bar.grid(
+            row=999,  # Fila muy alta para asegurar que esté al final
+            column=0,
+            columnspan=100,  # Ocupar múltiples columnas
+            sticky="nsew",  # Expandir en todas direcciones
+            padx=0,
+            pady=(5, 0),  # Margen superior pero no inferior
+        )
 
-        # Actualización periódica
-        self.update_status_bar()
+        # Configurar peso de fila para que el contenido principal se expanda
+        self.grid_rowconfigure(0, weight=1)  # Contenido principal
+        self.grid_rowconfigure(
+            999, weight=0
+        )  # Barra de estado (sin expansión vertical)
+        self.grid_columnconfigure(0, weight=1)  # Expansión horizontal
+
+        # Definición de secciones
+        sections = [
+            ("status", "Listo", 20, tk.W, True),
+            ("progress", "", 15, tk.CENTER, False),
+            ("stats", "Archivos: 0", 20, tk.E, False),
+            ("memory", "RAM: 0MB", 15, tk.E, False),
+            ("time", "", 10, tk.E, False),
+        ]
+
+        # Crear labels para cada sección
+        self.status_labels = {}
+        for col, (name, text, width, anchor, stretch) in enumerate(sections):
+            # Configurar peso de columna
+            if stretch:
+                self.status_bar.grid_columnconfigure(col, weight=1)
+
+            # Label del valor
+            label = ttk.Label(
+                self.status_bar,
+                text=text,
+                width=width,
+                anchor=anchor,
+                style="Statusbar.TLabel",
+            )
+            label.grid(
+                row=0,
+                column=col,
+                sticky="ew",
+                padx=(0, 5) if col < len(sections) - 1 else (0, 0),
+            )
+
+            self.status_labels[name] = label
+
+        # Configurar estilos
+        self.style.configure("Statusbar.TFrame", background="#f0f0f0", borderwidth=1)
+        self.style.configure(
+            "Statusbar.TLabel",
+            background="#f0f0f0",
+            font=("Segoe UI", 8),
+            padding=(0, 0),
+        )
+
+        # Iniciar actualización periódica
+        self.update_statusbar()
 
     def update_status_bar(self):
         """Actualiza dinámicamente la barra de estado"""
