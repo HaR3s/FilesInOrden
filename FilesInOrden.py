@@ -1367,7 +1367,9 @@ class FileOrganizerGUI(tk.Tk):
         """Guarda los cambios de edición"""
         if not new_folder.strip():
             messagebox.showwarning(
-                "Advertencia", "La carpeta destino no puede estar vacía"
+                "Advertencia",
+                "La carpeta destino no puede estar vacía",
+                ico="ico/favicon.ico",
             )
             return
 
