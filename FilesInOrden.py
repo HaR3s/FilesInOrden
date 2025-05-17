@@ -1202,7 +1202,7 @@ class FileOrganizerGUI(tk.Tk):
     def setup_status_bar(self, parent):
         """Barra de estado avanzada"""
         self.status_bar = ttk.Frame(parent)
-        self.status_bar.grid(row=0, column=0, sticky="nsew")
+        self.status_bar.grid(row=0, column=0, sticky="w")
 
         # Componentes de la barra
         self.status_label = ttk.Label(
